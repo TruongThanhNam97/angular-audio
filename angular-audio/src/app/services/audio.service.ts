@@ -37,7 +37,8 @@ export class AudioService {
   private playModeSubject$ = new Subject();
 
   private currentFile : any = {};
-  private currentFileSubject$ = new Subject();
+  private currentFileSubject$2 = new Subject();
+  private currentFileSubject$1 = new Subject();
 
   getCurrentFile() {
     return this.currentFile;
@@ -45,15 +46,20 @@ export class AudioService {
 
   updateCurrentFile1(file) {
     this.currentFile = {...file};
+    this.currentFileSubject$1.next(this.currentFile);
   }
 
   updateCurrentFile2(file) {
     this.currentFile = {...file};
-    this.currentFileSubject$.next(this.currentFile);
+    this.currentFileSubject$2.next(this.currentFile);
   }
 
-  getCurrentFileSubject() {
-    return this.currentFileSubject$.asObservable();
+  getCurrentFileSubject1() {
+    return this.currentFileSubject$1.asObservable();
+  }
+
+  getCurrentFileSubject2() {
+    return this.currentFileSubject$2.asObservable();
   }
 
   getPlayModeSubject() {

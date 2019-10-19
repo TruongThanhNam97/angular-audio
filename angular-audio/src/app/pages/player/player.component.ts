@@ -14,6 +14,7 @@ export class PlayerComponent implements OnInit {
   state: StreamState;
   currentFile: any = {};
   destroy$ = new Subject();
+  loading : boolean = false;
 
   constructor(
     private audioService: AudioService,
@@ -23,9 +24,10 @@ export class PlayerComponent implements OnInit {
   ngOnInit() {
     if (this.cloudService.getStateToAllowGetSongs()) {
       // get media files
+      this.loading = true;
       this.cloudService.getSongs().subscribe(files => {
         this.files = files;
-      });
+      },err => console.log(err),() => this.loading = false);
     } else {
       this.files = this.cloudService.getLocalSongs();
     }
@@ -34,7 +36,7 @@ export class PlayerComponent implements OnInit {
 
     this.currentFile = this.audioService.getCurrentFile();
 
-    this.audioService.getCurrentFileSubject().subscribe((v: any) => {
+    this.audioService.getCurrentFileSubject2().subscribe((v: any) => {
       this.openFile(v.file, v.index);
     });
   }

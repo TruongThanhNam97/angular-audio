@@ -21,11 +21,10 @@ export class MediaFooterComponent implements OnInit {
       v => this.files = v
     );
     this.currentFile = this.audioService.getCurrentFile();
-    this.audioService.getCurrentFileSubject().subscribe(
+    this.audioService.getCurrentFileSubject1().subscribe(
       v => this.currentFile = v
     );
     this.audioService.getState().subscribe(state => {
-      console.log(state);
       this.state = state;
     });
   }

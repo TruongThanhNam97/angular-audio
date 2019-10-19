@@ -3,29 +3,32 @@
     <span>Audio Player</span>
   </mat-toolbar>
   <div class="content" style="display: flex;margin-top: 50px;">
-    <div class="logo">
+    <div class="logo" style="width: 20%;">
       <mat-icon>music_note</mat-icon>
       <div>{{ this.currentFile?.file?.name }}</div>
     </div>
-    <mat-list color="primary" style="width: 1200px;height: 400px;margin: auto;overflow-y: scroll;">
-      <h3 mat-subheader>Songs</h3>
-      <mat-list-item
-        *ngFor="let file of files; let i = index"
-        (click)="openFile(file, i)"
-        style="cursor: pointer;"
-      >
-        <mat-icon color="primary" mat-list-icon>music_note</mat-icon>
-        <h4 mat-line>{{ file.name }}</h4>
-        <h5 mat-line>by {{ file.artist }}</h5>
-        <mat-icon
-          color="primary"
-          *ngIf="currentFile.index === i && !state?.error"
-          >volume_up</mat-icon
+    <div style="width: 70%;display:flex;justify-content: center;align-items: center;">
+      <mat-spinner *ngIf="loading"></mat-spinner>
+      <mat-list *ngIf="!loading" color="primary" style="width: 1200px;height: 400px;margin: auto;overflow-y: scroll;">
+        <h3 mat-subheader>Songs</h3>
+        <mat-list-item
+          *ngFor="let file of files; let i = index"
+          (click)="openFile(file, i)"
+          style="cursor: pointer;"
         >
-        <h6 *ngIf="currentFile.index === i && state?.error">ERROR</h6>
-        <mat-divider></mat-divider>
-      </mat-list-item>
-    </mat-list>
+          <mat-icon color="primary" mat-list-icon>music_note</mat-icon>
+          <h4 mat-line>{{ file.name }}</h4>
+          <h5 mat-line>by {{ file.artist }}</h5>
+          <mat-icon
+            color="primary"
+            *ngIf="currentFile.index === i && !state?.error"
+            >volume_up</mat-icon
+          >
+          <h6 *ngIf="currentFile.index === i && state?.error">ERROR</h6>
+          <mat-divider></mat-divider>
+        </mat-list-item>
+      </mat-list>
+    </div>
   </div>
   <!-- <div class="media-footer" *ngIf="playMode" style="position: fixed;bottom: 0;width: 100%">
     <mat-toolbar color="primary">
