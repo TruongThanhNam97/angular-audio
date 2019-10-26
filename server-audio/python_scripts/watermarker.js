@@ -8,8 +8,7 @@ class Watermarker {
     }
 
     Watermark(file_path){
-        console.log('start py');
-        var pyWatermarker = spawn('py',[ './python_scripts/test.py',  ]);
+        var pyWatermarker = spawn('py',[ './python_scripts/test.py', file_path]);
         pyWatermarker.stdout.on('data',(data) => {
             console.log('Message : ' + data.toString());
         });
@@ -17,7 +16,6 @@ class Watermarker {
             console.log('Error while watermarking:');
             console.log('Error :' + data.toString());
         })
-        console.log('end py');
     }
 }
 

@@ -1,8 +1,7 @@
 import math
 import numpy
 import random
-from hamming_coder import HammingCoder
-
+from EchoHiding.hamming_coder import HammingCoder
 
 class BinaryMessage:
     def __init__(self, input_txt):

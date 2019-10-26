@@ -48,10 +48,10 @@ export class FormUploadComponent implements OnInit {
     formData.append('artist',this.signForm.get('artist').value);
     formData.append('name',this.signForm.get('name').value);
     this.uploadService.uploadSong(formData).subscribe(
-      (res:any) => {this.uploadResponse = res;console.log(this.uploadResponse);},
+      (res:any) => {this.uploadResponse = res;console.log(this.uploadResponse);  },
       err => this.error = err
     );
-    this.signForm.reset();
+    //this.signForm.reset();
     this.selectedFile = null;
   }
 

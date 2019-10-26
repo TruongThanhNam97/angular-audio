@@ -1,32 +1,24 @@
-from audiowave import Wave
-from converter import WavConverter
-from coder import BinaryMessage, Key, System
+from EchoHiding.audiowave import Wave
+from EchoHiding.converter import WavConverter
+from EchoHiding.coder import BinaryMessage, Key, System
+from pathlib import Path
 
+class Coding_factory:
+    @staticmethod
+    def Encoding( File_Name, Original_Folder_Path, Watermarked_Folder_Path, Watermark_Message_Folder_Path ):
+        audio = Path(Original_Folder_Path)/File_Name
+        text = Path(Watermark_Message_Folder_Path)/"original.txt"
 
-print("Поместите файлы аудиозаписи(*.mp3, *.m4a, *.wav) и сообщения(*.txt)")
-print("в папку с данным приложением.")
+        audioconverter = WavConverter()
+        if audioconverter.is_needed(File_Name):
+            audio = audioconverter.into_wav(audio)
 
-print("Введите название файла аудиозаписи с расширением:")
-audio = input()
-print("Введите название файла сообщения с расширением:")
-text = input()
+        signal = Wave(audio)
+        message = BinaryMessage(text)
+        key = Key()
 
-audioconverter = WavConverter()
-if audioconverter.is_needed(audio):
-    audio = audioconverter.into_wav(audio)
-    print("Для дальнейшей работы аудиозапись была переведена в формат wav.")
+        stegosystem = System(signal, message, key)
+        stegosystem.create_stego()
+        stegosystem.signal.create_stegoaudio(stegosystem.key)
 
-signal = Wave(audio)
-message = BinaryMessage(text)
-key = Key()
-
-stegosystem = System(signal, message, key)
-stegosystem.create_stego()
-stegosystem.signal.create_stegoaudio(stegosystem.key)
-
-audioconverter.delete_temps()
-
-print("В папку с данным приложением сохранен файл с ключом key.txt и аудиофайл")
-print("со скрытым сообщением out.wav.")
-
-input()
+        audioconverter.delete_temps()
