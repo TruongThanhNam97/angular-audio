@@ -11,7 +11,7 @@ Watermark_Message_Folder_Path = Root_Path/"assets"/"watermark-messages"
 Watermarked_Folder_Path = Root_Path/"public"/"watermark-songs"
 
 #File_Name = sys.argv[1]
-File_Name = "1571840826929-Nuoc Mat Em Lau Bang Tinh Yeu Moi - Da L.mp3"
+File_Name = "test_input.mp3"
 
 coding.Coding_factory.Encoding(File_Name, Original_Folder_Path, Watermarked_Folder_Path, Watermark_Message_Folder_Path)
 

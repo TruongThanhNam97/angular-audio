@@ -1,6 +1,6 @@
-import numpy
 import wave
 import math
+import numpy
 
 
 class Wave:

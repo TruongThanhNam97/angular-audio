@@ -2,6 +2,7 @@ from EchoHiding.audiowave import Wave
 from EchoHiding.converter import WavConverter
 from EchoHiding.coder import BinaryMessage, Key, System
 from pathlib import Path
+import numpy
 
 class Coding_factory:
     @staticmethod

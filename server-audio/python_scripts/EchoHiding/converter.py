@@ -11,7 +11,7 @@ class WavConverter:
     def into_wav(self, input):
         self.input = str(input)
         self.input_wav = 'temp.wav'
-        ffmpy.FFmpeg(inputs={self.input : None}, outputs={self.input_wav: None}).run()
+        ffmpy.FFmpeg( executable="./libs/ffmpeg/bin/ffmpeg.exe", inputs={self.input : None}, outputs={self.input_wav: None}).run()
         self.was_used = True
         return self.input_wav
 
