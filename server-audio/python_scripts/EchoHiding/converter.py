@@ -1,17 +1,20 @@
 import ffmpy
+import sys
 import os
+import datetime
 
 
 class WavConverter:
-    def __init__(self):
+    def __init__(self, ffmpy_exe_path):
         self.input = ''
         self.input_wav = ''
+        self.ffmpy_exe_path = str(ffmpy_exe_path)
         self.was_used = False
 
-    def into_wav(self, input):
-        self.input = str(input)
-        self.input_wav = 'temp.wav'
-        ffmpy.FFmpeg( executable="./libs/ffmpeg/bin/ffmpeg.exe", inputs={self.input : None}, outputs={self.input_wav: None}).run()
+    def into_wav(self, _input):
+        self.input = str(_input)
+        self.input_wav = str (datetime.datetime.now().timestamp() ) +'_temp.wav'
+        ffmpy.FFmpeg( executable= self.ffmpy_exe_path, inputs={self.input : None}, outputs={self.input_wav: None}).run( stderr=sys.stdout )
         self.was_used = True
         return self.input_wav
 

@@ -29,10 +29,10 @@ class BinaryMessage:
 
 
 class Key:
-    def __init__(self):
+    def __init__(self,file_path):
         self.delta = []
         self.begin, self.end = 0, 0
-        self.output_txt = 'key.txt'
+        self.output_txt = file_path
 
     def set_delta(self, delta):
         self.delta = delta
@@ -94,7 +94,7 @@ class System:
         rest = self.signal.frames_num % self.signal.frame_rate
         acceptable_begin = self.signal.frames_num - self.samples_per_message - rest
         if acceptable_begin < 0:
-            print("Текст слишком велик для аудиозаписи")
+            print("Message to big")
             return
         max_second = acceptable_begin // self.signal.frame_rate
         rand_second = random.randint(math.floor(max_second * 0.05), max_second)

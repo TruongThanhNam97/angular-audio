@@ -2,7 +2,6 @@ import wave
 import math
 import numpy
 
-
 class Wave:
     types = {
         1: numpy.int8,
@@ -30,9 +29,6 @@ class Wave:
         # for united channels
         self.decreasing_from = 0
         self.increasing_to = 0
-
-        print(self.frames_num)
-        input()
 
     def set_decreasing_from(self, key):
         self.decreasing_from = max(0, key.begin - self.switching) * self.channels_num
@@ -65,9 +61,8 @@ class Wave:
             return 1.0
         return 0.8 + 0.2 * i / (self.increasing_to - end)
 
-    def create_stegoaudio(self, key):
-        output_wav = 'out.wav'
-        wave_out = wave.open(output_wav, 'w')
+    def create_stegoaudio(self, key, output_path):
+        wave_out = wave.open( str(output_path) , 'w')
         wave_out.setparams(self.wavein.getparams())
 
         self.set_decreasing_from(key)
