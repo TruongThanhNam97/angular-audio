@@ -16,7 +16,7 @@ var storage = multer.diskStorage({
 var upload = multer({
   storage: storage,
   fileFilter: (req, file, cb) => {
-    if (file.originalname.match(/\.(mp3|MP3|mp4|MP4)$/)) {
+    if (file.originalname.match(/\.(mp3|MP3|wav|WAV)$/)) {
       cb(null, true);
     } else {
       cb(null, false);
@@ -31,9 +31,8 @@ router.get("/", (req, res, next) => {
 
 /* POST song */
 var saveSongMetadata = (req, res, next) =>{
-  console.log('saved song ');
   const newSong = {
-    url: req.files[0].filename,
+    url: req.files[0].filename.split('.')[0]+'.wav' ,
     name: req.body.name,
     artist: req.body.artist
   };
@@ -45,9 +44,10 @@ var saveSongMetadata = (req, res, next) =>{
 
 var watermark = (req, res, next) => {
   let filename = req.files[0].filename;
-  watermarker.Watermark(filename);
-  saveSongMetadata(req, res, next);
-}
+  watermarker.Watermark(filename,
+                        () => saveSongMetadata(req, res, next),
+                        (err) => res.status(500).send(err)
+  )}
 
 router.post("/upload", upload.any(), watermark);
 

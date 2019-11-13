@@ -1,5 +1,29 @@
-<div class="container mt-5">
+<div class="container" *ngIf="isUpload">
+  Uploading.....
+</div>
+<div class="container mt-5" *ngIf="!isUpload">
   <form [formGroup]="signForm" (submit)="onSubmit()">
+    <div class="form-group">
+      <input
+        type="file"
+        class="form-control-file"
+        (change)="onSelectFile($event)"
+        formControlName="file"
+        [ngClass]="{
+          'is-invalid':
+            signForm.get('file').touched && signForm.get('file').invalid
+        }"
+      />
+      <span
+        class="invalid-feedback"
+        *ngIf="signForm.get('file').touched && signForm.get('file').invalid"
+      >
+        <!-- <span *ngIf="signForm.get('file').errors['required']">You must choose file</span> -->
+        <span *ngIf="signForm.get('file').errors['isFileInvalid']"
+          >File is invalid</span
+        >
+      </span>
+    </div>
     <div class="form-group">
       <input
         type="text"
@@ -40,30 +64,6 @@
         >
       </span>
     </div>
-    <div class="form-group">
-      <input
-        type="file"
-        class="form-control-file"
-        (change)="onSelectFile($event)"
-        formControlName="file"
-        [ngClass]="{
-          'is-invalid':
-            signForm.get('file').touched && signForm.get('file').invalid
-        }"
-      />
-      <span
-        class="invalid-feedback"
-        *ngIf="signForm.get('file').touched && signForm.get('file').invalid"
-      >
-        <!-- <span *ngIf="signForm.get('file').errors['required']">You must choose file</span> -->
-        <span *ngIf="signForm.get('file').errors['isFileInvalid']"
-          >File is invalid</span
-        >
-      </span>
-    </div>
-    <div *ngIf="error">
-      {{ error }}
-    </div>
     <div *ngIf="uploadResponse?.status === 'error'">
       {{ uploadResponse.message }}
     </div>
@@ -85,4 +85,7 @@
       Submit
     </button>
   </form>
+</div>
+<div *ngIf="error">
+  {{ error }}
 </div>

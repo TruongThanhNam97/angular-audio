@@ -1,23 +1,23 @@
-from audiowave import Wave
-from decoder import BinaryMessage, Key, System
+from EchoHiding.audiowave import Wave
+from EchoHiding.converter import WavConverter
+from EchoHiding.decoder import BinaryMessage, Key, System
+from pathlib import Path
 
+class Decoding_factory:
+    @staticmethod
+    def Decoding( File_Name, Original_Folder_Path ,Watermark_Message_Folder_Path ,FFMPEG_EXE_Path):
+        audio = Path(Original_Folder_Path)/File_Name
+        ffmpy_exe_path = FFMPEG_EXE_Path
+        message =  Path(Watermark_Message_Folder_Path)/"original.txt"
 
-print("Поместите файл аудиозаписи(*.wav) и ключа(*.txt) в папку")
-print("с данным приложением.")
+        audioconverter = WavConverter(ffmpy_exe_path)
+        need2convert = audioconverter.is_needed(File_Name)
+        if need2convert:
+            audio = audioconverter.into_wav(audio)
+        
+        signal = Wave(audio)
+        message = BinaryMessage(message)
+        key = Key()
 
-print("Введите название файла аудиозаписи с расширением:")
-audio = input()
-print("Введите название файла ключа с расширением:")
-text = input()
-
-signal = Wave(audio)
-message = BinaryMessage()
-key = Key(text)
-
-stegosystem = System(signal, message, key)
-stegosystem.extract_stegomessage()
-
-print("В папку с данным приложением сохранен файл с извлеченным")
-print("сообщением message.txt.")
-
-input()
+        stegosystem = System(signal, message, key)
+        return stegosystem.extract_stegomessage() , str(audio), need2convert

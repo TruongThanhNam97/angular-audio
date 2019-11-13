@@ -10,7 +10,7 @@ class Wave:
     }
 
     def __init__(self, input_wav):
-        self.wavein = wave.open(input_wav, 'r')
+        self.wavein = wave.open( str(input_wav) , 'r')
         self.channels_num = self.wavein.getnchannels()  # mono / stereo
         self.bytes_per_sample = self.wavein.getsampwidth()  # 1 / 2 / 4
         self.frame_rate = self.wavein.getframerate()  # 8000 / 44100 / 48000 / 96000

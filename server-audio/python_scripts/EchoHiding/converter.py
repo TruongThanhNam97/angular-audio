@@ -13,8 +13,10 @@ class WavConverter:
 
     def into_wav(self, _input):
         self.input = str(_input)
-        self.input_wav = str (datetime.datetime.now().timestamp() ) +'_temp.wav'
-        ffmpy.FFmpeg( executable= self.ffmpy_exe_path, inputs={self.input : None}, outputs={self.input_wav: None}).run( stderr=sys.stdout )
+        self.input_wav = str(datetime.datetime.now().timestamp() ) +'_temp.wav'
+        sys.stdout = open(os.devnull, "w")
+        ffmpy.FFmpeg( executable= self.ffmpy_exe_path, inputs={self.input : None}, outputs={self.input_wav: None}).run(stdout = None, stderr=sys.stdout )
+        sys.stdout = sys.__stdout__
         self.was_used = True
         return self.input_wav
 
