@@ -1,15 +1,17 @@
-import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
-import { Observable, of } from 'rxjs';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Observable, of, Subject } from 'rxjs';
 import { UploadService } from 'src/app/services/upload.service';
 import { CloudService } from 'src/app/services/cloud.service';
+import { takeUntil } from 'rxjs/operators';
+import { AlertifyService } from 'src/app/services/alertify.service';
 
 @Component({
   selector: 'app-form-upload',
   templateUrl: './form-upload.component.html',
   styleUrls: ['./form-upload.component.css']
 })
-export class FormUploadComponent implements OnInit {
+export class FormUploadComponent implements OnInit, OnDestroy {
 
   signForm: FormGroup;
 
@@ -19,16 +21,42 @@ export class FormUploadComponent implements OnInit {
 
   error: string;
 
-  isUpload: boolean = false;
+  isUpload = false;
 
-  constructor(private uploadService: UploadService, private cloudService: CloudService) { }
+  destroyDescription$: Subject<boolean> = new Subject<boolean>();
+
+  constructor(
+    private uploadService: UploadService,
+    private cloudService: CloudService,
+    private alertify: AlertifyService
+  ) { }
 
   ngOnInit() {
+    this.initForm();
+  }
+
+  ngOnDestroy() {
+    this.destroyDescription$.next(true);
+  }
+
+  initForm() {
     this.signForm = new FormGroup({
       file: new FormControl(null, [Validators.required], [this.isFileInvalid.bind(this)]),
       name: new FormControl(null, [Validators.required]),
       artist: new FormControl(null, [Validators.required])
     });
+  }
+
+  disableFieldOfForm() {
+    this.signForm.get('name').disable();
+    this.signForm.get('artist').disable();
+    this.signForm.get('file').disable();
+  }
+
+  enableFieldOfForm() {
+    this.signForm.get('name').enable();
+    this.signForm.get('artist').enable();
+    this.signForm.get('file').enable();
   }
 
   onSelectFile(e) {
@@ -56,19 +84,30 @@ export class FormUploadComponent implements OnInit {
     formData.append('artist', this.signForm.get('artist').value);
     formData.append('name', this.signForm.get('name').value);
     this.isUpload = true;
-    this.uploadService.uploadSong(formData).subscribe(
+    this.disableFieldOfForm();
+    this.uploadService.uploadSong(formData).pipe(
+      takeUntil(this.destroyDescription$)
+    ).subscribe(
       (res: any) => {
-        this.uploadResponse = res; 
-        console.log(this.uploadResponse);
-       },
-      err => { 
-        this.error = err.error;
-        this.isUpload = false; 
+        // Here to catch data from server
+        this.uploadResponse = res;
       },
-      () => this.isUpload = false
+      err => {
+        // Here to catch error from server
+        this.error = err.error;
+        this.isUpload = false;
+        this.enableFieldOfForm();
+        this.signForm.reset();
+        this.alertify.error('Error');
+      },
+      () => {
+        // Here when upload file event completed
+        this.isUpload = false;
+        this.enableFieldOfForm();
+        this.signForm.reset();
+        this.alertify.success('Upload file successfully');
+      }
     );
-    //this.signForm.reset();
-    this.selectedFile = null;
   }
 
 }
