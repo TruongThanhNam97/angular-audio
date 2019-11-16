@@ -31,7 +31,7 @@ class BinaryMessage:
 class Key:
     def __init__(self):
         self.delta = []
-        self.begin, self.end = 5000, 0
+        self.begin, self.end = 0, 0
 
     def set_delta(self, delta):
         self.delta = delta

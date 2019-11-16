@@ -9,7 +9,6 @@ class BinaryMessage:
         self.bits = []
         self.bits_original = []
         self.bitslen = 0
-        self.output_txt = "message.txt"
         self.input_message = open(str(orginal_message), 'r')
 
         _code = HammingCoder()

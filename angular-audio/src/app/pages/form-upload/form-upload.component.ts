@@ -58,7 +58,6 @@ export class FormUploadComponent implements OnInit {
     this.isUpload = true;
     this.uploadService.uploadSong(formData).subscribe(
       (res: any) => {
-        
         this.uploadResponse = res; 
         console.log(this.uploadResponse);
        },
