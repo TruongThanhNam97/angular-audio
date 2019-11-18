@@ -38,18 +38,20 @@ var saveSongMetadata = (req, res, next) => {
     };
     new songModel(newSong)
         .save()
-        .then(song => res.status(200).json(song))
+        .then(song => res.status(200).json( { status:"ok", message:song } ))
         .catch(err => res.json(err));
 };
 
 var watermark = (req, res, next) => {
     let filename = req.files[0].filename;
+
+    
     watermarker.Watermark(filename,
         () => saveSongMetadata(req, res, next),
         (err) => {
-            let arrReturn = { 
-                error : 1,
-                data  : err
+            let arrReturn = {
+                status: "error",
+                message: "This file has been upload before!"
             }
             res.status(200).json(arrReturn);
         }

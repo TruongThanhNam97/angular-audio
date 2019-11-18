@@ -1,10 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { Observable, of, Subject } from 'rxjs';
+import { Observable, of, Subject, throwError } from 'rxjs';
 import { UploadService } from 'src/app/services/upload.service';
 import { CloudService } from 'src/app/services/cloud.service';
 import { takeUntil } from 'rxjs/operators';
 import { AlertifyService } from 'src/app/services/alertify.service';
+import { ERROR_COMPONENT_TYPE } from '@angular/compiler';
 
 @Component({
   selector: 'app-form-upload',
@@ -88,9 +89,22 @@ export class FormUploadComponent implements OnInit, OnDestroy {
     this.uploadService.uploadSong(formData).pipe(
       takeUntil(this.destroyDescription$)
     ).subscribe(
-      (res: any) => {
+      (res) => {
         // Here to catch data from server
         this.uploadResponse = res;
+        
+        this.isUpload = false;
+        this.enableFieldOfForm();
+        this.signForm.reset();
+
+        
+        if (res.status == "progress")
+          {}
+        else if ( res.status == "error" )
+          this.alertify.error(res.message)
+        else if ( res.status == "ok" )
+          this.alertify.success('Your song has been processed');
+          
       },
       err => {
         // Here to catch error from server
@@ -100,13 +114,6 @@ export class FormUploadComponent implements OnInit, OnDestroy {
         this.signForm.reset();
         this.alertify.error('Error');
       },
-      () => {
-        // Here when upload file event completed
-        this.isUpload = false;
-        this.enableFieldOfForm();
-        this.signForm.reset();
-        this.alertify.success('Upload file successfully');
-      }
     );
   }
 
