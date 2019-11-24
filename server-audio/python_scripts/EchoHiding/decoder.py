@@ -73,7 +73,7 @@ class BinaryMessage:
 
 class Key:
     def __init__(self):
-        self.delta = 30, 40
+        self.delta = [30, 40]
         self.begin, self.end = 0, 0
 
 class System:
@@ -125,6 +125,7 @@ class System:
             return "1"
 
     def extract_stegomessage(self):
+
         counter = self.key.begin
         section_counter = 0
 

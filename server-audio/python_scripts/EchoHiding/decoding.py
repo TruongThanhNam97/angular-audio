@@ -20,4 +20,4 @@ class Decoding_factory:
         key = Key()
 
         stegosystem = System(signal, message, key)
-        return stegosystem.extract_stegomessage() , str(audio), need2convert
+        return stegosystem.extract_stegomessage() , str(audio), need2convert, stegosystem.message.bits
