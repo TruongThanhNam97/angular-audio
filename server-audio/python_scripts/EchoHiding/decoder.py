@@ -7,27 +7,32 @@ from EchoHiding.hamming_coder import HammingCoder
 class BinaryMessage:
     def __init__(self, orginal_message):
         self.bits = []
-        self.bits_original = []
+        self.bits_original_encoded = []
         self.bitslen = 0
         self.input_message = open(str(orginal_message), 'r')
+        self.bits_original = []
+        bits = ""
 
         _code = HammingCoder()
 
         for ch in self.input_message.read():
-            symb_ord = ord(ch.encode('utf8'))
-            bin_ord = bin(symb_ord)[2:].zfill(8)
+            symb_ord = ord(ch.encode('utf8'))          
+            bits = bin(symb_ord)[2:].zfill(8)
 
-            left = bin_ord[:4]
+            for j in range(8):
+                self.bits_original.append( bits[j] )
+
+            left = bits[:4]
             encoded_left = _code.encode(left)
             for k in encoded_left:
-                self.bits_original.append(int(k))
+                self.bits_original_encoded.append(int(k))
 
-            right = bin_ord[4:]
+            right = bits[4:]
             encoded_right = _code.encode(right)
             for k in encoded_right:
-                self.bits_original.append(int(k))
+                self.bits_original_encoded.append(int(k))
 
-        self.bitslen_message = len(self.bits_original)
+        self.bitslen_message = len(self.bits_original_encoded)
 
     def set_bitslen(self):
         self.bitslen = len(self.bits)
@@ -43,6 +48,7 @@ class BinaryMessage:
         self.set_bitslen()
 
         message = ""
+        decoded_bits = []
 
         for i in range(self.bitslen):
             bin_ord += str(self.bits[i])
@@ -52,7 +58,12 @@ class BinaryMessage:
                     right = code.decode(bin_ord)
                     symb_ord = int(left + right, 2)
 
-                    if symb_ord == 152 or 0 <= symb_ord <= 2:
+                    for j in range(4):
+                        decoded_bits.append(left[j])
+                    for j in range(4):
+                        decoded_bits.append(right[j])
+
+                    if 127 <= symb_ord <= 159 or 0 <= symb_ord <= 31:
                         letter = ' '
                     else:
                         byte_ord = int(symb_ord).to_bytes(1, byteorder='little')
@@ -68,7 +79,7 @@ class BinaryMessage:
                 bin_ord = ''
                 counter = 0
 
-        return message
+        return message, decoded_bits
 
 
 class Key:

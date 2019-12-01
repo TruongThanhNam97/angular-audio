@@ -12,15 +12,52 @@ Key_Folder_Path = Root_Path/"assets"/"song-keys"
 Watermarked_Folder_Path = Root_Path/"public"/"watermark-songs"
 Py_Script_Folder_Path = Root_Path/"python_scripts"
 FFMPEG_EXE_Path = Py_Script_Folder_Path/"libs"/"ffmpeg"/"bin"/"ffmpeg.exe"
-match_threshhold = 0.50
+
+
+def isSimilar(bits, message, original, original_bits):
+    string_match_threshhold = 0.50
+    bit_match_threshhold = 0.80
+
+
+    #check bit similar
+    total = len(bits)
+    if len(bits) > len(original_bits):
+        total = len(original_bits)
+    
+    similar_bits_count = 0.0
+    for i in range(total):
+        if( int(bits[i]) == int(original_bits[i]) ) :
+            similar_bits_count += 1.0
+
+    bits_similarity = similar_bits_count / total
+    string_similarity = SequenceMatcher(None, message, original_message ).ratio()
+
+    print("bit similarity : " + str(bits_similarity))
+    print("string similarity : " + str(string_similarity))
+    sys.stdout.flush()
+
+    if bits_similarity >= bit_match_threshhold:
+        return True
+
+    if string_similarity >= string_match_threshhold:
+        return True
+
+    return False
 
 File_Name = sys.argv[1]
-message , File_Path, is_temp, bits = decoding.Decoding_factory.Decoding(File_Name,Original_Folder_Path, Watermark_Message_Folder_Path, FFMPEG_EXE_Path)
-original_message = open( str(Watermark_Message_Folder_Path/"original.txt"),"r" ).read()
-print(bits)
-print("extracted")
+
+print('Starting to decode')
 sys.stdout.flush()
-if SequenceMatcher(None, message, original_message ).ratio() <= match_threshhold:
+
+message , File_Path, is_temp, message_bits, original_bits = decoding.Decoding_factory.Decoding(File_Name,Original_Folder_Path, Watermark_Message_Folder_Path, FFMPEG_EXE_Path)
+original_message = open( str(Watermark_Message_Folder_Path/"original.txt"),"r" ).read()
+
+print(message)
+sys.stdout.flush()
+
+if not isSimilar(message_bits, message, original_message, original_bits):
+    print('Starting to encode')
+    sys.stdout.flush()
     coding.Coding_factory.Encoding(File_Name, File_Path, Original_Folder_Path, Watermarked_Folder_Path, Watermark_Message_Folder_Path ,Key_Folder_Path)
     print( "OK" )
     sys.stdout.flush()
