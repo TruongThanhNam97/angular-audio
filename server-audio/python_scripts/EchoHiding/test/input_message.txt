@@ -1,1 +1,8 @@
-Продаются детские ботиночки. Не ношенные. (Ernest Miller Hemingway)
+A program was built to hide an arbitrary file inside audio using three
+different methods based on current research in the field. Standard libraries were
+used to compress (with bzip2) and encrypt (using AES) the data before it is
+embedded. The error-correcting Hamming and Golay codes were implemented
+to increase the systems resistance to malicious modification. Finally,the LAME
+MP3 encoder was integrated to work with one of the methods (echo hiding). The
+finished project provides a means for secure, discreet communication through a
+monitored, hostile channel.

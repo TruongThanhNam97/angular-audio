@@ -81,3 +81,4 @@ class Wave:
         wave_out.writeframesraw(self.content[self.increasing_to:])      # end
 
         wave_out.close()
+        
