@@ -2,6 +2,7 @@ import numpy
 import math
 from EchoHiding.hamming_decoder import HammingDecoder
 from EchoHiding.hamming_coder import HammingCoder
+from EchoHiding.config import Config
 
 
 class BinaryMessage:
@@ -37,7 +38,7 @@ class BinaryMessage:
     def set_bitslen(self):
         self.bitslen = len(self.bits)
 
-    def save_text(self):
+    def decode(self):
         counter = 0
         bin_ord = ''
 
@@ -81,75 +82,43 @@ class BinaryMessage:
 
         return message, decoded_bits
 
-
-class Key:
-    def __init__(self):
-        self.delta = [30, 40]
-        self.begin, self.end = 0, 0
-
 class System:
-    def __init__(self, signal, message, key):
+    def __init__(self, signal, message):
         self.signal = signal
         self.message = message
-        self.key = key
-  
-        self.hidden_bits_per_second = 16
-        self.samples_per_section = self.signal.frame_rate // self.hidden_bits_per_second
-        self.diff = self.signal.frame_rate % self.hidden_bits_per_second
 
-        self.key.begin = 15 * self.signal.frame_rate
-        div_part = self.message.bitslen_message // self.hidden_bits_per_second * self.signal.frame_rate
-        mod_part = self.message.bitslen_message % self.hidden_bits_per_second * self.samples_per_section
-        self.key.end = self.key.begin + div_part + mod_part
+        self.total_message_frames = self.message.bitslen * Config.segment_len
+        self.start_frame = Config.start_second * self.signal.frame_rate
+        self.end_frame = self.start_frame + self.total_message_frames
 
-    def get_mod(self, x):
-        return math.sqrt(x.real ** 2 + x.imag ** 2)
+
+        self.delta_frames = int(numpy.floor( self.signal.frame_rate * Config.delta_per_second ))
+        self.alpha_frames = int(numpy.floor( self.signal.frame_rate * Config.alpha_per_second ))
+
+        self.one_distance = self.delta_frames
+        self.zero_distance = self.delta_frames + self.alpha_frames
 
     def decode_section(self, section):
-        extended_section = []
-        extension = 4
 
-        for s in section:
-            for d in range(extension):
-                extended_section.append(s - d)
+        ab_fft = abs(numpy.fft.fft( section ))
+        log_arr = []
+        for ele in ab_fft:
+            log_arr.append( numpy.log( ele ) )
+        rceps = numpy.fft.ifft( log_arr )
 
-        dft = numpy.fft.fft(extended_section)
-
-        sqr_lg = []
-        for elem in dft:
-            sqr_lg.append((numpy.log(elem)) ** 2)
-
-        ift = numpy.fft.ifft(sqr_lg)
-
-        i0, i1 = extension*self.key.delta[0], extension*self.key.delta[1]
-        imax0, imax1 = i0, i1
-
-        for d in range(-2, 2):
-            if self.get_mod(ift[i0 + d]) > self.get_mod(ift[imax0]):
-                imax0 = i0 + d
-            if self.get_mod(ift[i1 + d]) > self.get_mod(ift[imax1]):
-                imax1 = i1 + d
-
-        if self.get_mod(ift[imax0]) > self.get_mod(ift[imax1]):
-            return "0"
-        else:
-            return "1"
+        if (rceps[self.one_distance].real > rceps[self.zero_distance].real) :
+            return 1
+        else :
+            return 0
 
     def extract_stegomessage(self):
 
-        counter = self.key.begin
-        section_counter = 0
+        for segment in range(self.message.bitslen_message):
+            start_segment = self.start_frame + Config.segment_len*segment
+            end_segment = start_segment + Config.segment_len
+            segment_array = self.signal.channels[0][start_segment : end_segment]
 
-        while counter < self.key.end:
-            section = self.signal.channels[0][counter:counter + self.samples_per_section]
-            self.message.bits.append(self.decode_section(section))
+            self.message.bits.append( self.decode_section(segment_array) )
 
-            counter += self.samples_per_section
-            section_counter += 1
-
-            if section_counter == self.hidden_bits_per_second:
-                counter += self.diff
-                section_counter = 0
-
-        return self.message.save_text()
+        return self.message.decode()
 

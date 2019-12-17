@@ -1,6 +1,6 @@
 from EchoHiding.audiowave import Wave
 from EchoHiding.converter import WavConverter
-from EchoHiding.decoder import BinaryMessage, Key, System
+from EchoHiding.decoder import BinaryMessage, System
 from pathlib import Path
 
 class Decoding_factory:
@@ -17,8 +17,7 @@ class Decoding_factory:
         
         signal = Wave(audio)
         message = BinaryMessage(message)
-        key = Key()
 
-        stegosystem = System(signal, message, key)
+        stegosystem = System(signal, message)
         decoded_message, decoded_bits = stegosystem.extract_stegomessage()
         return decoded_message , str(audio), need2convert, message.bits_original ,decoded_bits

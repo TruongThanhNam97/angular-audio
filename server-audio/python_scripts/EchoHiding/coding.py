@@ -1,6 +1,6 @@
 from EchoHiding.audiowave import Wave
 from EchoHiding.converter import WavConverter
-from EchoHiding.coder import BinaryMessage, Key, System
+from EchoHiding.coder import BinaryMessage, System
 from pathlib import Path
 import numpy
 
@@ -13,8 +13,7 @@ class Coding_factory:
 
         signal = Wave(audio)
         message = BinaryMessage(text)
-        key = Key()
 
-        stegosystem = System(signal, message, key)
+        stegosystem = System(signal, message)
         stegosystem.create_stego()
-        stegosystem.signal.create_stegoaudio(stegosystem.key,output_path)
+        stegosystem.signal.create_stegoaudio(output_path)

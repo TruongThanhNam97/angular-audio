@@ -4,8 +4,9 @@ import ffmpy
 import sys
 import os
 import datetime
+import utility
 
-file_name = "test/memory.wav" 
+file_name = "test/memory.mp3" 
 start_second = 20
 
 types = {
@@ -18,25 +19,6 @@ segment_len = 8192
 delta_per_second = 0.04
 alpha_per_second = 0.02
 #utility
-class Utility:
-    class String:
-        @staticmethod
-        def toBitsArray(string):
-            result = []
-
-            for c in string:
-                bits = format( ord(c), '08b' )
-                result.extend([int(b) for b in bits])
-            return result
-
-    class BitsArray:
-        @staticmethod
-        def toString(array):
-            result = ""
-            for b in range(len(array) // 8):
-                byte = array[b*8:(b+1)*8]
-                result += (chr(int(''.join([str(bit) for bit in byte]), 2)))
-            return result
 
 #encode
 def encode(file_name, input_message):
@@ -62,14 +44,14 @@ def encode(file_name, input_message):
     max_int = (2**(8*bytes_per_sample))/2-1
     min_int = -(2**(8*bytes_per_sample))/2
 
-    message_bits = Utility.String.toBitsArray(input_message)
+    message_bits = utility.String.toBitsArray(input_message)
     message_bits_len = len(message_bits)
     total_message_frames = message_bits_len*segment_len
     startframe = start_second * framerate
     endframe = startframe + total_message_frames
 
     delta_frames = int(numpy.floor( framerate * delta_per_second ))
-    alpha_frames = int(numpy.floor( framerate * alpha_per_second  ))
+    alpha_frames = int(numpy.floor( framerate * alpha_per_second ))
     one_distance = delta_frames
     zero_distance = delta_frames + alpha_frames
 
@@ -79,11 +61,6 @@ def encode(file_name, input_message):
 
     echo_amp = 0.4
     #encode
-
-    def K_delta_function(n):
-        if (n==0):
-            return 1
-        return 0
 
     ##create echo kernel
     one_kernel = numpy.append( numpy.zeros(one_distance) , echo_amp )
@@ -144,7 +121,7 @@ def encode(file_name, input_message):
 #decode
 def decode(file_name , input_message):
 
-    waveout = wave.open( "test/out.wav" , 'r')
+    waveout = wave.open( "test/out_f1.wav" , 'r')
 
     frames_num = waveout.getnframes()
     bytes_per_sample = waveout.getsampwidth()
@@ -153,7 +130,7 @@ def decode(file_name , input_message):
                                 dtype=types[bytes_per_sample])
     channels_num = waveout.getnchannels()
 
-    message_bits = Utility.String.toBitsArray(input_message)
+    message_bits = utility.String.toBitsArray(input_message)
     message_bits_len = len(message_bits)
     total_message_frames = message_bits_len*segment_len
     startframe = start_second * framerate
@@ -186,15 +163,16 @@ def decode(file_name , input_message):
         else :
             data.append(0)
         
-    return Utility.BitsArray.toString( data )
+    return utility.BitsArray.toString( data )
 def main():
-    input_message = "This is the embedded message"
+    input_message = "TRUONG THANH NAM - DANG XUAN DUY KHUONG"
+    
     file_out = encode(file_name, input_message)
     message = decode(file_out, input_message)
 
     #check bit similar
-    bits = Utility.String.toBitsArray(input_message)
-    decoded_bits = Utility.String.toBitsArray(message)
+    bits = utility.String.toBitsArray(input_message)
+    decoded_bits = utility.String.toBitsArray(message)
     total = len(bits)
     if len(bits) > len(decoded_bits):
         total = len(decoded_bits)
@@ -207,6 +185,6 @@ def main():
     bits_similarity = similar_bits_count / total
     print("bit similarity : " + str(bits_similarity))
 
-    print( message )
+    print( message ) 
 
 main()

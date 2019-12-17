@@ -2,6 +2,7 @@ import math
 import numpy
 import random
 from EchoHiding.hamming_coder import HammingCoder
+from EchoHiding.config import Config
 
 class BinaryMessage:
     def __init__(self, input_txt):
@@ -24,118 +25,96 @@ class BinaryMessage:
             for k in encoded_right:
                 self.bits.append(int(k))
 
-        self.average = numpy.mean(self.bits)
         self.bitslen = len(self.bits)
 
-
-class Key:
-    def __init__(self):
-        self.delta = []
-        self.begin, self.end = 0, 0
-
-    def set_delta(self, delta):
-        self.delta = delta
-
-    def set_begin(self, begin):         # in sample's number
-        self.begin = begin
-
-    def set_end(self, end):       # in sample's number
-        self.end = end
-
 class System:
-    def __init__(self, signal, message, key):
+    def __init__(self, signal, message):
         self.signal = signal
         self.message = message
-        self.key = key
 
-        self.echo_volume = 0.3
-        self.hidden_bits_per_second = 16
+        self.total_message_frames = self.count_frames()     # for encoded message
 
-        self.volume_max = 0.9
-        self.volume_min = 0.7
-        self.delta_max = 30
-        self.delta_min = 40
+        self.max_int = (2**(8*self.signal.bytes_per_sample))/2-1
+        self.min_int = -(2**(8*self.signal.bytes_per_sample))/2
 
-        self.volume0, self.volume1 = self.volume_max, self.volume_min
-        self.key.set_delta([self.delta_max, self.delta_min])
-
-        # for separate channel
-        # 44000 / 16 = 2750 sample
-        # fps/bps => f/b 
-        self.samples_per_section = self.signal.frame_rate // self.hidden_bits_per_second
-        # 44000 % 16 = 0
-        self.diff = self.signal.frame_rate % self.hidden_bits_per_second
-        #5500000
-        self.samples_per_message = self.count_samples()     # for encoded message
-        self.key.set_begin(self.get_begin())
-        self.key.set_end(self.key.begin + self.samples_per_message)
+        self.start_frame = Config.start_second * self.signal.frame_rate
+        self.end_frame = self.start_frame + self.total_message_frames
+        
+        self.delta_frames = int(numpy.floor( self.signal.frame_rate * Config.delta_per_second ))
+        self.alpha_frames = int(numpy.floor( self.signal.frame_rate * Config.alpha_per_second ))
+        
+        self.one_distance = self.delta_frames
+        self.zero_distance = self.delta_frames + self.alpha_frames
 
         self.stegochannels = []
 
-    def count_samples(self):
-        div_part = self.message.bitslen // self.hidden_bits_per_second * self.signal.frame_rate
-        mod_part = self.message.bitslen % self.hidden_bits_per_second * self.samples_per_section
-        return div_part + mod_part
+    def count_frames(self):
+        return self.message.bitslen * Config.segment_len
 
-    def get_begin(self):        # in sample's number     
-        #
-        the_remain_data = self.signal.frames_num % self.signal.frame_rate
-        acceptable_begin = self.signal.frames_num - self.samples_per_message - the_remain_data
-        if acceptable_begin < 0:
+    def is_message_valid(self):        # in sample's number     
+        acceptable_begin = self.signal.frames_num - self.total_message_frames
+        
+        if acceptable_begin < self.start_frame:
             print("Message is too big")
-            return
+            return False
         # max_second = acceptable_begin // self.signal.frame_rate
         # rand_second = random.randint(math.floor(max_second * 0.05), max_second)
-        return 15 * self.signal.frame_rate
+        return True
 
-    def smoothing_signal(self, i, position):
-        x = self.message.bits[i]
-        a = 0.0005
-        b = 0.9995
-        if x == 0:
-            return 0.0
-        #k = 
-        k = position / self.samples_per_section
-        if (a < k < b) or (a > k and i != 0 and int(self.message.bits[i - 1]) == x) \
-                or (k > b and i + 1 != self.message.bitslen and int(self.message.bits[i + 1]) == x):
-            return 1.0
-        if a >= k:
-            return k / a
-        if k >= b:
-            return (1.0 - k) / (1.0 - b)
+    def create_stego_signal(self, channel):
+        stego_signal = []
 
-    def get_echo(self, channel, frame_number, start_frame, message_bit_number):
-        echo0 = self.volume0 * self.echo_volume * (channel[frame_number - self.key.delta[0]] if frame_number >= self.key.delta[0] else 0) * \
-                (1 - self.smoothing_signal(message_bit_number, frame_number - start_frame))
-        echo1 = self.volume1 * self.echo_volume * (channel[frame_number - self.key.delta[1]] if frame_number >= self.key.delta[1] else 0) * \
-                self.smoothing_signal(message_bit_number, frame_number - start_frame)
-        return echo0 + echo1
+        ##create echo signal
+        one_kernel = numpy.append( numpy.zeros(self.one_distance) , Config.echo_amplitute )
+        zero_kernel = numpy.append( numpy.zeros(self.zero_distance) , Config.echo_amplitute )
 
-    def embed_stegomessage(self, channel):
-        audio_section_counter = self.key.begin // self.signal.frame_rate
-        section_counter = 0
-        volume = 1.0 - self.echo_volume * self.volume_max
-        stegochannel = []
+        ##create echo kernel
+        one_echo_signals = numpy.convolve( channel, one_kernel )
+        zero_echo_signals = numpy.convolve( channel, zero_kernel )
 
-        for message_counter in range(self.message.bitslen):
-            start_frame = audio_section_counter * self.signal.frame_rate + section_counter * self.samples_per_section
-            for frame_counter in range(start_frame, start_frame + self.samples_per_section):
-                stegochannel.append(math.floor(volume * channel[frame_counter] + self.get_echo(channel, frame_counter, start_frame, message_counter)))
-            section_counter += 1
+        ##create mixer signal
+        mixer_signal = []
+        for frame in range(self.total_message_frames):
+            mixer_signal.append(self.message.bits[frame // Config.segment_len])
 
-            if section_counter == self.hidden_bits_per_second:
-                for remain in range(frame_counter, frame_counter + self.diff):
-                    stegochannel.append(math.floor(volume * channel[remain] + self.get_echo(channel, remain, start_frame, message_counter)))
-                section_counter = 0
-                audio_section_counter += 1
+        #create signal
+        for frame in range( len(channel) ) :
+            frame_int = int( channel[frame] * (0.70)
+                            + one_echo_signals[frame]*mixer_signal[frame] 
+                            + zero_echo_signals[frame]*(1-mixer_signal[frame]))
+            frame_int = min( frame_int, self.max_int )
+            frame_int = max( frame_int, self.min_int)
+            stego_signal.append( frame_int )
+        return stego_signal
 
-        return stegochannel
+    def create_stego_channel(self, channel):
+        stego_channel = []
+        stego_channel.extend( self.signal.channels[0][:self.start_frame] )
+
+        stego_signal = self.create_stego_signal(self.signal.channels[0][self.start_frame:self.end_frame] )
+
+        stego_channel.extend( stego_signal[:])
+
+        stego_channel.extend( self.signal.channels[0][self.end_frame:])
+        return stego_channel
+
+    def unite_channels(self, channels):
+        content = []
+        for i in range(len(channels[0])):
+            for j in range(2):
+                content.append(channels[j][i])
+        return content
 
     def create_stego(self):
-        self.stegochannels.append(self.embed_stegomessage(self.signal.channels[0]))
-
+        stego_channel = self.create_stego_channel(self.signal.channels[0])
+    
         if self.signal.channels_num == 2:
-            self.stegochannels.append((self.signal.channels[1])[self.key.begin:self.key.end])
-            self.signal.stego = self.signal.unite_channels(self.stegochannels)
+            self.stegochannels = []
+
+            self.stegochannels.append( stego_channel )
+            self.stegochannels.append( self.signal.channels[1] )
+            
+            output = self.unite_channels( self.stegochannels )     
+            self.signal.output = output
         else:
-            self.signal.stego = self.stegochannels[0]
+            self.signal.output = stego_channel
