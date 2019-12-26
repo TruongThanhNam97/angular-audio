@@ -11,6 +11,7 @@ import { PlayerComponent } from './pages/player/player.component';
 import { FormUploadComponent } from './pages/form-upload/form-upload.component';
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component';
 import { MediaFooterComponent } from './pages/media-footer/media-footer.component';
+import { FileUploadModule } from 'ng2-file-upload';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { MediaFooterComponent } from './pages/media-footer/media-footer.componen
     BrowserAnimationsModule,
     MaterialModule,
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
+    FileUploadModule
   ],
   providers: [],
   bootstrap: [AppComponent]
