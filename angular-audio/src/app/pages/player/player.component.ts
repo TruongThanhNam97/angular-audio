@@ -1,25 +1,25 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
-import { AudioService } from "../../services/audio.service";
-import { CloudService } from "../../services/cloud.service";
-import { StreamState } from "../../interfaces/stream-state";
-import { Subject } from "rxjs";
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { AudioService } from '../../services/audio.service';
+import { CloudService } from '../../services/cloud.service';
+import { StreamState } from '../../interfaces/stream-state';
+import { Subject } from 'rxjs';
 
 @Component({
-  selector: "app-player",
-  templateUrl: "./player.component.html",
-  styleUrls: ["./player.component.scss"]
+  selector: 'app-player',
+  templateUrl: './player.component.html',
+  styleUrls: ['./player.component.scss']
 })
 export class PlayerComponent implements OnInit {
   files: any;
   state: StreamState;
   currentFile: any = {};
   destroy$ = new Subject();
-  loading : boolean = false;
+  loading = false;
 
   constructor(
     private audioService: AudioService,
     private cloudService: CloudService
-  ) {}
+  ) { }
 
   ngOnInit() {
     if (this.cloudService.getStateToAllowGetSongs()) {
@@ -27,7 +27,7 @@ export class PlayerComponent implements OnInit {
       this.loading = true;
       this.cloudService.getSongs().subscribe(files => {
         this.files = files;
-      },err => console.log(err),() => this.loading = false);
+      }, err => { }, () => this.loading = false);
     } else {
       this.files = this.cloudService.getLocalSongs();
     }

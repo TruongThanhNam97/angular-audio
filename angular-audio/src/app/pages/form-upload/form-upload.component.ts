@@ -2,10 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Observable, of, Subject, throwError } from 'rxjs';
 import { UploadService } from 'src/app/services/upload.service';
-import { CloudService } from 'src/app/services/cloud.service';
-import { takeUntil } from 'rxjs/operators';
 import { AlertifyService } from 'src/app/services/alertify.service';
-import { ERROR_COMPONENT_TYPE } from '@angular/compiler';
+import { CloudService } from 'src/app/services/cloud.service';
 
 @Component({
   selector: 'app-form-upload',
@@ -28,8 +26,8 @@ export class FormUploadComponent implements OnInit, OnDestroy {
 
   constructor(
     private uploadService: UploadService,
-    private cloudService: CloudService,
-    private alertify: AlertifyService
+    private alertify: AlertifyService,
+    private cloudService: CloudService
   ) { }
 
   ngOnInit() {
@@ -42,32 +40,21 @@ export class FormUploadComponent implements OnInit, OnDestroy {
 
   initForm() {
     this.signForm = new FormGroup({
-      file: new FormControl(null, [Validators.required], [this.isFileInvalid.bind(this)]),
-      name: new FormControl(null, [Validators.required]),
-      artist: new FormControl(null, [Validators.required])
+      file: new FormControl(null, [Validators.required], [this.isFileInvalid.bind(this)])
     });
   }
 
   disableFieldOfForm() {
-    this.signForm.get('name').disable();
-    this.signForm.get('artist').disable();
     this.signForm.get('file').disable();
   }
 
   enableFieldOfForm() {
-    this.signForm.get('name').enable();
-    this.signForm.get('artist').enable();
     this.signForm.get('file').enable();
   }
 
   onSelectFile(e) {
-    this.selectedFile = e.target.files[0];
-    let file_name = this.selectedFile.name.split('.')[0];
-    let meta_array = file_name.split('-', 2);
-    this.signForm.patchValue({
-      artist: meta_array[0],
-      name: meta_array[1]
-    });
+    this.selectedFile = [];
+    this.selectedFile = e.target.files;
   }
 
   isFileInvalid(control: FormControl): Observable<{ [s: string]: boolean }> {
@@ -80,41 +67,50 @@ export class FormUploadComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-    const formData = new FormData();
-    formData.append('file', this.selectedFile);
-    formData.append('artist', this.signForm.get('artist').value);
-    formData.append('name', this.signForm.get('name').value);
     this.isUpload = true;
     this.disableFieldOfForm();
-    this.uploadService.uploadSong(formData).pipe(
-      takeUntil(this.destroyDescription$)
-    ).subscribe(
-      (res) => {
-        // Here to catch data from server
-        this.uploadResponse = res;
-        
-        this.isUpload = false;
-        this.enableFieldOfForm();
-        this.signForm.reset();
+    let temp = 0;
+    const selectedFileLength = this.selectedFile.length;
+    for (let i = 0; i < selectedFileLength; i++) {
+      const formData = new FormData();
+      formData.append('file', this.selectedFile[i]);
+      this.uploadService.uploadSong(formData).subscribe(
+        (res) => {
+          // Here to catch data from server
+          this.uploadResponse = res;
+          if (this.uploadResponse['song']) {
+            const songName = this.uploadResponse['song'].name;
+            this.alertify.success(`Song name: ${songName} has been processed`);
+          }
+        },
+        err => {
+          // Here to catch error from server
+          temp++;
+          this.error = err.error.error;
+          if (temp === selectedFileLength) {
+            this.isUpload = false;
+            this.enableFieldOfForm();
+            this.signForm.reset();
+          }
+          this.alertify.error(this.error);
+        },
+        () => {
+          this.cloudService.allowGetSongs = false;
+          temp++;
+          console.log(temp);
+          if (temp === selectedFileLength) {
+            this.isUpload = false;
+            this.enableFieldOfForm();
+            this.signForm.reset();
+          }
+        }
+      );
+    }
+    this.selectedFile = null;
+  }
 
-        
-        if (res.status == "progress")
-          {}
-        else if ( res.status == "error" )
-          this.alertify.error(res.message)
-        else if ( res.status == "ok" )
-          this.alertify.success('Your song has been processed');
-          
-      },
-      err => {
-        // Here to catch error from server
-        this.error = err.error;
-        this.isUpload = false;
-        this.enableFieldOfForm();
-        this.signForm.reset();
-        this.alertify.error('Error');
-      },
-    );
+  formatSize(size: number): number {
+    return Math.round(size);
   }
 
 }

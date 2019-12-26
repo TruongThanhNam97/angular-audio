@@ -1,25 +1,25 @@
-import { Injectable } from "@angular/core";
-import { of, Subject } from "rxjs";
-import { HttpClient } from "@angular/common/http";
-import { map, tap } from "rxjs/operators";
+import { Injectable } from '@angular/core';
+import { of, Subject } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { map, tap } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root'
 })
 export class CloudService {
-  SERVER_URL = "http://localhost:3000/";
-  SERVER_URL_SOUND = "http://localhost:3000/watermark-songs/";
+  SERVER_URL = 'http://localhost:3000/';
+  SERVER_URL_SOUND = 'http://localhost:3000/watermark-songs/';
 
-  private localSongs : any = [];
+  private localSongs: any = [];
 
   private localSongsSubject$ = new Subject();
 
-  private allowGetSongs : boolean = true;
+  allowGetSongs = true;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getSongs() {
-    return this.http.get(this.SERVER_URL + "getSongs").pipe(
+    return this.http.get(this.SERVER_URL + 'getSongs').pipe(
       map((v: any) => {
         const result = v.reduce((acc, cur) => {
           const obj = {
@@ -33,9 +33,9 @@ export class CloudService {
         return result;
       }),
       tap(v => {
-        this.allowGetSongs = false
+        this.allowGetSongs = false;
         this.localSongs = v;
-      } )
+      })
     );
   }
 
@@ -47,8 +47,8 @@ export class CloudService {
     return this.allowGetSongs;
   }
 
-  addSongToLocalSongs(song : any) {
-    this.localSongs = [...this.localSongs,song];
+  addSongToLocalSongs(song: any) {
+    this.localSongs = [...this.localSongs, song];
     this.localSongsSubject$.next(this.localSongs);
   }
 
@@ -56,5 +56,5 @@ export class CloudService {
     return this.localSongs;
   }
 
-  
+
 }

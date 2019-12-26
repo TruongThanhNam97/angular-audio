@@ -9,7 +9,7 @@ var storage = multer.diskStorage({
         cb(null, "./assets/original-songs");
     },
     filename: function (req, file, cb) {
-        cb(null, Date.now() + "-" + file.originalname);
+        cb(null, Date.now() + "~!~" + file.originalname);
     }
 });
 
@@ -31,29 +31,25 @@ router.get("/", (req, res, next) => {
 
 /* POST song */
 var saveSongMetadata = (req, res, next) => {
+    let name = next.split('~!~')[1].split('.')[0].split(';')[0];
+    let artist = next.split('~!~')[1].split('.')[0].split(';')[1];
     const newSong = {
-        url: req.files[0].filename.split('.')[0] + '.wav',
-        name: req.body.name,
-        artist: req.body.artist
+        url: next.split('.')[0] + '.wav',
+        name,
+        artist
     };
-    new songModel(newSong)
+    return new songModel(newSong)
         .save()
-        .then(song => res.status(200).json( { status:"ok", message:song } ))
-        .catch(err => res.json(err));
+        .then(song => res.status(200).json({ song }))
+        .catch(err => res.status(400).json({ error: err }));
 };
 
 var watermark = (req, res, next) => {
     let filename = req.files[0].filename;
-
-    
     watermarker.Watermark(filename,
-        () => saveSongMetadata(req, res, next),
+        () => saveSongMetadata(req, res, filename),
         (err) => {
-            let arrReturn = {
-                status: "error",
-                message: "This file has been upload before!"
-            }
-            res.status(200).json(arrReturn);
+            res.status(400).json({ error: err });
         }
     )
 }
