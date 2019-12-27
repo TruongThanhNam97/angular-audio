@@ -2,35 +2,42 @@
   <mat-toolbar color="primary">
     <mat-toolbar-row>
       {{ state?.readableCurrentTime }}
-      <mat-slider
-        class="time-slider"
-        min="0"
-        [max]="state?.duration"
-        step="1"
-        [value]="state?.currentTime"
-        (input)="onSliderChangeEnd($event)"
-        [disabled]="state?.error || currentFile.index === undefined"
-      ></mat-slider>
+      <mat-slider class="time-slider" min="0" [max]="state?.duration" step="1" [value]="state?.currentTime"
+        (input)="onSliderChangeEnd($event)" [disabled]="state?.error || currentFile.index === undefined"></mat-slider>
       {{ state?.readableDuration }}
     </mat-toolbar-row>
     <mat-toolbar-row class="media-action-bar">
-      <button mat-button [disabled]="isFirstPlaying()" (click)="previous()">
+      <button *ngIf="!randomMode" mat-button matTooltip="Random" (click)="onChangeRandomMode()">
+        <mat-icon mat-list-icon>transform</mat-icon>
+      </button>
+      <button *ngIf="randomMode" mat-button matTooltip="Un random" (click)="onChangeRandomMode()">
+        <mat-icon color="accent" mat-list-icon>transform</mat-icon>
+      </button>
+      <button mat-button *ngIf="!loop" matTooltip="Loop" (click)="onChangeLoopMode()">
+        <mat-icon mat-list-icon>loop</mat-icon>
+      </button>
+      <button mat-button *ngIf="loop" matTooltip="Un loop" (click)="onChangeLoopMode()">
+        <mat-icon color="accent" mat-list-icon>loop</mat-icon>
+      </button>
+      <button matTooltip="Previous" mat-button [disabled]="isFirstPlaying()" (click)="previous()">
         <mat-icon mat-list-icon>skip_previous</mat-icon>
       </button>
-      <button
-        mat-button
-        (click)="play()"
-        [disabled]="state?.error"
-        *ngIf="!state?.playing"
-      >
+      <button matTooltip="Play" mat-button (click)="play()" [disabled]="state?.error" *ngIf="!state?.playing">
         <mat-icon mat-list-icon>play_circle_filled</mat-icon>
       </button>
-      <button mat-button (click)="pause()" *ngIf="state?.playing">
+      <button matTooltip="Pause" mat-button (click)="pause()" *ngIf="state?.playing">
         <mat-icon mat-list-icon>pause</mat-icon>
       </button>
-      <button mat-button [disabled]="isLastPlaying()" (click)="next()">
+      <button matTooltip="Next" mat-button [disabled]="isLastPlaying()" (click)="next()">
         <mat-icon mat-list-icon>skip_next</mat-icon>
       </button>
+      <button mat-button (click)="onChangeMuteMode()" *ngIf="volume > 0 && !mute">
+        <mat-icon mat-list-icon>volume_up</mat-icon>
+      </button>
+      <button mat-button (click)="onChangeMuteMode()" *ngIf="volume === 0 && mute">
+        <mat-icon mat-list-icon>volume_off</mat-icon>
+      </button>
+      <mat-slider min="0" max="1" step="0.1" (input)="onVolumeChange($event)" [value]="volume"></mat-slider>
     </mat-toolbar-row>
   </mat-toolbar>
 </div>

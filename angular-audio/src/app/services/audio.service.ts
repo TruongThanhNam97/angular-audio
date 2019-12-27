@@ -19,9 +19,7 @@ export class AudioService {
     canplay: false,
     error: false
   };
-  private stateChange: BehaviorSubject<StreamState> = new BehaviorSubject(
-    this.state
-  );
+  private stateChange: BehaviorSubject<StreamState> = new BehaviorSubject(this.state);
   audioEvents = [
     'ended',
     'error',
@@ -33,12 +31,45 @@ export class AudioService {
     'loadedmetadata',
     'loadstart'
   ];
-  private playMode: boolean = false;
+  private playMode = false;
   private playModeSubject$ = new Subject();
 
   private currentFile: any = {};
   private currentFileSubject$2 = new Subject();
   private currentFileSubject$1 = new Subject();
+
+  private volumeSubject$ = new Subject();
+
+  private muteSubject$ = new Subject();
+
+  private loopSubject$ = new Subject();
+
+  getLoopSubject() {
+    return this.loopSubject$.asObservable();
+  }
+
+  updateLoop(mode) {
+    this.audioObj.loop = mode;
+    this.loopSubject$.next(this.audioObj.loop);
+  }
+
+  getMuteSubject() {
+    return this.muteSubject$.asObservable();
+  }
+
+  updateMute(mode) {
+    this.audioObj.muted = mode;
+    this.muteSubject$.next(this.audioObj.muted);
+  }
+
+  getVolumeSubject() {
+    return this.volumeSubject$.asObservable();
+  }
+
+  updateVolume(volume) {
+    this.audioObj.volume = volume;
+    this.volumeSubject$.next(this.audioObj.volume);
+  }
 
   getCurrentFile() {
     return this.currentFile;
@@ -91,9 +122,7 @@ export class AudioService {
         break;
       case 'timeupdate':
         this.state.currentTime = this.audioObj.currentTime;
-        this.state.readableCurrentTime = this.formatTime(
-          this.state.currentTime
-        );
+        this.state.readableCurrentTime = this.formatTime(this.state.currentTime);
         break;
       case 'error':
         this.resetState();
@@ -122,12 +151,22 @@ export class AudioService {
       this.audioObj.load();
       this.audioObj.play();
 
+      // Get current volume of audio
+      this.volumeSubject$.next(this.audioObj.volume);
+
+      // Get current mute mode of audio
+      this.muteSubject$.next(this.audioObj.muted);
+
+      // Get current loop mode of audio
+      this.loopSubject$.next(this.audioObj.loop);
+
       const handler = (event: Event) => {
         this.updateStateEvents(event);
         observer.next(event);
       };
 
       this.addEvents(this.audioObj, this.audioEvents, handler);
+      // return unsubscribe function
       return () => {
         // Stop Playing
         this.audioObj.pause();
@@ -150,7 +189,6 @@ export class AudioService {
     events.forEach(event => {
       obj.removeEventListener(event, handler);
     });
-    0;
   }
 
   playStream(url) {

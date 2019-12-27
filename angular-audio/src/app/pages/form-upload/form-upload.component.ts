@@ -23,7 +23,6 @@ export class FormUploadComponent implements OnInit {
 
   ngOnInit() {
     this.initializeUploader();
-    console.log(this.uploader.isUploading);
   }
 
   initializeUploader() {
