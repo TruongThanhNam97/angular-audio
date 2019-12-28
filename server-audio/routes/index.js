@@ -3,6 +3,7 @@ var router = express.Router();
 var multer = require("multer");
 var songModel = require("../models/song");
 var watermarker = require("../python_scripts/watermarker.js");
+var path = require("path");
 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -62,6 +63,12 @@ router.get("/getSongs", (req, res, next) => {
         .find({})
         .then(songs => res.status(200).json(songs))
         .catch(err => res.status(404).json({ notfound: "Not found songs" }));
+});
+
+/* Download song */
+router.get("/download/song", (req, res, next) => {
+    const file = path.resolve(__dirname, `../public/watermark-songs/${req.query.nameToDownload}`);
+    res.download(file);
 });
 
 module.exports = router;

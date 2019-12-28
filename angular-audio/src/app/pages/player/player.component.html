@@ -11,20 +11,16 @@
       <mat-spinner *ngIf="loading"></mat-spinner>
       <mat-list *ngIf="!loading" color="primary" style="width: 1200px;height: 400px;margin: auto;overflow-y: scroll;">
         <h3 mat-subheader>Songs</h3>
-        <mat-list-item
-          *ngFor="let file of files; let i = index"
-          (click)="openFile(file, i)"
-          style="cursor: pointer;"
-        >
-          <mat-icon color="primary" mat-list-icon>music_note</mat-icon>
+        <mat-list-item *ngFor="let file of files; let i = index">
+          <mat-icon class="music-icon" (click)="openFile(file, i)" style="cursor: pointer;background-color: #FF4081;"
+            color="primary" mat-list-icon>music_note
+          </mat-icon>
           <h4 mat-line>{{ file.name }}</h4>
           <h5 mat-line>by {{ file.artist }}</h5>
-          <mat-icon
-            color="primary"
-            *ngIf="currentFile.index === i && !state?.error"
-            >volume_up</mat-icon
-          >
+          <mat-icon color="primary" *ngIf="currentFile.index === i && !state?.error">volume_up</mat-icon>
           <h6 *ngIf="currentFile.index === i && state?.error">ERROR</h6>
+          <mat-icon (click)="openDialog(file)" style="cursor: pointer;" class="more-icon" color="primary">more_horiz
+          </mat-icon>
           <mat-divider></mat-divider>
         </mat-list-item>
       </mat-list>

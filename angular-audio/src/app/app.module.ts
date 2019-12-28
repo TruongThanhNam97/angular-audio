@@ -12,6 +12,7 @@ import { FormUploadComponent } from './pages/form-upload/form-upload.component';
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component';
 import { MediaFooterComponent } from './pages/media-footer/media-footer.component';
 import { FileUploadModule } from 'ng2-file-upload';
+import { PopupComponent } from './pages/player/popup/popup.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { FileUploadModule } from 'ng2-file-upload';
     PlayerComponent,
     FormUploadComponent,
     PageNotFoundComponent,
-    MediaFooterComponent
+    MediaFooterComponent,
+    PopupComponent
   ],
   imports: [
     BrowserModule,
@@ -29,6 +31,9 @@ import { FileUploadModule } from 'ng2-file-upload';
     ReactiveFormsModule,
     HttpClientModule,
     FileUploadModule
+  ],
+  entryComponents: [
+    PopupComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

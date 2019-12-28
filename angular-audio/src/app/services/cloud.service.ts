@@ -25,7 +25,8 @@ export class CloudService {
           const obj = {
             url: this.SERVER_URL_SOUND + cur.url,
             name: cur.name,
-            artist: cur.artist
+            artist: cur.artist,
+            nameToDownload: cur.url
           };
           acc.push(obj);
           return acc;

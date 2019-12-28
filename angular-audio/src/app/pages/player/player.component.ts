@@ -3,6 +3,8 @@ import { AudioService } from '../../services/audio.service';
 import { CloudService } from '../../services/cloud.service';
 import { StreamState } from '../../interfaces/stream-state';
 import { Subject } from 'rxjs';
+import { MatBottomSheet, MatDialog } from '@angular/material';
+import { PopupComponent } from './popup/popup.component';
 
 @Component({
   selector: 'app-player',
@@ -18,7 +20,8 @@ export class PlayerComponent implements OnInit {
 
   constructor(
     private audioService: AudioService,
-    private cloudService: CloudService
+    private cloudService: CloudService,
+    public dialog: MatDialog
   ) { }
 
   ngOnInit() {
@@ -50,5 +53,9 @@ export class PlayerComponent implements OnInit {
     this.audioService.stop();
     // this.playStream(file.url);
     this.audioService.playStream(file.url).subscribe();
+  }
+
+  openDialog(file: any): void {
+    this.dialog.open(PopupComponent, { data: file });
   }
 }
