@@ -36,7 +36,7 @@
 
     <div>
       <div>
-        Queue progress:
+        {{ uploader.progress === 100 ? 'Processing....' : 'Queue progress:' }}
         <div class="progress mb-4">
           <div class="progress-bar" role="progressbar" [ngStyle]="{ 'width': uploader.progress + '%' }"></div>
         </div>
