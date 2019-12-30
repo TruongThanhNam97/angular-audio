@@ -3,11 +3,17 @@ import { Routes, RouterModule } from '@angular/router';
 import { PlayerComponent } from './pages/player/player.component';
 import { FormUploadComponent } from './pages/form-upload/form-upload.component';
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component';
+import { AuthGuard } from './services/auth-guard.service';
+import { LoginComponent } from './pages/login/login.component';
+import { LoginGuard } from './services/login-guard.service';
+import { RegisterComponent } from './pages/register/register.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/upload', pathMatch: 'full' },
-  { path: 'upload', component: FormUploadComponent },
+  { path: '', redirectTo: '/songs', pathMatch: 'full' },
+  { path: 'upload', component: FormUploadComponent, canActivate: [AuthGuard] },
   { path: 'songs', component: PlayerComponent },
+  { path: 'login', component: LoginComponent, canActivate: [LoginGuard] },
+  { path: 'register', component: RegisterComponent, canActivate: [LoginGuard] },
   { path: 'page-not-found', component: PageNotFoundComponent },
   { path: '**', redirectTo: '/page-not-found' }
 ];

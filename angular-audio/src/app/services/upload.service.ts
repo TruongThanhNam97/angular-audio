@@ -2,15 +2,19 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpEventType } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { CloudService } from './cloud.service';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UploadService {
-  SERVER_URL = 'http://localhost:3000/';
-  SERVER_URL_SOUND = 'http://localhost:3000/watermark-songs/';
+  private SERVER_URL: string;
+  private SERVER_URL_SOUND: string;
 
-  constructor(private http: HttpClient, private cloudService: CloudService) { }
+  constructor(private http: HttpClient, private cloudService: CloudService) {
+    this.SERVER_URL = environment.SERVER_URL;
+    this.SERVER_URL_SOUND = environment.SERVER_URL_SOUND;
+  }
 
   uploadSong(data) {
     return this.http

@@ -3,6 +3,7 @@ import { UploadService } from 'src/app/services/upload.service';
 import { AlertifyService } from 'src/app/services/alertify.service';
 import { CloudService } from 'src/app/services/cloud.service';
 import { FileUploader } from 'ng2-file-upload';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-form-upload',
@@ -27,7 +28,7 @@ export class FormUploadComponent implements OnInit {
 
   initializeUploader() {
     this.uploader = new FileUploader({
-      url: `${this.cloudService.SERVER_URL}upload`,
+      url: `${environment.SERVER_URL}upload`,
       isHTML5: true,
       allowedFileType: ['audio'],
       removeAfterUpload: true,
@@ -41,7 +42,7 @@ export class FormUploadComponent implements OnInit {
         // Here to catch data from server
         res = JSON.parse(res);
         const song = {
-          url: `${this.uploadService.SERVER_URL_SOUND}${res.song.url}`,
+          url: `${environment.SERVER_URL_SOUND}${res.song.url}`,
           name: res.song.name,
           artist: res.song.artist
         };

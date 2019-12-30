@@ -13,6 +13,8 @@ import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.com
 import { MediaFooterComponent } from './pages/media-footer/media-footer.component';
 import { FileUploadModule } from 'ng2-file-upload';
 import { PopupComponent } from './pages/player/popup/popup.component';
+import { LoginComponent } from './pages/login/login.component';
+import { RegisterComponent } from './pages/register/register.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +23,9 @@ import { PopupComponent } from './pages/player/popup/popup.component';
     FormUploadComponent,
     PageNotFoundComponent,
     MediaFooterComponent,
-    PopupComponent
+    PopupComponent,
+    LoginComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,

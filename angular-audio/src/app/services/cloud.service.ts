@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { of, Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { map, tap } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CloudService {
-  SERVER_URL = 'http://localhost:3000/';
-  SERVER_URL_SOUND = 'http://localhost:3000/watermark-songs/';
+  private SERVER_URL: string;
+  private SERVER_URL_SOUND: string;
 
   private localSongs: any = [];
 
@@ -16,7 +17,10 @@ export class CloudService {
 
   allowGetSongs = true;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+    this.SERVER_URL = environment.SERVER_URL;
+    this.SERVER_URL_SOUND = environment.SERVER_URL_SOUND;
+  }
 
   getSongs() {
     return this.http.get(this.SERVER_URL + 'getSongs').pipe(
