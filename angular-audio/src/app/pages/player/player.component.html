@@ -17,8 +17,10 @@
           </mat-icon>
           <h4 mat-line>{{ file.name }}</h4>
           <h5 mat-line>by {{ file.artist }}</h5>
-          <mat-icon color="primary" *ngIf="currentFile.index === i && !state?.error">volume_up</mat-icon>
-          <h6 *ngIf="currentFile.index === i && state?.error">ERROR</h6>
+          <h5 mat-line>Upload by {{ file.userName }}</h5>
+          <mat-icon color="primary" *ngIf="currentFile && currentFile?.index === i && !state?.error">volume_up
+          </mat-icon>
+          <h6 *ngIf="currentFile && currentFile?.index === i && state?.error">ERROR</h6>
           <mat-icon (click)="openDialog(file)" style="cursor: pointer;" class="more-icon" color="primary">more_horiz
           </mat-icon>
           <mat-divider></mat-divider>

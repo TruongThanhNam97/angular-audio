@@ -15,6 +15,7 @@ import { FileUploadModule } from 'ng2-file-upload';
 import { PopupComponent } from './pages/player/popup/popup.component';
 import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
+import { PopupBanComponent } from './pages/login/popup-ban/popup-ban.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { RegisterComponent } from './pages/register/register.component';
     MediaFooterComponent,
     PopupComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    PopupBanComponent
   ],
   imports: [
     BrowserModule,
@@ -37,7 +39,8 @@ import { RegisterComponent } from './pages/register/register.component';
     FileUploadModule
   ],
   entryComponents: [
-    PopupComponent
+    PopupComponent,
+    PopupBanComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

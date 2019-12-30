@@ -44,6 +44,8 @@ export class AudioService {
 
   private loopSubject$ = new Subject();
 
+  constructor() { }
+
   getLoopSubject() {
     return this.loopSubject$.asObservable();
   }

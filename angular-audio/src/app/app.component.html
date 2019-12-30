@@ -3,20 +3,23 @@
     <a class="navbar-brand" [routerLink]="['/']">Watermark</a>
     <div class="collapse navbar-collapse" id="collapsibleNavId">
       <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-        <li class="nav-item" *ngIf="!isAuthenticated">
-          <a class="nav-link" [routerLink]="['/register']" [routerLinkActive]="'active'"
-            [routerLinkActiveOptions]="{ exact: true }">Register</a>
-        </li>
-        <li class="nav-item" *ngIf="!isAuthenticated">
-          <a class="nav-link" [routerLink]="['/login']" [routerLinkActive]="'active'"
-            [routerLinkActiveOptions]="{ exact: true }">Login</a>
-        </li>
         <li class="nav-item">
           <a class="nav-link" [routerLink]="['/songs']" [routerLinkActive]="'active'"
             [routerLinkActiveOptions]="{ exact: true }">Home</a>
         </li>
       </ul>
     </div>
+
+    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+      <li class="nav-item" *ngIf="!isAuthenticated">
+        <a *ngIf="!isAuthenticated" class="nav-link" [routerLink]="['/register']" [routerLinkActive]="'active'"
+          [routerLinkActiveOptions]="{ exact: true }">Register</a>
+      </li>
+      <li class="nav-item" *ngIf="!isAuthenticated">
+        <a *ngIf="!isAuthenticated" class="nav-link" [routerLink]="['/login']" [routerLinkActive]="'active'"
+          [routerLinkActiveOptions]="{ exact: true }">Login</a>
+      </li>
+    </ul>
 
     <div class="dropdown" *ngIf="currentUser">
       <div style="color: white;cursor: pointer;" class="nav-link dropdown-toggle" id="dropdownId" data-toggle="dropdown"

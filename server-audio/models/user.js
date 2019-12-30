@@ -8,6 +8,11 @@ const schema = new mongoose.Schema({
     password: {
         type: String,
         required: true
+    },
+    numberOfReup: {
+        type: Number,
+        required: true,
+        default: 0
     }
 }, { versionKey: false });
 

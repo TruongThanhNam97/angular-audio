@@ -2,8 +2,10 @@ var express = require("express");
 var router = express.Router();
 var multer = require("multer");
 var songModel = require("../models/song");
+var userModel = require('../models/user');
 var watermarker = require("../python_scripts/watermarker.js");
 var path = require("path");
+var passport = require("passport");
 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -26,7 +28,7 @@ var upload = multer({
 });
 
 /* GET home page. */
-router.get("/", (req, res, next) => {
+router.get("/", passport.authenticate('jwt', { session: false }), (req, res, next) => {
     res.render("index", { title: "Express" });
 });
 
@@ -34,10 +36,13 @@ router.get("/", (req, res, next) => {
 var saveSongMetadata = (req, res, next) => {
     let name = next.split('~!~')[1].split('.')[0].split(';')[0];
     let artist = next.split('~!~')[1].split('.')[0].split(';')[1];
+    console.log(req.user);
     const newSong = {
         url: next.split('.')[0] + '.wav',
         name,
-        artist
+        artist,
+        userId: req.user.id,
+        userName: req.user.username
     };
     return new songModel(newSong)
         .save()
@@ -47,15 +52,27 @@ var saveSongMetadata = (req, res, next) => {
 
 var watermark = (req, res, next) => {
     let filename = req.files[0].filename;
-    watermarker.Watermark(filename,
-        () => saveSongMetadata(req, res, filename),
-        (err) => {
-            res.status(400).json({ error: err });
+    userModel.findById({ _id: req.user.id }).then(user => {
+        if (user.numberOfReup >= 3) {
+            res.status(400).json({ error: { err: 'Cannot upload music' } });
+        } else {
+            watermarker.Watermark(filename,
+                () => saveSongMetadata(req, res, filename),
+                (err) => {
+                    userModel.findById({ _id: req.user.id }).then(user => {
+                        let numberOfReup = user.numberOfReup;
+                        numberOfReup++;
+                        userModel.findOneAndUpdate({ _id: req.user.id }, { $set: { numberOfReup } }, { new: true }).then(updatedUser => {
+                            res.status(400).json({ error: { err, numberOfReup: updatedUser.numberOfReup } });
+                        });
+                    });
+                }
+            )
         }
-    )
+    });
 }
 
-router.post("/upload", upload.any(), watermark);
+router.post("/upload", passport.authenticate('jwt', { session: false }), upload.any(), watermark);
 
 /* GET songs */
 router.get("/getSongs", (req, res, next) => {

@@ -4,6 +4,8 @@ import { AuthService } from 'src/app/services/auth.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AlertifyService } from 'src/app/services/alertify.service';
+import { MatDialog } from '@angular/material';
+import { PopupBanComponent } from './popup-ban/popup-ban.component';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +17,11 @@ export class LoginComponent implements OnInit, OnDestroy {
   signForm: FormGroup;
   destroySubscription$: Subject<boolean> = new Subject();
 
-  constructor(private authService: AuthService, private alertifyService: AlertifyService) { }
+  constructor(
+    private authService: AuthService,
+    private alertifyService: AlertifyService,
+    private dialog: MatDialog
+  ) { }
 
   ngOnInit() {
     this.initializeForm();
@@ -46,6 +52,11 @@ export class LoginComponent implements OnInit, OnDestroy {
         }
         if (error.error.password) {
           this.alertifyService.error(error.error.password);
+        }
+        if (error.error.message) {
+          this.dialog.open(PopupBanComponent, {
+            data: error.error.message
+          });
         }
       }
     );

@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { UploadService } from 'src/app/services/upload.service';
 import { AlertifyService } from 'src/app/services/alertify.service';
 import { CloudService } from 'src/app/services/cloud.service';
 import { FileUploader } from 'ng2-file-upload';
 import { environment } from 'src/environments/environment';
+import { DECODE_TOKEN } from 'src/app/interfaces/decode-token';
+import { AuthService } from 'src/app/services/auth.service';
+import { MatDialog } from '@angular/material';
+import { PopupBanComponent } from '../login/popup-ban/popup-ban.component';
 
 @Component({
   selector: 'app-form-upload',
@@ -16,10 +19,13 @@ export class FormUploadComponent implements OnInit {
 
   hasBaseDropZoneOver = false;
 
+  currentUser: DECODE_TOKEN;
+
   constructor(
-    private uploadService: UploadService,
     private alertify: AlertifyService,
-    private cloudService: CloudService
+    private cloudService: CloudService,
+    private authService: AuthService,
+    public dialog: MatDialog
   ) { }
 
   ngOnInit() {
@@ -32,7 +38,8 @@ export class FormUploadComponent implements OnInit {
       isHTML5: true,
       allowedFileType: ['audio'],
       removeAfterUpload: true,
-      autoUpload: false
+      autoUpload: false,
+      authToken: localStorage.getItem('jwtToken')
     });
 
     this.uploader.onAfterAddingFile = (file) => { file.withCredentials = false; };
@@ -44,7 +51,9 @@ export class FormUploadComponent implements OnInit {
         const song = {
           url: `${environment.SERVER_URL_SOUND}${res.song.url}`,
           name: res.song.name,
-          artist: res.song.artist
+          artist: res.song.artist,
+          userId: res.song.userId,
+          userName: res.song.userName
         };
         this.cloudService.allowGetSongs = false;
         this.cloudService.addSongToLocalSongs(song);
@@ -57,7 +66,14 @@ export class FormUploadComponent implements OnInit {
       if (err) {
         // Here to catch error from server
         err = JSON.parse(err);
-        this.alertify.error(err.error);
+        console.log(err);
+        if (err.error.numberOfReup >= 3) {
+          this.authService.logOut();
+          this.dialog.open(PopupBanComponent, { data: 'Your account is banned' });
+        }
+        if (err.error.err !== 'Cannot upload music') {
+          this.alertify.error(err.error.err);
+        }
       }
     };
   }

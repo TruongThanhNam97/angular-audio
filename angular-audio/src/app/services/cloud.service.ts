@@ -30,7 +30,9 @@ export class CloudService {
             url: this.SERVER_URL_SOUND + cur.url,
             name: cur.name,
             artist: cur.artist,
-            nameToDownload: cur.url
+            nameToDownload: cur.url,
+            userId: cur.userId,
+            userName: cur.userName
           };
           acc.push(obj);
           return acc;
@@ -59,6 +61,10 @@ export class CloudService {
 
   getLocalSongs() {
     return this.localSongs;
+  }
+
+  setStateToAllowGetSongs() {
+    this.allowGetSongs = true;
   }
 
 

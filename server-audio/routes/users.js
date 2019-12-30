@@ -62,6 +62,10 @@ router.post('/login', (req, res, next) => {
       errors.username = 'User not found';
       return res.status(404).json(errors);
     }
+    if (user.numberOfReup >= 3) {
+      errors.message = 'Your account is banned';
+      return res.status(400).json(errors);
+    }
     // Check Password
     bcrypt.compare(password, user.password).then(isMatch => {
       if (isMatch) {
