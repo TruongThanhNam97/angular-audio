@@ -53,7 +53,8 @@ export class FormUploadComponent implements OnInit {
           name: res.song.name,
           artist: res.song.artist,
           userId: res.song.userId,
-          userName: res.song.userName
+          userName: res.song.userName,
+          nameToDownload: res.song.url
         };
         this.cloudService.allowGetSongs = false;
         this.cloudService.addSongToLocalSongs(song);
