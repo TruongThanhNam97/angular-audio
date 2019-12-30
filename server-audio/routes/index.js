@@ -34,8 +34,8 @@ router.get("/", passport.authenticate('jwt', { session: false }), (req, res, nex
 
 /* POST song */
 var saveSongMetadata = (req, res, next) => {
-    let name = next.split('~!~')[1].split('.')[0].split(';')[0];
-    let artist = next.split('~!~')[1].split('.')[0].split(';')[1];
+    let name = next.split('~!~')[1].split('.')[0].split('-')[0];
+    let artist = next.split('~!~')[1].split('.')[0].split('-')[1];
     console.log(req.user);
     const newSong = {
         url: next.split('.')[0] + '.wav',
