@@ -4,6 +4,7 @@ import { AuthService } from './services/auth.service';
 import { DECODE_TOKEN } from './interfaces/decode-token';
 import decode from 'jwt-decode';
 import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -14,7 +15,10 @@ export class AppComponent implements OnInit {
   playMode = false;
   isAuthenticated = false;
   currentUser: DECODE_TOKEN;
-  constructor(private audioSerive: AudioService, private authService: AuthService, private router: Router) { }
+  SERVER_URL_IMAGE: string;
+  constructor(private audioSerive: AudioService, private authService: AuthService, private router: Router) { 
+    this.SERVER_URL_IMAGE = environment.SERVER_URL_IMAGE;
+  }
   ngOnInit() {
     this.checkToken();
     this.audioSerive.getPlayModeSubject().subscribe((v: any) => this.playMode = v);

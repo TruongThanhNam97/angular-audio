@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { of, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { map, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -11,21 +11,20 @@ export class CloudService {
   private SERVER_URL: string;
   private SERVER_URL_SOUND: string;
 
-  private localSongs: any = [];
+  private currentPlayList: any;
+  private allowGetSongs = true;
 
-  private localSongsSubject$ = new Subject();
-
-  allowGetSongs = true;
+  private currentPlayListSubject$: Subject<any> = new Subject();
 
   constructor(private http: HttpClient) {
     this.SERVER_URL = environment.SERVER_URL;
     this.SERVER_URL_SOUND = environment.SERVER_URL_SOUND;
   }
 
-  getSongs() {
-    return this.http.get(this.SERVER_URL + 'getSongs').pipe(
-      map((v: any) => {
-        const result = v.reduce((acc, cur) => {
+  getSongs(id: string) {
+    return this.http.get(this.SERVER_URL + 'getSongs', { params: { id } }).pipe(
+      map((files: any) => {
+        const result = files.reduce((acc, cur) => {
           const obj = {
             url: this.SERVER_URL_SOUND + cur.url,
             name: cur.name,
@@ -39,28 +38,24 @@ export class CloudService {
         }, []);
         return result;
       }),
-      tap(v => {
+      tap(files => {
         this.allowGetSongs = false;
-        this.localSongs = v;
+        this.currentPlayList = [...files];
+        this.currentPlayListSubject$.next(this.currentPlayList);
       })
     );
   }
 
-  getLocalSongsSubjects$() {
-    return this.localSongsSubject$.asObservable();
+  getCurrentPlayList() {
+    return this.currentPlayList;
+  }
+
+  getCurrentPlayListSubject() {
+    return this.currentPlayListSubject$.asObservable();
   }
 
   getStateToAllowGetSongs() {
     return this.allowGetSongs;
-  }
-
-  addSongToLocalSongs(song: any) {
-    this.localSongs = [...this.localSongs, song];
-    this.localSongsSubject$.next(this.localSongs);
-  }
-
-  getLocalSongs() {
-    return this.localSongs;
   }
 
   setStateToAllowGetSongs() {

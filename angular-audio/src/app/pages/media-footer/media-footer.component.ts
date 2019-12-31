@@ -21,13 +21,11 @@ export class MediaFooterComponent implements OnInit {
   constructor(private audioService: AudioService, private cloudService: CloudService) { }
 
   ngOnInit() {
-    this.files = this.cloudService.getLocalSongs();
-    this.cloudService.getLocalSongsSubjects$().subscribe(
-      v => this.files = v
-    );
+    this.files = this.cloudService.getCurrentPlayList();
+    this.cloudService.getCurrentPlayListSubject().subscribe(files => this.files = [...files]);
     this.currentFile = this.audioService.getCurrentFile();
     this.audioService.getCurrentFileSubject1().subscribe(
-      v => this.currentFile = v
+      (file: any) => this.currentFile = { ...file }
     );
     this.audioService.getState().subscribe(state => {
       this.state = state;
@@ -35,7 +33,7 @@ export class MediaFooterComponent implements OnInit {
         && this.state.readableCurrentTime !== '' && this.state.readableDuration !== '') {
         if (this.randomMode) {
           this.random();
-        } else {
+        } else if (!this.loop) {
           this.next();
         }
       }
@@ -60,21 +58,18 @@ export class MediaFooterComponent implements OnInit {
     const index = this.currentFile.index + 1;
     if (index <= this.files.length - 1) {
       const file = this.files[index];
-      // this.openFile(file, index);
       this.audioService.updateCurrentFile2({ index, file });
     }
   }
   previous() {
     const index = this.currentFile.index - 1;
     const file = this.files[index];
-    // this.openFile(file, index);
     this.audioService.updateCurrentFile2({ index, file });
   }
 
   random() {
     const index = this.getRandomIndex(this.files.length);
     const file = this.files[index];
-    // this.openFile(file, index);
     this.audioService.updateCurrentFile2({ index, file });
   }
 

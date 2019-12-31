@@ -30,11 +30,6 @@ export class UploadService {
               return { status: 'progress', message: progress };
             }
             case HttpEventType.Response: {
-              this.cloudService.addSongToLocalSongs({
-                url: this.SERVER_URL_SOUND + event.body.song.url,
-                name: event.body.song.name,
-                artist: event.body.song.artist
-              });
               return event.body;
             }
             default:

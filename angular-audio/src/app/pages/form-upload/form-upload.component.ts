@@ -23,7 +23,6 @@ export class FormUploadComponent implements OnInit {
 
   constructor(
     private alertify: AlertifyService,
-    private cloudService: CloudService,
     private authService: AuthService,
     public dialog: MatDialog
   ) { }
@@ -48,16 +47,6 @@ export class FormUploadComponent implements OnInit {
       if (res) {
         // Here to catch data from server
         res = JSON.parse(res);
-        const song = {
-          url: `${environment.SERVER_URL_SOUND}${res.song.url}`,
-          name: res.song.name,
-          artist: res.song.artist,
-          userId: res.song.userId,
-          userName: res.song.userName,
-          nameToDownload: res.song.url
-        };
-        this.cloudService.allowGetSongs = false;
-        this.cloudService.addSongToLocalSongs(song);
         const songName = res.song.name;
         this.alertify.success(`Song name: ${songName} has been processed`);
       }
@@ -67,7 +56,6 @@ export class FormUploadComponent implements OnInit {
       if (err) {
         // Here to catch error from server
         err = JSON.parse(err);
-        console.log(err);
         if (err.error.numberOfReup >= 3) {
           this.authService.logOut();
           this.dialog.open(PopupBanComponent, { data: 'Your account is banned' });

@@ -5,7 +5,8 @@
 export const environment = {
   production: false,
   SERVER_URL: 'http://localhost:3000/',
-  SERVER_URL_SOUND: 'http://localhost:3000/watermark-songs/'
+  SERVER_URL_SOUND: 'http://localhost:3000/watermark-songs/',
+  SERVER_URL_IMAGE: 'http://localhost:3000/images/'
 };
 
 /*

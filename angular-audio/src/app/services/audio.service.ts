@@ -104,6 +104,10 @@ export class AudioService {
     this.playModeSubject$.next(this.playMode);
   }
 
+  getPlayMode() {
+    return this.playMode;
+  }
+
 
   getState(): Observable<StreamState> {
     return this.stateChange.asObservable();

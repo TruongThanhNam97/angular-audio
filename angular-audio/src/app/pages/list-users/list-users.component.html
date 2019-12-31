@@ -1,0 +1,13 @@
+<div class="container mt-5" style="display: flex;flex-wrap: wrap;">
+  <div [ngStyle]="{'border': selectedAlbum && selectedAlbum === album.username ? '5px solid #FF4081' : ''}"
+    (click)="onNavigateToSeeAlbum(album)" *ngFor="let album of listAlbums" class="card"
+    style="width: 30%; margin-right: 1%; margin-bottom: 2%;cursor: pointer;">
+    <img
+    style="height: 200px;"
+      src="{{ album['avatar'] ? SERVER_URL_IMAGE+album['avatar'] : '../../../../../assets/apple-music-note-800x420.jpg'  }}"
+      class="card-img-top" alt="{{ album.username }}">
+    <div class="card-body">
+      <h5 class="card-title">Albums of {{ album.username }}</h5>
+    </div>
+  </div>
+</div>

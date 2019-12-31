@@ -4,7 +4,7 @@
     <div class="collapse navbar-collapse" id="collapsibleNavId">
       <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
         <li class="nav-item">
-          <a class="nav-link" [routerLink]="['/songs']" [routerLinkActive]="'active'"
+          <a class="nav-link" [routerLink]="['/albums']" [routerLinkActive]="'active'"
             [routerLinkActiveOptions]="{ exact: true }">Home</a>
         </li>
       </ul>
@@ -23,7 +23,11 @@
 
     <div class="dropdown" *ngIf="currentUser">
       <div style="color: white;cursor: pointer;" class="nav-link dropdown-toggle" id="dropdownId" data-toggle="dropdown"
-        aria-haspopup="true" aria-expanded="false">Welcome {{currentUser.username}}</div>
+        aria-haspopup="true" aria-expanded="false">
+        <img style="width: 35px;height: 35px;border-radius: 50%;"
+          src="{{ currentUser['avatar'] ? SERVER_URL_IMAGE+currentUser['avatar'] : '../../../assets/profile-default.jpg' }}"
+          alt="{{ currentUser['username'] }}">
+        Welcome {{currentUser.username}}</div>
       <div class="dropdown-menu" aria-labelledby="dropdownId">
         <div (click)="onUploadMusic()" class="dropdown-item dropItem" style="display: flex;align-items: center;">
           <mat-icon mat-list-icon class="mr-2">cloud_upload</mat-icon>Upload music
@@ -36,4 +40,5 @@
   </div>
 </nav>
 <router-outlet></router-outlet>
+<div style="height: 220px;"></div>
 <app-media-footer *ngIf="playMode"></app-media-footer>

@@ -7,15 +7,18 @@ import { AuthGuard } from './services/auth-guard.service';
 import { LoginComponent } from './pages/login/login.component';
 import { LoginGuard } from './services/login-guard.service';
 import { RegisterComponent } from './pages/register/register.component';
+import { ListUsersComponent } from './pages/list-users/list-users.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/songs', pathMatch: 'full' },
+  { path: '', redirectTo: '/albums', pathMatch: 'full' },
   { path: 'upload', component: FormUploadComponent, canActivate: [AuthGuard] },
   { path: 'songs', component: PlayerComponent },
+  { path: 'albums', component: ListUsersComponent },
+  { path: 'albums/:id', component: PlayerComponent },
   { path: 'login', component: LoginComponent, canActivate: [LoginGuard] },
   { path: 'register', component: RegisterComponent, canActivate: [LoginGuard] },
   { path: 'page-not-found', component: PageNotFoundComponent },
-  { path: '**', redirectTo: '/page-not-found' }
+  // { path: '**', redirectTo: '/page-not-found' }
 ];
 
 @NgModule({

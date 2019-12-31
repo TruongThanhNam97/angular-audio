@@ -16,6 +16,7 @@ import { PopupComponent } from './pages/player/popup/popup.component';
 import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { PopupBanComponent } from './pages/login/popup-ban/popup-ban.component';
+import { ListUsersComponent } from './pages/list-users/list-users.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { PopupBanComponent } from './pages/login/popup-ban/popup-ban.component';
     PopupComponent,
     LoginComponent,
     RegisterComponent,
-    PopupBanComponent
+    PopupBanComponent,
+    ListUsersComponent
   ],
   imports: [
     BrowserModule,

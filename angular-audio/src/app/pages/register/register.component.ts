@@ -15,6 +15,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
   signForm: FormGroup;
   destroySubscription$: Subject<boolean> = new Subject();
 
+  arrayType = ['jpg', 'JPG', 'png', 'PNG', 'gif', 'GIF', 'tif', 'TIF'];
+
   constructor(private authService: AuthService, private alertifyService: AlertifyService) { }
 
   ngOnInit() {
@@ -29,7 +31,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
     this.signForm = new FormGroup({
       username: new FormControl(null, [Validators.required, Validators.minLength(10), Validators.maxLength(30)]),
       password: new FormControl(null, [Validators.required, Validators.minLength(6), Validators.maxLength(30)]),
-      password2: new FormControl(null, [Validators.required])
+      password2: new FormControl(null, [Validators.required]),
+      avatar: new FormControl(null, [this.validateImage.bind(this)])
     }, [this.validateConfirmPassword]);
   }
 
@@ -37,8 +40,26 @@ export class RegisterComponent implements OnInit, OnDestroy {
     return signForm.get('password').value === signForm.get('password2').value ? null : { misMatch: true };
   }
 
+  validateImage(formControl: FormControl): { [key: string]: boolean } {
+    if (formControl.value) {
+      const fileType = formControl.value.name.split('.')[1];
+      return this.arrayType.includes(fileType) ? null : { incorrectType: true };
+    }
+  }
+
+  onSelectedFile(file: any) {
+    this.signForm.patchValue({
+      avatar: file.target.files[0]
+    });
+  }
+
   onSubmit() {
-    this.authService.register(this.signForm.value).pipe(
+    const formData = new FormData();
+    formData.append('username', this.signForm.value.username);
+    formData.append('password', this.signForm.value.password);
+    formData.append('password2', this.signForm.value.password2);
+    formData.append('avatar', this.signForm.value.avatar);
+    this.authService.register(formData).pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(
       _ => {

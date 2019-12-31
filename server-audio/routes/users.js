@@ -11,29 +11,53 @@ const validateLoginInput = require('../validation/login');
 
 const userModel = require('../models/user');
 
-/* GET users listing. */
-router.get('/', function (req, res, next) {
-  res.send('respond with a resource');
+var multer = require("multer");
+
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./public/images");
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + "-" + file.originalname);
+  }
+});
+
+var upload = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    if (file.originalname.match(/\.(jpg|JPG|png|PNG|tif|TIF|gif|GIF)$/)) {
+      cb(null, true);
+    } else {
+      cb(null, false);
+    }
+  }
+});
+
+//@route    GET /users/
+//@desc     GET all users
+//@access   Public
+router.get('/', (req, res, next) => {
+  userModel.find({ numberOfReup: { $lt: 3 } }).select('username avatar').then(users => res.status(200).json(users)).catch(() => res.status(404).json({ notFound: 'Users not found' }));
 });
 
 //@route    POST /users/register
 //@desc     Register user
 //@access   Public
-router.post('/register', (req, res, next) => {
+router.post('/register', upload.any(), (req, res, next) => {
   const { errors, isValid } = validateRegisterInput(req.body);
   // Check Validation
   if (!isValid) {
     return res.status(400).json(errors);
   }
-  userModel.findOne({ username: req.body.username }).then(user => {
+  const { username, password } = req.body;
+  userModel.findOne({ username: username }).then(user => {
     if (user) {
       errors.username = 'Username already exists';
       res.status(400).json(errors);
     } else {
-      const newUser = new userModel({
-        username: req.body.username,
-        password: req.body.password
-      });
+      const user = { username, password };
+      if (req.files[0]) user.avatar = req.files[0].filename;
+      const newUser = new userModel(user);
       bcrypt.genSalt(10, (err, salt) => {
         bcrypt.hash(newUser.password, salt, (err, hash) => {
           if (err) throw err;
@@ -74,6 +98,7 @@ router.post('/login', (req, res, next) => {
           id: user.id,
           username: user.username
         };
+        if (user.avatar) payload.avatar = user.avatar;
         // Sign Token
         jwt.sign(payload, 'namkhuong', { expiresIn: 3600 }, (err, token) => {
           res.status(200).json({

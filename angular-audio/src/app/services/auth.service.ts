@@ -45,7 +45,7 @@ export class AuthService {
             this.logOut();
         }, (expire - now) * 1000);
         localStorage.setItem('jwtToken', token);
-        this.router.navigate(['/songs']);
+        this.router.navigate(['/albums']);
     }
 
     logOut() {

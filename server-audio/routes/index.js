@@ -77,7 +77,7 @@ router.post("/upload", passport.authenticate('jwt', { session: false }), upload.
 /* GET songs */
 router.get("/getSongs", (req, res, next) => {
     songModel
-        .find({})
+        .find({ userId: { $eq: req.query.id } })
         .then(songs => res.status(200).json(songs))
         .catch(err => res.status(404).json({ notfound: "Not found songs" }));
 });
