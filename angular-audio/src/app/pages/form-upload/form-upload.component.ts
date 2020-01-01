@@ -46,7 +46,8 @@ export class FormUploadComponent implements OnInit {
     if (e.target.files.length > 0) {
       for (let i = 0; i < e.target.files.length; i++) {
         const file = e.target.files[i];
-        const song = file.name.split('.')[0];
+        const lastIndex = file.name.lastIndexOf('.');
+        const song = file.name.slice(0, lastIndex);
         const formGroup = new FormGroup({
           name: new FormControl(song.split('-')[0], [Validators.required, Validators.maxLength(50)]),
           artist: new FormControl(song.split('-')[1], [Validators.required, Validators.maxLength(50)]),
@@ -55,11 +56,13 @@ export class FormUploadComponent implements OnInit {
         (this.signForm.get('arrSongs') as FormArray).push(formGroup);
       }
     }
+    e.target.value = null;
   }
 
   validateFile(control: FormControl): { [key: string]: boolean } {
     if (control) {
-      const typeFile = control.value.name.split('.')[1];
+      const lastIndex = control.value.name.lastIndexOf('.');
+      const typeFile = control.value.name.slice(lastIndex + 1);
       return this.typeFileMusic.includes(typeFile) ? null : { invalid: true };
     }
   }
