@@ -37,7 +37,7 @@ var upload = multer({
 //@desc     GET all users
 //@access   Public
 router.get('/', (req, res, next) => {
-  userModel.find({ numberOfReup: { $lt: 3 } }).select('username avatar').then(users => res.status(200).json(users)).catch(() => res.status(404).json({ notFound: 'Users not found' }));
+  userModel.find({ numberOfReup: { $lt: 3 }, username: { $ne: 'superadmin' } }).select('username avatar').then(users => res.status(200).json(users)).catch(() => res.status(404).json({ notFound: 'Users not found' }));
 });
 
 //@route    POST /users/register

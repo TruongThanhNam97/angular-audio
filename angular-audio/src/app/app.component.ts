@@ -16,7 +16,7 @@ export class AppComponent implements OnInit {
   isAuthenticated = false;
   currentUser: DECODE_TOKEN;
   SERVER_URL_IMAGE: string;
-  constructor(private audioSerive: AudioService, private authService: AuthService, private router: Router) { 
+  constructor(private audioSerive: AudioService, private authService: AuthService, private router: Router) {
     this.SERVER_URL_IMAGE = environment.SERVER_URL_IMAGE;
   }
   ngOnInit() {
@@ -48,5 +48,9 @@ export class AppComponent implements OnInit {
 
   onUploadMusic() {
     this.router.navigate(['/upload']);
+  }
+
+  onUploadCateGory() {
+    this.router.navigate(['/upload-category']);
   }
 }

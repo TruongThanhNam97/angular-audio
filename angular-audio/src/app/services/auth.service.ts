@@ -45,7 +45,11 @@ export class AuthService {
             this.logOut();
         }, (expire - now) * 1000);
         localStorage.setItem('jwtToken', token);
-        this.router.navigate(['/albums']);
+        if (this.currentUser.username === 'superadmin') {
+            this.router.navigate(['/upload-category']);
+        } else {
+            this.router.navigate(['/albums']);
+        }
     }
 
     logOut() {
