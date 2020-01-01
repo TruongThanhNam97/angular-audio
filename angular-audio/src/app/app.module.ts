@@ -11,7 +11,6 @@ import { PlayerComponent } from './pages/player/player.component';
 import { FormUploadComponent } from './pages/form-upload/form-upload.component';
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component';
 import { MediaFooterComponent } from './pages/media-footer/media-footer.component';
-import { FileUploadModule } from 'ng2-file-upload';
 import { PopupComponent } from './pages/player/popup/popup.component';
 import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
@@ -37,8 +36,7 @@ import { ListUsersComponent } from './pages/list-users/list-users.component';
     BrowserAnimationsModule,
     MaterialModule,
     ReactiveFormsModule,
-    HttpClientModule,
-    FileUploadModule
+    HttpClientModule
   ],
   entryComponents: [
     PopupComponent,

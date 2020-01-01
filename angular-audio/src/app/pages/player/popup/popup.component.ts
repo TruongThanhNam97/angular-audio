@@ -22,7 +22,7 @@ export class PopupComponent implements OnInit {
 
   downloadFile() {
     this.download.downloadFile(this.data.nameToDownload).subscribe(blob => {
-      saveAs(blob, `${this.data.nameToDownload.split('~!~')[1]}`);
+      saveAs(blob, `${this.data.name}-${this.data.artist}.wav`);
     }, err => console.log(err));
     this.dialogRef.close();
   }

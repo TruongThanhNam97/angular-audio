@@ -34,13 +34,10 @@ router.get("/", passport.authenticate('jwt', { session: false }), (req, res, nex
 
 /* POST song */
 var saveSongMetadata = (req, res, next) => {
-    let name = next.split('~!~')[1].split('.')[0].split('-')[0];
-    let artist = next.split('~!~')[1].split('.')[0].split('-')[1];
-    console.log(req.user);
     const newSong = {
         url: next.split('.')[0] + '.wav',
-        name,
-        artist,
+        name: req.body.name,
+        artist: req.body.artist,
         userId: req.user.id,
         userName: req.user.username
     };
@@ -63,7 +60,7 @@ var watermark = (req, res, next) => {
                         let numberOfReup = user.numberOfReup;
                         numberOfReup++;
                         userModel.findOneAndUpdate({ _id: req.user.id }, { $set: { numberOfReup } }, { new: true }).then(updatedUser => {
-                            res.status(400).json({ error: { err, numberOfReup: updatedUser.numberOfReup } });
+                            res.status(400).json({ error: { err: `${req.body.name}: Reup Detected`, numberOfReup: updatedUser.numberOfReup } });
                         });
                     });
                 }

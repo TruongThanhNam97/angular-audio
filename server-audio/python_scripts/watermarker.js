@@ -14,8 +14,7 @@ class Watermarker {
                 return next();
         });
         pyWatermarker.stderr.on('data', (data) => {
-            const length = file_path.split('~!~').length;
-            on_error(`${file_path.split('~!~')[length - 1]} : Reup Detected`);
+            on_error();
         })
     }
 }

@@ -17,25 +17,6 @@ export class UploadService {
   }
 
   uploadSong(data) {
-    return this.http
-      .post(this.SERVER_URL + 'upload', data, {
-        reportProgress: true,
-        observe: 'events'
-      })
-      .pipe(
-        map((event: any) => {
-          switch (event.type) {
-            case HttpEventType.UploadProgress: {
-              const progress = Math.round((100 * event.loaded) / event.total);
-              return { status: 'progress', message: progress };
-            }
-            case HttpEventType.Response: {
-              return event.body;
-            }
-            default:
-              return `Unhandeled event : ${event.type}`;
-          }
-        })
-      );
+    return this.http.post(`${this.SERVER_URL}upload`, data, { headers: { Authorization: localStorage.getItem('jwtToken') } });
   }
 }
