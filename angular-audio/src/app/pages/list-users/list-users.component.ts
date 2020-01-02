@@ -4,6 +4,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
 import { environment } from 'src/environments/environment';
+import { CategoryService } from 'src/app/services/categories.service';
 
 @Component({
   selector: 'app-list-users',
@@ -20,13 +21,16 @@ export class ListUsersComponent implements OnInit, OnDestroy {
 
   SERVER_URL_IMAGE: string;
 
-  constructor(private albumService: AlbumService, private router: Router, private route: ActivatedRoute) { 
+  constructor(
+    private albumService: AlbumService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private categoryService: CategoryService) {
     this.SERVER_URL_IMAGE = environment.SERVER_URL_IMAGE;
   }
 
   ngOnInit() {
     this.getAlbums();
-    this.selectedAlbum = this.albumService.getSelectedAlbum();
   }
 
   ngOnDestroy() {

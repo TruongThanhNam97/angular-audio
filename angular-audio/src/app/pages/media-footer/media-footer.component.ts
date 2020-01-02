@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { AudioService } from 'src/app/services/audio.service';
 import { CloudService } from 'src/app/services/cloud.service';
 import { StreamState } from '../../interfaces/stream-state';
+import { MatDialog, MatBottomSheet } from '@angular/material';
+import { PopupComponent } from '../player/popup/popup.component';
+import { PlaylistPlayingComponent } from './playlist-playing/playlist-playing.component';
 
 @Component({
   selector: 'app-media-footer',
@@ -18,7 +21,12 @@ export class MediaFooterComponent implements OnInit {
   loop = false;
   randomMode = false;
 
-  constructor(private audioService: AudioService, private cloudService: CloudService) { }
+  constructor(
+    private audioService: AudioService,
+    private cloudService: CloudService,
+    private dialog: MatDialog,
+    private bottomSheet: MatBottomSheet
+  ) { }
 
   ngOnInit() {
     this.files = this.cloudService.getCurrentPlayList();
@@ -118,6 +126,14 @@ export class MediaFooterComponent implements OnInit {
   onChangeRandomMode() {
     this.audioService.updateLoop(false);
     this.randomMode = !this.randomMode;
+  }
+
+  onViewMore() {
+    this.dialog.open(PopupComponent, { data: this.currentFile.file });
+  }
+
+  onOpenPlaylist() {
+    this.bottomSheet.open(PlaylistPlayingComponent, { data: this.files });
   }
 
 }

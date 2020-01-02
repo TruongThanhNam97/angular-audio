@@ -40,8 +40,12 @@
         <mat-icon mat-list-icon>volume_off</mat-icon>
       </button>
       <mat-slider min="0" max="1" step="0.1" (input)="onVolumeChange($event)" [value]="volume"></mat-slider>
-      <button mat-button>
+      <button (click)="onViewMore()" mat-button matTooltip="View more">
+        <mat-icon mat-list-icon>more_horiz</mat-icon>
+      </button>
+      <button mat-button (click)="onOpenPlaylist()">
         <mat-icon mat-list-icon>queue_music</mat-icon>
+        Playlist is playing ({{ files.length }})
       </button>
     </mat-toolbar-row>
   </mat-toolbar>

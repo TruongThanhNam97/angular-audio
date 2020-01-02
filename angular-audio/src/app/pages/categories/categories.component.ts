@@ -3,6 +3,7 @@ import { CategoryService } from 'src/app/services/categories.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
+import { AlbumService } from 'src/app/services/album.service';
 
 @Component({
   selector: 'app-categories',
@@ -24,7 +25,6 @@ export class CategoriesComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadCategories();
-    this.selectedCategory = this.categoriesService.getSelectedCategory();
   }
 
   ngOnDestroy() {

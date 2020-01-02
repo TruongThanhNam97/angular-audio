@@ -41,7 +41,7 @@ export class CloudService {
       tap(files => {
         this.allowGetSongs = false;
         this.currentPlayList = [...files];
-        this.currentPlayListSubject$.next(this.currentPlayList);
+        // this.currentPlayListSubject$.next(this.currentPlayList);
       })
     );
   }
@@ -66,7 +66,7 @@ export class CloudService {
       tap(files => {
         this.allowGetSongs = false;
         this.currentPlayList = [...files];
-        this.currentPlayListSubject$.next(this.currentPlayList);
+        // this.currentPlayListSubject$.next(this.currentPlayList);
       })
     );
   }
@@ -85,6 +85,10 @@ export class CloudService {
 
   setStateToAllowGetSongs() {
     this.allowGetSongs = true;
+  }
+
+  updateCurrentPlayList() {
+    this.currentPlayListSubject$.next(this.currentPlayList);
   }
 
 

@@ -18,6 +18,7 @@ import { PopupBanComponent } from './pages/login/popup-ban/popup-ban.component';
 import { ListUsersComponent } from './pages/list-users/list-users.component';
 import { UploadCategoryComponent } from './pages/upload-category/upload-category.component';
 import { CategoriesComponent } from './pages/categories/categories.component';
+import { PlaylistPlayingComponent } from './pages/media-footer/playlist-playing/playlist-playing.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { CategoriesComponent } from './pages/categories/categories.component';
     PopupBanComponent,
     ListUsersComponent,
     UploadCategoryComponent,
-    CategoriesComponent
+    CategoriesComponent,
+    PlaylistPlayingComponent
   ],
   imports: [
     BrowserModule,
@@ -44,7 +46,8 @@ import { CategoriesComponent } from './pages/categories/categories.component';
   ],
   entryComponents: [
     PopupComponent,
-    PopupBanComponent
+    PopupBanComponent,
+    PlaylistPlayingComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

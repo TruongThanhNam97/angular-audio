@@ -9,7 +9,7 @@ export class AlbumService {
     private SERVER_URL: string;
     private SERVER_SOUND_URL: string;
 
-    private selectedAlbum: string;
+    selectedAlbum: string;
 
     constructor(private http: HttpClient) {
         this.SERVER_URL = environment.SERVER_URL;
@@ -24,11 +24,12 @@ export class AlbumService {
         return this.selectedAlbum;
     }
 
-    setSelectAlbum(username: string) {
-        this.selectedAlbum = username;
+    setSelectedAlbum(selectedAlbum: string) {
+        this.selectedAlbum = selectedAlbum;
     }
 
-    resetSelectAlbum() {
+    resetSelectedAlbum() {
         this.selectedAlbum = null;
     }
+
 }

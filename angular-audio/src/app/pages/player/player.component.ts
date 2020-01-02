@@ -21,9 +21,11 @@ export class PlayerComponent implements OnInit, OnDestroy {
   currentFile: any = {};
   destroySubscription$: Subject<boolean> = new Subject();
   loading = false;
-  username: string;
+  username: string = null;
   id: string;
-  categoryName: string;
+  categoryName: string = null;
+  selectedAlbum: string;
+  selectedCategory: string;
 
   constructor(
     private audioService: AudioService,
@@ -36,20 +38,27 @@ export class PlayerComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.selectedAlbum = this.album.getSelectedAlbum();
+    this.selectedCategory = this.categoryService.getSelectedCategory();
     this.route.params.subscribe(param => this.id = param.id);
     this.route.queryParams.subscribe(param => {
       if (param.username) {
         this.username = param.username;
         this.loadSongsByUserId(this.id);
+        if (!this.selectedAlbum && !this.selectedCategory) {
+          this.album.setSelectedAlbum(this.username);
+        }
       }
       if (param.categoryName) {
         this.categoryName = param.categoryName;
         this.loadSongsByCategoryId(this.id);
+        if (!this.selectedAlbum && !this.selectedCategory) {
+          this.categoryService.setSelectedCategory(this.categoryName);
+        }
       }
     });
     this.currentFile = this.audioService.getCurrentFile();
-    if (this.audioService.getPlayMode()
-      && this.username !== this.album.getSelectedAlbum() && this.categoryName !== this.categoryService.getSelectedCategory()) {
+    if (this.audioService.getPlayMode() && ((this.username !== this.selectedAlbum) || (this.categoryName !== this.selectedCategory))) {
       this.currentFile = {};
     }
     this.audioService.getCurrentFileSubject2().subscribe((v: any) => {
@@ -80,19 +89,21 @@ export class PlayerComponent implements OnInit, OnDestroy {
   }
 
   openFile(file, index) {
-    this.album.resetSelectAlbum();
-    this.categoryService.resetSelectedCategory();
     this.audioService.updatePlayMode();
-    this.currentFile = { index, file };
+    if (this.username && this.selectedAlbum === this.username || this.categoryName && this.selectedCategory === this.categoryName) {
+      this.currentFile = { index, file };
+    }
     this.audioService.updateCurrentFile1({ index, file });
     this.audioService.stop();
     this.audioService.playStream(file.url).subscribe();
-    if (this.username) {
-      this.album.setSelectAlbum(this.username);
-    }
-    if (this.categoryName) {
-      this.categoryService.setSelectedCategory(this.categoryName);
-    }
+    // if (this.username && this.selectedAlbum === this.username) {
+    //   this.categoryService.resetSelectedCategory();
+    //   this.album.setSelectedAlbum(this.username);
+    // }
+    // if (this.categoryName && this.selectedCategory === this.categoryName) {
+    //   this.album.resetSelectedAlbum();
+    //   this.categoryService.setSelectedCategory(this.categoryName);
+    // }
   }
 
   openDialog(file: any): void {
@@ -106,5 +117,19 @@ export class PlayerComponent implements OnInit, OnDestroy {
     if (this.categoryName) {
       this.router.navigate(['/categories']);
     }
+  }
+
+  update() {
+    if (this.username) {
+      this.categoryService.resetSelectedCategory();
+      this.album.setSelectedAlbum(this.username);
+      this.selectedAlbum = this.username;
+    }
+    if (this.categoryName) {
+      this.album.resetSelectedAlbum();
+      this.categoryService.setSelectedCategory(this.categoryName);
+      this.selectedCategory = this.categoryName;
+    }
+    this.cloudService.updateCurrentPlayList();
   }
 }

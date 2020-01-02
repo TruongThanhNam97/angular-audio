@@ -36,11 +36,12 @@ export class CategoryService {
         return this.selectedCategory;
     }
 
-    setSelectedCategory(categoryName: string) {
-        return this.selectedCategory = categoryName;
+    setSelectedCategory(selectedCategory) {
+        this.selectedCategory = selectedCategory;
     }
 
     resetSelectedCategory() {
         this.selectedCategory = null;
     }
+
 }
