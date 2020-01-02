@@ -55,7 +55,9 @@ export class AuthService {
             this.logOut();
         }, (expire - now) * 1000);
         localStorage.setItem('jwtToken', token);
-        localStorage.setItem('reup', this.currentUser.numberOfReup.toString());
+        if (!localStorage.getItem('reup')) {
+            localStorage.setItem('reup', this.currentUser.numberOfReup.toString());
+        }
         if (this.currentUser.username === 'superadmin') {
             this.router.navigate(['/upload-category']);
         } else {
