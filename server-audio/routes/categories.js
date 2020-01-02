@@ -52,6 +52,13 @@ router.post('/upload', passport.authenticate('jwt', { session: false }), upload.
     });
 });
 
+//@route    GET /categories/getCategories
+//@desc     Upload categories
+//@access   Public
+router.get('/getCategories', (req, res, next) => {
+    categoriesModel.find({}).then(categories => res.status(200).json(categories)).catch(err => res.status(400).json(err));
+});
+
 
 
 
