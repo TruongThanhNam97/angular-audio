@@ -1,0 +1,17 @@
+<ng-container *ngIf="categories && categories.length > 0; else elseTemplate">
+  <div class="container mt-5" style="display: flex;flex-wrap: wrap;">
+    <div (click)="onNavigateToSeeCategory(category)" class="wrap-category" *ngFor="let category of categories">
+      <img class="category-img"
+        src="{{ category.avatar ?  category.avatar : '../../../../../assets/apple-music-note-800x420.jpg'}}"
+        alt="{{category.name}}">
+      <div class="back-screen">
+      </div>
+      <div class="category-name">
+        {{ category.name}}
+      </div>
+    </div>
+  </div>
+</ng-container>
+<ng-template #elseTemplate>
+  <div class="container mt-3">No categories. Waiting admin to update cateogories...</div>
+</ng-template>

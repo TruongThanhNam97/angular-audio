@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { AudioService } from 'src/app/services/audio.service';
 import { CloudService } from 'src/app/services/cloud.service';
 import { StreamState } from '../../interfaces/stream-state';
+import { MatDialog, MatBottomSheet } from '@angular/material';
+import { PopupComponent } from '../player/popup/popup.component';
+import { PlaylistPlayingComponent } from './playlist-playing/playlist-playing.component';
 
 @Component({
   selector: 'app-media-footer',
@@ -18,16 +21,19 @@ export class MediaFooterComponent implements OnInit {
   loop = false;
   randomMode = false;
 
-  constructor(private audioService: AudioService, private cloudService: CloudService) { }
+  constructor(
+    private audioService: AudioService,
+    private cloudService: CloudService,
+    private dialog: MatDialog,
+    private bottomSheet: MatBottomSheet
+  ) { }
 
   ngOnInit() {
-    this.files = this.cloudService.getLocalSongs();
-    this.cloudService.getLocalSongsSubjects$().subscribe(
-      v => this.files = v
-    );
+    this.files = this.cloudService.getCurrentPlayList();
+    this.cloudService.getCurrentPlayListSubject().subscribe(files => this.files = [...files]);
     this.currentFile = this.audioService.getCurrentFile();
     this.audioService.getCurrentFileSubject1().subscribe(
-      v => this.currentFile = v
+      (file: any) => this.currentFile = { ...file }
     );
     this.audioService.getState().subscribe(state => {
       this.state = state;
@@ -35,7 +41,7 @@ export class MediaFooterComponent implements OnInit {
         && this.state.readableCurrentTime !== '' && this.state.readableDuration !== '') {
         if (this.randomMode) {
           this.random();
-        } else {
+        } else if (!this.loop) {
           this.next();
         }
       }
@@ -60,21 +66,18 @@ export class MediaFooterComponent implements OnInit {
     const index = this.currentFile.index + 1;
     if (index <= this.files.length - 1) {
       const file = this.files[index];
-      // this.openFile(file, index);
       this.audioService.updateCurrentFile2({ index, file });
     }
   }
   previous() {
     const index = this.currentFile.index - 1;
     const file = this.files[index];
-    // this.openFile(file, index);
     this.audioService.updateCurrentFile2({ index, file });
   }
 
   random() {
     const index = this.getRandomIndex(this.files.length);
     const file = this.files[index];
-    // this.openFile(file, index);
     this.audioService.updateCurrentFile2({ index, file });
   }
 
@@ -123,6 +126,14 @@ export class MediaFooterComponent implements OnInit {
   onChangeRandomMode() {
     this.audioService.updateLoop(false);
     this.randomMode = !this.randomMode;
+  }
+
+  onViewMore() {
+    this.dialog.open(PopupComponent, { data: this.currentFile.file });
+  }
+
+  onOpenPlaylist() {
+    this.bottomSheet.open(PlaylistPlayingComponent, { data: this.files });
   }
 
 }

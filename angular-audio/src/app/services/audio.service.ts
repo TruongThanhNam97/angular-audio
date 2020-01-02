@@ -38,6 +38,8 @@ export class AudioService {
   private currentFileSubject$2 = new Subject();
   private currentFileSubject$1 = new Subject();
 
+  private destroyGeneralSubject$: Subject<boolean> = new Subject();
+
   private volumeSubject$ = new Subject();
 
   private muteSubject$ = new Subject();
@@ -45,6 +47,14 @@ export class AudioService {
   private loopSubject$ = new Subject();
 
   constructor() { }
+
+  getDestroyGeneralSubject$() {
+    return this.destroyGeneralSubject$.asObservable();
+  }
+
+  triggerDestroyGeneral() {
+    this.destroyGeneralSubject$.next(true);
+  }
 
   getLoopSubject() {
     return this.loopSubject$.asObservable();
@@ -102,6 +112,10 @@ export class AudioService {
   updatePlayMode() {
     this.playMode = true;
     this.playModeSubject$.next(this.playMode);
+  }
+
+  getPlayMode() {
+    return this.playMode;
   }
 
 

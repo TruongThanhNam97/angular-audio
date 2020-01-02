@@ -4,6 +4,8 @@ import { AuthService } from './services/auth.service';
 import { DECODE_TOKEN } from './interfaces/decode-token';
 import decode from 'jwt-decode';
 import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
+import { UploadService } from './services/upload.service';
 
 @Component({
   selector: 'app-root',
@@ -14,12 +16,28 @@ export class AppComponent implements OnInit {
   playMode = false;
   isAuthenticated = false;
   currentUser: DECODE_TOKEN;
-  constructor(private audioSerive: AudioService, private authService: AuthService, private router: Router) { }
+  SERVER_URL_IMAGE: string;
+  queueProcessing = 0;
+  reupDectected: number;
+  constructor(
+    private audioSerive: AudioService,
+    private authService: AuthService,
+    private router: Router,
+    private uploadService: UploadService) {
+    this.SERVER_URL_IMAGE = environment.SERVER_URL_IMAGE;
+  }
   ngOnInit() {
     this.checkToken();
     this.audioSerive.getPlayModeSubject().subscribe((v: any) => this.playMode = v);
     this.authService.getIsAuthenticatedSubject().subscribe((isAuthenticated: boolean) => this.isAuthenticated = isAuthenticated);
-    this.authService.getCurrentUserSubject().subscribe((currentUser: DECODE_TOKEN) => this.currentUser = currentUser);
+    this.authService.getCurrentUserSubject().subscribe((currentUser: DECODE_TOKEN) => {
+      this.currentUser = currentUser;
+      if (this.currentUser) {
+        this.reupDectected = this.currentUser.numberOfReup;
+      }
+    });
+    this.uploadService.getQueueProcessingSubject().subscribe((queueProcessing: number) => this.queueProcessing = queueProcessing);
+    this.authService.getReupDectectedSubject().subscribe((numberOfReupDectected: number) => this.reupDectected = numberOfReupDectected);
   }
 
   checkToken() {
@@ -32,8 +50,10 @@ export class AppComponent implements OnInit {
         this.authService.setUpAfterLogin(token);
         this.isAuthenticated = true;
         this.currentUser = { ...user };
+        this.reupDectected = +localStorage.getItem('reup');
       } else {
         localStorage.removeItem('jwtToken');
+        localStorage.removeItem('reup');
       }
     }
   }
@@ -44,5 +64,9 @@ export class AppComponent implements OnInit {
 
   onUploadMusic() {
     this.router.navigate(['/upload']);
+  }
+
+  onUploadCateGory() {
+    this.router.navigate(['/upload-category']);
   }
 }

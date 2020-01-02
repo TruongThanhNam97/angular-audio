@@ -1,0 +1,41 @@
+.album-image {
+    position: relative;
+    overflow: hidden;
+}
+.wrap-card:hover .album-image::before {
+    opacity: 1;
+}
+.wrap-card:hover .album-image::after {
+    opacity: 1;
+}
+.wrap-card:hover img {
+    transform: scale(1.2);
+}
+.album-image img {
+    transition: 0.4s;
+}
+.album-image::before {
+    content: "";
+    width: 100%;
+    height: 100%;
+    background-color: #000000c2;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    transition: 0.4s;
+    z-index: 1;
+}
+.album-image::after {
+    font-family: FontAwesome;
+    content: "\f144";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    opacity: 0;
+    transition: 0.4s;
+    z-index: 2;
+    color: white;
+    font-size: 50px;
+}

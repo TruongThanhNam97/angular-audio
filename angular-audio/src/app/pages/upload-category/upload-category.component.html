@@ -1,0 +1,20 @@
+<div class="container mt-4">
+  <form [formGroup]="signForm" (submit)="onSubmit()">
+    <div class="form-group">
+      <input [ngClass]="{'is-invalid': signForm.get('name').touched && signForm.get('name').invalid}" type="text"
+        class="form-control" placeholder="Category name" formControlName="name">
+      <span class="invalid-feedback" *ngIf="signForm.get('name').touched && signForm.get('name').invalid">
+        <span *ngIf="signForm.get('name').hasError('required')">Category name field is required</span>
+      </span>
+    </div>
+    <div class="form-group">
+      <label for="btnFile" class="btn btn-info">Choose image</label>
+      <input (change)="onChange($event)" style="display: none;" type="file" class="form-control-file" id="btnFile">
+      <span
+        *ngIf="signForm.get('avatar').value && !signForm.get('avatar').hasError('invalid')">{{ signForm.get('avatar').value.name }}</span>
+      <span style="color: red;" *ngIf="signForm.get('avatar').value && signForm.get('avatar').hasError('invalid')">File
+        is invalid</span>
+    </div>
+    <button [disabled]="signForm.invalid" class="btn btn-success btn-block">Submit</button>
+  </form>
+</div>

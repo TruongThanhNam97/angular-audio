@@ -1,5 +1,7 @@
-<div class="media-footer" style="position: fixed;bottom: 0;width: 100%">
-  <mat-toolbar color="primary">
+<div class="media-footer">
+  <mat-toolbar color="primary" style="position: fixed;bottom: 0;width: 100%; height: 200px;">
+    <mat-toolbar-row class="media-action-bar">{{ currentFile.file.name +' - '+ currentFile.file.artist }}
+    </mat-toolbar-row>
     <mat-toolbar-row>
       {{ state?.readableCurrentTime }}
       <mat-slider class="time-slider" min="0" [max]="state?.duration" step="1" [value]="state?.currentTime"
@@ -38,6 +40,13 @@
         <mat-icon mat-list-icon>volume_off</mat-icon>
       </button>
       <mat-slider min="0" max="1" step="0.1" (input)="onVolumeChange($event)" [value]="volume"></mat-slider>
+      <button (click)="onViewMore()" mat-button matTooltip="View more">
+        <mat-icon mat-list-icon>more_horiz</mat-icon>
+      </button>
+      <button mat-button (click)="onOpenPlaylist()">
+        <mat-icon mat-list-icon>queue_music</mat-icon>
+        Playlist is playing ({{ files.length }})
+      </button>
     </mat-toolbar-row>
   </mat-toolbar>
 </div>

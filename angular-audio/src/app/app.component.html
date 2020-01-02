@@ -1,11 +1,23 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container">
-    <a class="navbar-brand" [routerLink]="['/']">Watermark</a>
+    <a *ngIf="currentUser?.username !== 'superadmin'" class="navbar-brand" [routerLink]="['/']">Watermark</a>
     <div class="collapse navbar-collapse" id="collapsibleNavId">
       <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-        <li class="nav-item">
-          <a class="nav-link" [routerLink]="['/songs']" [routerLinkActive]="'active'"
-            [routerLinkActiveOptions]="{ exact: true }">Home</a>
+        <li *ngIf="currentUser?.username === 'superadmin'" class="nav-item">
+          <a class="nav-link" [routerLink]="['/upload-category']" [routerLinkActive]="'active'"
+            [routerLinkActiveOptions]="{ exact: true }">UPLOAD CATEGORY</a>
+        </li>
+        <li *ngIf="currentUser?.username === 'superadmin'" class="nav-item">
+          <a class="nav-link" [routerLink]="['/edit-category']" [routerLinkActive]="'active'"
+            [routerLinkActiveOptions]="{ exact: true }">EDIT CATEGORY</a>
+        </li>
+        <li *ngIf="currentUser?.username !== 'superadmin'" class="nav-item">
+          <a class="nav-link" [routerLink]="['/albums']" [routerLinkActive]="'active'"
+            [routerLinkActiveOptions]="{ exact: true }">ALBUM</a>
+        </li>
+        <li *ngIf="currentUser?.username !== 'superadmin'" class="nav-item">
+          <a class="nav-link" [routerLink]="['/categories']" [routerLinkActive]="'active'"
+            [routerLinkActiveOptions]="{ exact: true }">CATEGORIES</a>
         </li>
       </ul>
     </div>
@@ -21,11 +33,31 @@
       </li>
     </ul>
 
+    <div class="notify-processing"
+      *ngIf="currentUser && (reupDectected === 1 || reupDectected === 2)">
+      Reup Detected: {{ reupDectected }}
+      <span class="pulse"></span>
+    </div>
+
+    <div class="notify-processing ml-4" *ngIf="queueProcessing > 0">
+      In processing {{ queueProcessing }}
+      <span class="pulse"></span>
+    </div>
+
     <div class="dropdown" *ngIf="currentUser">
       <div style="color: white;cursor: pointer;" class="nav-link dropdown-toggle" id="dropdownId" data-toggle="dropdown"
-        aria-haspopup="true" aria-expanded="false">Welcome {{currentUser.username}}</div>
+        aria-haspopup="true" aria-expanded="false">
+        <img style="width: 35px;height: 35px;border-radius: 50%;"
+          src="{{ currentUser['avatar'] ? SERVER_URL_IMAGE+currentUser['avatar'] : '../../../assets/profile-default.jpg' }}"
+          alt="{{ currentUser['username'] }}">
+        Welcome {{currentUser.username}}</div>
       <div class="dropdown-menu" aria-labelledby="dropdownId">
-        <div (click)="onUploadMusic()" class="dropdown-item dropItem" style="display: flex;align-items: center;">
+        <div *ngIf="currentUser?.username === 'superadmin'" (click)="onUploadCateGory()" class="dropdown-item dropItem"
+          style="display: flex;align-items: center;">
+          <mat-icon mat-list-icon class="mr-2">cloud_upload</mat-icon>Upload category
+        </div>
+        <div *ngIf="currentUser?.username !== 'superadmin'" (click)="onUploadMusic()" class="dropdown-item dropItem"
+          style="display: flex;align-items: center;">
           <mat-icon mat-list-icon class="mr-2">cloud_upload</mat-icon>Upload music
         </div>
         <div (click)="onLogout()" class="dropdown-item dropItem" style="display: flex;align-items: center;">
@@ -36,4 +68,5 @@
   </div>
 </nav>
 <router-outlet></router-outlet>
+<div style="height: 220px;"></div>
 <app-media-footer *ngIf="playMode"></app-media-footer>

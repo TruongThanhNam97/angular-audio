@@ -1,59 +1,50 @@
-<div class="container">
-  <div *ngIf="!uploader.isUploading">
-
-    <h4>Add songs</h4>
-
-    <div ng2FileDrop [ngClass]="{'nv-file-over': hasBaseDropZoneOver}" (fileOver)="fileOverBase($event)"
-      [uploader]="uploader" class="card bg-faded p-3 text-center mb-3 my-drop-zone">
-      <i class="fa fa-upload fa-3x"></i>
-      Drop Photos Here
-    </div>
-    <label for="multiFiles">
-      <div class="btn btn-success" style="cursor: pointer;">Choose Files</div>
-    </label>
-    <input id="multiFiles" type="file" ng2FileSelect [uploader]="uploader" multiple /><br />
-  </div>
-
-  <div style="margin-bottom: 40px" *ngIf="uploader?.queue?.length">
-
-    <h3>Upload queue</h3>
-    <p>Queue length: {{ uploader?.queue?.length }}</p>
-
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th width="50%">Name</th>
-          <th>Size</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let item of uploader.queue">
-          <td><strong>{{ item?.file?.name  }}</strong></td>
-          <td *ngIf="uploader.options.isHTML5" nowrap>{{ item?.file?.size/1024/1024 | number:'.2' }} MB</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <div>
-      <div>
-        Queue progress:
-        <div class="progress mb-4">
-          <div class="progress-bar" role="progressbar" [ngStyle]="{ 'width': uploader.progress + '%' }"></div>
+<ng-container *ngIf="categories && categories.length > 0; else elseTemplate">
+  <div class="container mt-3" *ngIf="signForm">
+    <form [formGroup]="signForm">
+      <div class="form-group">
+        <label for="btnFile" class="btn btn-success">Choose Files</label>
+        <input (change)="onSelectFile($event)" type="file" class="form-control-file" id="btnFile" style="display: none;"
+          multiple>
+      </div>
+      <div class="mb-4" *ngFor="let control of getControls();let i = index;" [formArrayName]="'arrSongs'">
+        <div [formGroupName]="i" style="text-align: right;">
+          <span>{{ control.value.file.name }}</span>
+          <div class="form-group">
+            <input [ngClass]="{'is-invalid': control.get('name').invalid}" type="text" class="form-control"
+              formControlName="name" placeholder="Song name">
+            <span class="invalid-feedback" *ngIf="control.get('name').invalid">
+              <span *ngIf="control.get('name').hasError('required')">Song name field is required</span>
+              <span *ngIf="control.get('name').hasError('maxlength')">Max length of song name field: 50</span>
+            </span>
+          </div>
+          <div class="form-group">
+            <input [ngClass]="{'is-invalid': control.get('artist').invalid}" type="text" class="form-control"
+              formControlName="artist" placeholder="Artist of song">
+            <span class="invalid-feedback" *ngIf="control.get('artist').invalid">
+              <span *ngIf="control.get('artist').hasError('required')">Artist field is required</span>
+              <span *ngIf="control.get('artist').hasError('maxlength')">Max length of artist field: 50</span>
+            </span>
+          </div>
+          <div class="form-group row">
+            <div class="col-5">
+              <select class="form-control" formControlName="categoryId">
+                <option *ngFor="let category of categories" [value]="category.id">{{ category.name }}</option>
+              </select>
+            </div>
+            <div class="col-7">
+              <span style="color: red;" *ngIf="control.get('file').hasError('invalid')">File is invalid</span>
+              <button type="button" (click)="onRemove(i)" class="btn btn-danger ml-3">Remove</button>
+              <button [disabled]="control.invalid" type="button" (click)="onSave(control,i)"
+                class="btn btn-info ml-3">Save file</button>
+            </div>
+          </div>
         </div>
       </div>
-      <button type="button" class="btn btn-success btn-s mr-2" (click)="uploader.uploadAll()"
-        [disabled]="!uploader.getNotUploadedItems().length">
-        <span class="fa fa-upload"></span> Upload
-      </button>
-      <button type="button" class="btn btn-warning btn-s mr-2" (click)="uploader.cancelAll()"
-        [disabled]="!uploader.isUploading">
-        <span class="fa fa-ban"></span> Cancel
-      </button>
-      <button type="button" class="btn btn-danger btn-s" (click)="uploader.clearQueue()"
-        [disabled]="!uploader.queue.length">
-        <span class="fa fa-trash"></span> Remove
-      </button>
-    </div>
-
+    </form>
   </div>
-</div>
+</ng-container>
+<ng-template #elseTemplate>
+  <div class="container mt-3">
+    No categories. Waiting admin to update cateogories...
+  </div>
+</ng-template>

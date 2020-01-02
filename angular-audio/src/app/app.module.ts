@@ -11,11 +11,15 @@ import { PlayerComponent } from './pages/player/player.component';
 import { FormUploadComponent } from './pages/form-upload/form-upload.component';
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component';
 import { MediaFooterComponent } from './pages/media-footer/media-footer.component';
-import { FileUploadModule } from 'ng2-file-upload';
 import { PopupComponent } from './pages/player/popup/popup.component';
 import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { PopupBanComponent } from './pages/login/popup-ban/popup-ban.component';
+import { ListUsersComponent } from './pages/list-users/list-users.component';
+import { UploadCategoryComponent } from './pages/upload-category/upload-category.component';
+import { CategoriesComponent } from './pages/categories/categories.component';
+import { PlaylistPlayingComponent } from './pages/media-footer/playlist-playing/playlist-playing.component';
+import { EditCategoryComponent } from './pages/edit-category/edit-category.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +31,12 @@ import { PopupBanComponent } from './pages/login/popup-ban/popup-ban.component';
     PopupComponent,
     LoginComponent,
     RegisterComponent,
-    PopupBanComponent
+    PopupBanComponent,
+    ListUsersComponent,
+    UploadCategoryComponent,
+    CategoriesComponent,
+    PlaylistPlayingComponent,
+    EditCategoryComponent
   ],
   imports: [
     BrowserModule,
@@ -35,12 +44,12 @@ import { PopupBanComponent } from './pages/login/popup-ban/popup-ban.component';
     BrowserAnimationsModule,
     MaterialModule,
     ReactiveFormsModule,
-    HttpClientModule,
-    FileUploadModule
+    HttpClientModule
   ],
   entryComponents: [
     PopupComponent,
-    PopupBanComponent
+    PopupBanComponent,
+    PlaylistPlayingComponent
   ],
   providers: [],
   bootstrap: [AppComponent]
