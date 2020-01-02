@@ -27,4 +27,8 @@ export class AlbumService {
     setSelectAlbum(username: string) {
         this.selectedAlbum = username;
     }
+
+    resetSelectAlbum() {
+        this.selectedAlbum = null;
+    }
 }

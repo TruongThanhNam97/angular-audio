@@ -10,6 +10,8 @@ export class CategoryService {
     SERVER_URL: string;
     SERVER_URL_IMAGE: string;
 
+    selectedCategory: string;
+
     constructor(private http: HttpClient) {
         this.SERVER_URL = environment.SERVER_URL;
         this.SERVER_URL_IMAGE = environment.SERVER_URL_IMAGE;
@@ -28,5 +30,17 @@ export class CategoryService {
                 return result;
             })
         );
+    }
+
+    getSelectedCategory() {
+        return this.selectedCategory;
+    }
+
+    setSelectedCategory(categoryName: string) {
+        return this.selectedCategory = categoryName;
+    }
+
+    resetSelectedCategory() {
+        this.selectedCategory = null;
     }
 }

@@ -21,8 +21,33 @@ export class CloudService {
     this.SERVER_URL_SOUND = environment.SERVER_URL_SOUND;
   }
 
-  getSongs(id: string) {
+  getSongsByUserId(id: string) {
     return this.http.get(this.SERVER_URL + 'getSongs', { params: { id } }).pipe(
+      map((files: any) => {
+        const result = files.reduce((acc, cur) => {
+          const obj = {
+            url: this.SERVER_URL_SOUND + cur.url,
+            name: cur.name,
+            artist: cur.artist,
+            nameToDownload: cur.url,
+            userId: cur.userId,
+            userName: cur.userName
+          };
+          acc.push(obj);
+          return acc;
+        }, []);
+        return result;
+      }),
+      tap(files => {
+        this.allowGetSongs = false;
+        this.currentPlayList = [...files];
+        this.currentPlayListSubject$.next(this.currentPlayList);
+      })
+    );
+  }
+
+  getSongsByCategoryId(id: string) {
+    return this.http.get(this.SERVER_URL + 'getSongsByCategory', { params: { id } }).pipe(
       map((files: any) => {
         const result = files.reduce((acc, cur) => {
           const obj = {

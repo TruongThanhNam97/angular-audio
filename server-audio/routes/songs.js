@@ -80,6 +80,14 @@ router.get("/getSongs", (req, res, next) => {
         .catch(err => res.status(404).json({ notfound: "Not found songs" }));
 });
 
+/* GET songs */
+router.get("/getSongsByCategory", (req, res, next) => {
+    songModel
+        .find({ categoryId: { $eq: req.query.id } })
+        .then(songs => res.status(200).json(songs))
+        .catch(err => res.status(404).json({ notfound: "Not found songs" }));
+});
+
 /* Download song */
 router.get("/download/song", (req, res, next) => {
     const file = path.resolve(__dirname, `../public/watermark-songs/${req.query.nameToDownload}`);

@@ -1,5 +1,6 @@
 <div class="container mt-5" style="display: flex;flex-wrap: wrap;justify-content: space-around;">
-  <div class="wrap-category" *ngFor="let category of categories">
+  <div [ngStyle]="{'border': selectedCategory && selectedCategory === category.name ? '5px solid #FF4081' : ''}"  
+  (click)="onNavigateToSeeCategory(category)" class="wrap-category" *ngFor="let category of categories">
     <img class="category-img"
       src="{{ category.avatar ?  category.avatar : '../../../../../assets/apple-music-note-800x420.jpg'}}"
       alt="{{category.name}}">

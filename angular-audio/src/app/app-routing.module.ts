@@ -19,6 +19,7 @@ const routes: Routes = [
   { path: 'albums/:id', component: PlayerComponent },
   { path: 'upload-category', component: UploadCategoryComponent },
   { path: 'categories', component: CategoriesComponent },
+  { path: 'categories/:id', component: PlayerComponent },
   { path: 'login', component: LoginComponent, canActivate: [LoginGuard] },
   { path: 'register', component: RegisterComponent, canActivate: [LoginGuard] },
   { path: 'page-not-found', component: PageNotFoundComponent },

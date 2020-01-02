@@ -1,7 +1,8 @@
 <div class="container">
-  <a [routerLink]="['/albums']" class="btn btn-secondary mt-1 mb-1">Back</a>
+  <div (click)="onBack()" class="btn btn-secondary mt-1 mb-1">Back</div>
   <mat-toolbar color="primary" class="main-toolbar">
-    <span>Albums of {{ username }}</span>
+    <span *ngIf="username">Albums of {{ username }}</span>
+    <span *ngIf="categoryName">Songs of {{ categoryName }}</span>
   </mat-toolbar>
   <div class="content" style="display: flex;margin-top: 50px;">
     <div class="logo" style="width: 20%;">

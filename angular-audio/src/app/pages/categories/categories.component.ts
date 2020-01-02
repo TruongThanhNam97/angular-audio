@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CategoryService } from 'src/app/services/categories.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-categories',
@@ -14,10 +15,16 @@ export class CategoriesComponent implements OnInit, OnDestroy {
 
   categories: any;
 
-  constructor(private categoriesService: CategoryService) { }
+  selectedCategory: string;
+
+  constructor(
+    private categoriesService: CategoryService,
+    private router: Router,
+    private route: ActivatedRoute) { }
 
   ngOnInit() {
     this.loadCategories();
+    this.selectedCategory = this.categoriesService.getSelectedCategory();
   }
 
   ngOnDestroy() {
@@ -28,6 +35,10 @@ export class CategoriesComponent implements OnInit, OnDestroy {
     this.categoriesService.getCategories().pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(categories => this.categories = [...categories]);
+  }
+
+  onNavigateToSeeCategory(category) {
+    this.router.navigate([category.id], { relativeTo: this.route, queryParams: { categoryName: category.name } });
   }
 
 }
