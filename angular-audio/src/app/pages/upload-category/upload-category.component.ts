@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
-import { UploadCategoryService } from 'src/app/services/upload-category.service';
+import { CategoryService } from 'src/app/services/categories.service';
 import { AlertifyService } from 'src/app/services/alertify.service';
 
 @Component({
@@ -17,7 +17,7 @@ export class UploadCategoryComponent implements OnInit, OnDestroy {
 
   destroySubscription$: Subject<boolean> = new Subject();
 
-  constructor(private uploadCategory: UploadCategoryService, private alertify: AlertifyService) { }
+  constructor(private uploadCategory: CategoryService, private alertify: AlertifyService) { }
 
   ngOnInit() {
     this.initializeForm();

@@ -17,6 +17,7 @@ import { RegisterComponent } from './pages/register/register.component';
 import { PopupBanComponent } from './pages/login/popup-ban/popup-ban.component';
 import { ListUsersComponent } from './pages/list-users/list-users.component';
 import { UploadCategoryComponent } from './pages/upload-category/upload-category.component';
+import { CategoriesComponent } from './pages/categories/categories.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { UploadCategoryComponent } from './pages/upload-category/upload-category
     RegisterComponent,
     PopupBanComponent,
     ListUsersComponent,
-    UploadCategoryComponent
+    UploadCategoryComponent,
+    CategoriesComponent
   ],
   imports: [
     BrowserModule,

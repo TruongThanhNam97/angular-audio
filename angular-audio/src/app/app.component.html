@@ -11,6 +11,10 @@
           <a class="nav-link" [routerLink]="['/albums']" [routerLinkActive]="'active'"
             [routerLinkActiveOptions]="{ exact: true }">ALBUM</a>
         </li>
+        <li *ngIf="currentUser?.username !== 'superadmin'" class="nav-item">
+          <a class="nav-link" [routerLink]="['/categories']" [routerLinkActive]="'active'"
+            [routerLinkActiveOptions]="{ exact: true }">CATEGORIES</a>
+        </li>
       </ul>
     </div>
 

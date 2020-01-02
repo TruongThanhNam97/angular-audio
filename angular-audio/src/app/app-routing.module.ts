@@ -9,6 +9,7 @@ import { LoginGuard } from './services/login-guard.service';
 import { RegisterComponent } from './pages/register/register.component';
 import { ListUsersComponent } from './pages/list-users/list-users.component';
 import { UploadCategoryComponent } from './pages/upload-category/upload-category.component';
+import { CategoriesComponent } from './pages/categories/categories.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/albums', pathMatch: 'full' },
@@ -17,6 +18,7 @@ const routes: Routes = [
   { path: 'albums', component: ListUsersComponent },
   { path: 'albums/:id', component: PlayerComponent },
   { path: 'upload-category', component: UploadCategoryComponent },
+  { path: 'categories', component: CategoriesComponent },
   { path: 'login', component: LoginComponent, canActivate: [LoginGuard] },
   { path: 'register', component: RegisterComponent, canActivate: [LoginGuard] },
   { path: 'page-not-found', component: PageNotFoundComponent },
