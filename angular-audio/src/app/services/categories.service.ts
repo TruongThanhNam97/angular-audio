@@ -26,7 +26,11 @@ export class CategoryService {
         return this.http.get(`${this.SERVER_URL}categories/getCategories`).pipe(
             map((categories: any) => {
                 const result = categories.map(category =>
-                    ({ id: category._id, name: category.name, avatar: `${this.SERVER_URL_IMAGE}${category.avatar}` }));
+                    ({
+                        id: category._id,
+                        name: category.name,
+                        avatar: category.avatar ? `${this.SERVER_URL_IMAGE}${category.avatar}` : null
+                    }));
                 return result;
             })
         );
