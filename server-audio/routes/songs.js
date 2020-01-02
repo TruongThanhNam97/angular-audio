@@ -39,7 +39,8 @@ var saveSongMetadata = (req, res, next) => {
         name: req.body.name,
         artist: req.body.artist,
         userId: req.user.id,
-        userName: req.user.username
+        userName: req.user.username,
+        categoryId: req.body.categoryId
     };
     return new songModel(newSong)
         .save()

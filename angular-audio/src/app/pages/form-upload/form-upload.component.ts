@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AlertifyService } from 'src/app/services/alertify.service';
 import { environment } from 'src/environments/environment';
 import { DECODE_TOKEN } from 'src/app/interfaces/decode-token';
@@ -7,8 +7,9 @@ import { MatDialog } from '@angular/material';
 import { PopupBanComponent } from '../login/popup-ban/popup-ban.component';
 import { FormGroup, FormArray, FormControl, Validators } from '@angular/forms';
 import { UploadService } from 'src/app/services/upload.service';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, take } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { CategoryService } from 'src/app/services/categories.service';
 
 @Component({
   selector: 'app-form-upload',
@@ -29,17 +30,25 @@ export class FormUploadComponent implements OnInit {
 
   typeFileMusic = ['mp3', 'MP3', 'wav', 'WAV'];
 
+  categories: any;
+
   constructor(
     private alertify: AlertifyService,
     private authService: AuthService,
     public dialog: MatDialog,
-    private uploadService: UploadService
+    private uploadService: UploadService,
+    private categoryService: CategoryService
   ) {
     this.SERVER_URL = environment.SERVER_URL;
   }
 
   ngOnInit() {
-    this.initializeForm();
+    this.categoryService.getCategories().pipe(
+      take(1)
+    ).subscribe(categories => {
+      this.categories = categories;
+      this.initializeForm();
+    });
   }
 
   onSelectFile(e) {
@@ -51,7 +60,8 @@ export class FormUploadComponent implements OnInit {
         const formGroup = new FormGroup({
           name: new FormControl(song.split('-')[0], [Validators.required, Validators.maxLength(50)]),
           artist: new FormControl(song.split('-')[1], [Validators.required, Validators.maxLength(50)]),
-          file: new FormControl(file, [this.validateFile.bind(this)])
+          file: new FormControl(file, [this.validateFile.bind(this)]),
+          categoryId: new FormControl(this.categories[0].id)
         });
         (this.signForm.get('arrSongs') as FormArray).push(formGroup);
       }
@@ -82,6 +92,7 @@ export class FormUploadComponent implements OnInit {
     formData.append('name', control.value.name);
     formData.append('artist', control.value.artist);
     formData.append('file', control.value.file);
+    formData.append('categoryId', control.value.categoryId);
     this.alertify.success('Waiting processing');
     this.uploadService.uploadSong(formData).pipe(
       takeUntil(this.destroySubscription$)

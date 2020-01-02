@@ -24,6 +24,11 @@
             <span *ngIf="control.get('artist').hasError('maxlength')">Max length of artist field: 50</span>
           </span>
         </div>
+        <div class="form-group">
+          <select class="form-control" formControlName="categoryId">
+            <option *ngFor="let category of categories" [value]="category.id">{{ category.name }}</option>
+          </select>
+        </div>
         <span style="color: red;" *ngIf="control.get('file').hasError('invalid')">File is invalid</span>
         <button type="button" (click)="onRemove(i)" class="btn btn-danger ml-3">Remove</button>
         <button [disabled]="control.invalid" type="button" (click)="onSave(control,i)" class="btn btn-info ml-3">Save
