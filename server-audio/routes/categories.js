@@ -52,11 +52,41 @@ router.post('/upload', passport.authenticate('jwt', { session: false }), upload.
     });
 });
 
+//@route    POST /categories/update
+//@desc     Update category
+//@access   Private
+router.post('/update', passport.authenticate('jwt', { session: false }), upload.any(), (req, res, next) => {
+    const { errors, isValid } = validateUploadCategories(req.body);
+    // Check Validation
+    if (!isValid) {
+        return res.status(400).json(errors);
+    }
+    const { id, name } = req.body;
+    if (req.files[0]) {
+        categoriesModel.findOneAndUpdate({ _id: id }, { $set: { name, avatar: req.files[0].filename } }, { new: true }).select('_id name avatar').then(
+            category => res.status(200).json(category)
+        );
+    } else {
+        categoriesModel.findOneAndUpdate({ _id: id }, { $set: { name } }, { new: true }).select('_id name avatar').then(
+            category => res.status(200).json(category)
+        );
+    }
+});
+
+//@route    POST /categories/delete
+//@desc     Delete category
+//@access   Private
+router.post('/delete', passport.authenticate('jwt', { session: false }), (req, res, next) => {
+    categoriesModel.findOneAndUpdate({ _id: req.body.id }, { $set: { status: 1 } }, { new: true }).select('_id name avatar').then(
+        category => res.status(200).json(category)
+    );
+});
+
 //@route    GET /categories/getCategories
 //@desc     Upload categories
 //@access   Public
 router.get('/getCategories', (req, res, next) => {
-    categoriesModel.find({}).then(categories => res.status(200).json(categories)).catch(err => res.status(400).json(err));
+    categoriesModel.find({ status: { $eq: 0 } }).select('_id name avatar').then(categories => res.status(200).json(categories)).catch(err => res.status(400).json(err));
 });
 
 

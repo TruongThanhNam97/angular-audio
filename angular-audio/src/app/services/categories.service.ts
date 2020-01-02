@@ -36,6 +36,30 @@ export class CategoryService {
         );
     }
 
+    updateCategory(data) {
+        return this.http.post(`${this.SERVER_URL}categories/update`, data, {
+            headers: {
+                Authorization: localStorage.getItem('jwtToken')
+            }
+        }).pipe(
+            map((category: any) => {
+                return {
+                    id: category._id,
+                    name: category.name,
+                    avatar: category.avatar ? `${this.SERVER_URL_IMAGE}${category.avatar}` : null
+                };
+            })
+        );
+    }
+
+    deleteCategory(data) {
+        return this.http.post(`${this.SERVER_URL}categories/delete`, data, {
+            headers: {
+                Authorization: localStorage.getItem('jwtToken')
+            }
+        });
+    }
+
     getSelectedCategory() {
         return this.selectedCategory;
     }

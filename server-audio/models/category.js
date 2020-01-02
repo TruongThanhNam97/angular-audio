@@ -8,6 +8,11 @@ const schema = new mongoose.Schema({
     avatar: {
         type: String,
         required: false
+    },
+    status: {
+        type: Number,
+        default: 0,
+        required: true
     }
 }, { versionKey: false });
 

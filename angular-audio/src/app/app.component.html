@@ -7,6 +7,10 @@
           <a class="nav-link" [routerLink]="['/upload-category']" [routerLinkActive]="'active'"
             [routerLinkActiveOptions]="{ exact: true }">UPLOAD CATEGORY</a>
         </li>
+        <li *ngIf="currentUser?.username === 'superadmin'" class="nav-item">
+          <a class="nav-link" [routerLink]="['/edit-category']" [routerLinkActive]="'active'"
+            [routerLinkActiveOptions]="{ exact: true }">EDIT CATEGORY</a>
+        </li>
         <li *ngIf="currentUser?.username !== 'superadmin'" class="nav-item">
           <a class="nav-link" [routerLink]="['/albums']" [routerLinkActive]="'active'"
             [routerLinkActiveOptions]="{ exact: true }">ALBUM</a>

@@ -19,6 +19,7 @@ import { ListUsersComponent } from './pages/list-users/list-users.component';
 import { UploadCategoryComponent } from './pages/upload-category/upload-category.component';
 import { CategoriesComponent } from './pages/categories/categories.component';
 import { PlaylistPlayingComponent } from './pages/media-footer/playlist-playing/playlist-playing.component';
+import { EditCategoryComponent } from './pages/edit-category/edit-category.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { PlaylistPlayingComponent } from './pages/media-footer/playlist-playing/
     ListUsersComponent,
     UploadCategoryComponent,
     CategoriesComponent,
-    PlaylistPlayingComponent
+    PlaylistPlayingComponent,
+    EditCategoryComponent
   ],
   imports: [
     BrowserModule,
