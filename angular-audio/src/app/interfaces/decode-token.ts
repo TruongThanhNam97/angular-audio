@@ -3,4 +3,5 @@ export interface DECODE_TOKEN {
     username: string;
     iat: number;
     exp: number;
+    numberOfReup: number;
 }

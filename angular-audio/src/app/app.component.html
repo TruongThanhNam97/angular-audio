@@ -29,6 +29,17 @@
       </li>
     </ul>
 
+    <div class="notify-processing"
+      *ngIf="currentUser && (reupDectected === 1 || reupDectected === 2)">
+      Reup Detected: {{ reupDectected }}
+      <span class="pulse"></span>
+    </div>
+
+    <div class="notify-processing ml-4" *ngIf="queueProcessing > 0">
+      In processing {{ queueProcessing }}
+      <span class="pulse"></span>
+    </div>
+
     <div class="dropdown" *ngIf="currentUser">
       <div style="color: white;cursor: pointer;" class="nav-link dropdown-toggle" id="dropdownId" data-toggle="dropdown"
         aria-haspopup="true" aria-expanded="false">

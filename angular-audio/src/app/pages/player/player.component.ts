@@ -5,7 +5,7 @@ import { StreamState } from '../../interfaces/stream-state';
 import { Subject } from 'rxjs';
 import { MatDialog } from '@angular/material';
 import { PopupComponent } from './popup/popup.component';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, take } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlbumService } from 'src/app/services/album.service';
 import { CategoryService } from 'src/app/services/categories.service';
@@ -38,6 +38,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.audioService.triggerDestroyGeneral();
     this.selectedAlbum = this.album.getSelectedAlbum();
     this.selectedCategory = this.categoryService.getSelectedCategory();
     this.route.params.subscribe(param => this.id = param.id);
@@ -61,7 +62,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     if (this.audioService.getPlayMode() && ((this.username !== this.selectedAlbum) || (this.categoryName !== this.selectedCategory))) {
       this.currentFile = {};
     }
-    this.audioService.getCurrentFileSubject2().subscribe((v: any) => {
+    this.audioService.getCurrentFileSubject2().pipe(takeUntil(this.audioService.getDestroyGeneralSubject$())).subscribe((v: any) => {
       this.openFile(v.file, v.index);
     });
   }

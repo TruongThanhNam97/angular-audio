@@ -21,9 +21,19 @@ export class AuthService {
     private isAuthenticatedSubject$: Subject<boolean> = new Subject();
     private currentUserSubject$: Subject<DECODE_TOKEN> = new Subject();
 
+    private reupDectectedSubject$: Subject<number> = new Subject();
+
     constructor(private http: HttpClient, private router: Router) {
         this.SERVER_URL = environment.SERVER_URL;
         this.SERVER_URL_SOUND = environment.SERVER_URL_SOUND;
+    }
+
+    getReupDectectedSubject() {
+        return this.reupDectectedSubject$.asObservable();
+    }
+
+    updateReupDectected(numberOfReupDectected: number) {
+        this.reupDectectedSubject$.next(numberOfReupDectected);
     }
 
     login(data: any) {
@@ -45,6 +55,7 @@ export class AuthService {
             this.logOut();
         }, (expire - now) * 1000);
         localStorage.setItem('jwtToken', token);
+        localStorage.setItem('reup', this.currentUser.numberOfReup.toString());
         if (this.currentUser.username === 'superadmin') {
             this.router.navigate(['/upload-category']);
         } else {
@@ -54,6 +65,7 @@ export class AuthService {
 
     logOut() {
         localStorage.removeItem('jwtToken');
+        localStorage.removeItem('reup');
         clearTimeout(this.tokenTimer);
         this.isAuthenticated = false;
         this.currentUser = null;

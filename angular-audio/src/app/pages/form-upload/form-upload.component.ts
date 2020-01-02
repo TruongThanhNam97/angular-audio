@@ -88,6 +88,7 @@ export class FormUploadComponent implements OnInit {
   }
 
   onSave(control: FormControl, index: number) {
+    this.uploadService.addQueueProcessing();
     const formData = new FormData();
     formData.append('name', control.value.name);
     formData.append('artist', control.value.artist);
@@ -100,8 +101,12 @@ export class FormUploadComponent implements OnInit {
       (res: any) => {
         const songName = res.song.name;
         this.alertify.success(`Song name: ${songName} has been processed`);
+        this.uploadService.minusQueueProcessing();
       },
       err => {
+        this.uploadService.minusQueueProcessing();
+        localStorage.setItem('reup', err.error.error.numberOfReup);
+        this.authService.updateReupDectected(err.error.error.numberOfReup);
         if (err.error.error.numberOfReup >= 3) {
           this.authService.logOut();
           this.dialog.open(PopupBanComponent, { data: 'Your account is banned' });

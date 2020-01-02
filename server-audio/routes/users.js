@@ -96,7 +96,8 @@ router.post('/login', (req, res, next) => {
         // User Matched
         const payload = {
           id: user.id,
-          username: user.username
+          username: user.username,
+          numberOfReup: user.numberOfReup
         };
         if (user.avatar) payload.avatar = user.avatar;
         // Sign Token
