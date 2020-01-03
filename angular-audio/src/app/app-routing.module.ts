@@ -26,11 +26,10 @@ const routes: Routes = [
       { path: 'edit-profile', component: EditProfileComponent },
     ]
   },
-  { path: 'songs', component: PlayerComponent },
   { path: 'albums', component: ListUsersComponent },
   { path: 'albums/:id', component: PlayerComponent },
-  { path: 'upload-category', component: UploadCategoryComponent },
-  { path: 'edit-category', component: EditCategoryComponent },
+  { path: 'upload-category', component: UploadCategoryComponent, canActivate: [AuthGuard] },
+  { path: 'edit-category', component: EditCategoryComponent, canActivate: [AuthGuard] },
   { path: 'categories', component: CategoriesComponent },
   { path: 'categories/:id', component: PlayerComponent },
   { path: 'login', component: LoginComponent, canActivate: [LoginGuard] },
