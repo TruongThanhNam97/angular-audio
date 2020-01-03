@@ -26,12 +26,14 @@ export class CloudService {
       map((files: any) => {
         const result = files.reduce((acc, cur) => {
           const obj = {
+            id: cur._id,
             url: this.SERVER_URL_SOUND + cur.url,
             name: cur.name,
             artist: cur.artist,
             nameToDownload: cur.url,
             userId: cur.userId,
-            userName: cur.userName
+            userName: cur.userName,
+            categoryId: cur.categoryId
           };
           acc.push(obj);
           return acc;
@@ -69,6 +71,35 @@ export class CloudService {
         // this.currentPlayListSubject$.next(this.currentPlayList);
       })
     );
+  }
+
+  updateSong(data) {
+    return this.http.post(`${this.SERVER_URL}edit-song`, data, {
+      headers: {
+        Authorization: localStorage.getItem('jwtToken')
+      }
+    }).pipe(
+      map((song: any) => {
+        return {
+          id: song._id,
+          url: this.SERVER_URL_SOUND + song.url,
+          name: song.name,
+          artist: song.artist,
+          nameToDownload: song.url,
+          userId: song.userId,
+          userName: song.userName,
+          categoryId: song.categoryId
+        };
+      })
+    );
+  }
+
+  deleteSong(data) {
+    return this.http.post(`${this.SERVER_URL}delete-song`, data, {
+      headers: {
+        Authorization: localStorage.getItem('jwtToken')
+      }
+    });
   }
 
   getCurrentPlayList() {

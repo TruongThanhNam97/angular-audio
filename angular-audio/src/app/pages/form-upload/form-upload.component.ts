@@ -70,7 +70,7 @@ export class FormUploadComponent implements OnInit {
   }
 
   validateFile(control: FormControl): { [key: string]: boolean } {
-    if (control) {
+    if (control.value) {
       const lastIndex = control.value.name.lastIndexOf('.');
       const typeFile = control.value.name.slice(lastIndex + 1);
       return this.typeFileMusic.includes(typeFile) ? null : { invalid: true };

@@ -6,7 +6,12 @@ const schema = new mongoose.Schema({
     artist: String,
     userId: String,
     userName: String,
-    categoryId: String
+    categoryId: String,
+    status: {
+        type: Number,
+        default: 0,
+        required: true
+    }
 }, { versionKey: false });
 
 module.exports = mongoose.model('songs', schema);

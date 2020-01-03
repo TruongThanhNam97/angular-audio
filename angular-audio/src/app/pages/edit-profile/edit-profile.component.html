@@ -11,6 +11,13 @@
       </span>
     </div>
     <div class="form-group">
+      <input [ngClass]="{'is-invalid': signForm.get('oldpassword').touched && signForm.get('oldpassword').invalid}"
+        type="text" class="form-control" placeholder="Old password" formControlName="oldpassword">
+      <span class="invalid-feedback" *ngIf="signForm.get('oldpassword').touched && signForm.get('oldpassword').invalid">
+        <span *ngIf="signForm.get('oldpassword').hasError('required')">Oldpassword field is required</span>
+      </span>
+    </div>
+    <div class="form-group">
       <input [ngClass]="{'is-invalid': signForm.get('password').touched && signForm.get('password').invalid}"
         type="password" class="form-control" placeholder="New password" formControlName="password">
       <span class="invalid-feedback" *ngIf="signForm.get('password').touched && signForm.get('password').invalid">

@@ -75,7 +75,8 @@ router.post("/upload", passport.authenticate('jwt', { session: false }), upload.
 /* GET songs */
 router.get("/getSongs", (req, res, next) => {
     songModel
-        .find({ userId: { $eq: req.query.id } })
+        .find({ userId: { $eq: req.query.id }, status: { $eq: 0 } })
+        .select('_id url name artist userId userName categoryId')
         .then(songs => res.status(200).json(songs))
         .catch(err => res.status(404).json({ notfound: "Not found songs" }));
 });
@@ -83,9 +84,36 @@ router.get("/getSongs", (req, res, next) => {
 /* GET songs */
 router.get("/getSongsByCategory", (req, res, next) => {
     songModel
-        .find({ categoryId: { $eq: req.query.id } })
+        .find({ categoryId: { $eq: req.query.id }, status: { $eq: 0 } })
+        .select('_id url name artist userId userName categoryId')
         .then(songs => res.status(200).json(songs))
         .catch(err => res.status(404).json({ notfound: "Not found songs" }));
+});
+
+/* UPDATE songs */
+router.post("/edit-song", passport.authenticate('jwt', { session: false }), (req, res, next) => {
+    const { id, name, artist, categoryId } = req.body;
+    songModel.findOne({ _id: id }).then(song => {
+        if (song.userId.toString() !== req.user._id.toString()) {
+            return res.status(401).json('Unauthorized');
+        }
+        songModel.findOneAndUpdate({ _id: id }, { $set: { name, artist, categoryId } }, { new: true })
+            .select('_id url name artist userId userName categoryId')
+            .then(song => res.status(200).json(song)).catch(err => console.log(err));
+    });
+});
+
+/* DELETE songs */
+router.post("/delete-song", passport.authenticate('jwt', { session: false }), (req, res, next) => {
+    const { id } = req.body;
+    songModel.findOne({ _id: id }).then(song => {
+        if (song.userId.toString() !== req.user._id.toString()) {
+            return res.status(401).json('Unauthorized');
+        }
+        songModel.findOneAndUpdate({ _id: id }, { $set: { status: 1 } }, { new: true })
+            .select('_id url name artist userId userName categoryId')
+            .then(song => res.status(200).json({})).catch(err => console.log(err));
+    });
 });
 
 /* Download song */

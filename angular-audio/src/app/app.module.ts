@@ -22,6 +22,7 @@ import { PlaylistPlayingComponent } from './pages/media-footer/playlist-playing/
 import { EditCategoryComponent } from './pages/edit-category/edit-category.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { EditProfileComponent } from './pages/edit-profile/edit-profile.component';
+import { EditSongsComponent } from './pages/edit-songs/edit-songs.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { EditProfileComponent } from './pages/edit-profile/edit-profile.componen
     PlaylistPlayingComponent,
     EditCategoryComponent,
     DashboardComponent,
-    EditProfileComponent
+    EditProfileComponent,
+    EditSongsComponent
   ],
   imports: [
     BrowserModule,

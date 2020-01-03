@@ -124,34 +124,46 @@ router.post('/update', passport.authenticate('jwt', { session: false }), upload.
   if (!isValid) {
     return res.status(400).json(errors);
   }
-  const { id, oldusername, username, password } = req.body;
+  const { id, oldusername, username, password, oldpassword } = req.body;
+  console.log(req.user);
   userModel.findOne({ username: username }).then(user => {
+    if (!user) {
+      return res.status(404).json('User Not Found');
+    }
     if (user && user.username !== oldusername) {
       errors.username = 'Username already exists';
-      res.status(400).json(errors);
+      return res.status(400).json(errors);
+    }
+    if (user._id.toString() !== req.user._id.toString()) {
+      return res.status(401).json('Unauthorized');
     } else {
-      const user = { username, password };
-      if (req.files[0]) user.avatar = req.files[0].filename;
-      bcrypt.genSalt(10, (err, salt) => {
-        bcrypt.hash(user.password, salt, (err, hash) => {
-          if (err) throw err;
-          user.password = hash;
-          userModel.findOneAndUpdate({ _id: id }, { $set: user }, { new: true })
-            .then(user => {
-              const payload = {
-                id: user.id,
-                username: user.username,
-                numberOfReup: user.numberOfReup
-              };
-              if (user.avatar) payload.avatar = user.avatar;
-              // Sign Token
-              jwt.sign(payload, 'namkhuong', { expiresIn: 3600 }, (err, token) => {
-                res.status(200).json({
-                  success: true,
-                  token: 'Bearer ' + token
+      bcrypt.compare(oldpassword, req.user.password).then(isMatch => {
+        if (!isMatch) {
+          return res.status(400).json({ password: 'Old password is incorrect' });
+        }
+        const user = { username, password };
+        if (req.files[0]) user.avatar = req.files[0].filename;
+        bcrypt.genSalt(10, (err, salt) => {
+          bcrypt.hash(user.password, salt, (err, hash) => {
+            if (err) throw err;
+            user.password = hash;
+            userModel.findOneAndUpdate({ _id: id }, { $set: user }, { new: true })
+              .then(user => {
+                const payload = {
+                  id: user.id,
+                  username: user.username,
+                  numberOfReup: user.numberOfReup
+                };
+                if (user.avatar) payload.avatar = user.avatar;
+                // Sign Token
+                jwt.sign(payload, 'namkhuong', { expiresIn: 3600 }, (err, token) => {
+                  res.status(200).json({
+                    success: true,
+                    token: 'Bearer ' + token
+                  });
                 });
-              });
-            }).catch(err => console.log(err));
+              }).catch(err => console.log(err));
+          });
         });
       });
     }

@@ -36,6 +36,7 @@ export class EditProfileComponent implements OnInit, OnDestroy {
     this.signForm = new FormGroup({
       id: new FormControl(this.currentUser.id, [Validators.required]),
       oldusername: new FormControl(this.currentUser.username, [Validators.required]),
+      oldpassword: new FormControl(null, [Validators.required]),
       username: new FormControl(this.currentUser.username, [Validators.required, Validators.minLength(10), Validators.maxLength(30)]),
       password: new FormControl(null, [Validators.required, Validators.minLength(6), Validators.maxLength(30)]),
       password2: new FormControl(null, [Validators.required]),
@@ -64,6 +65,7 @@ export class EditProfileComponent implements OnInit, OnDestroy {
     const formData = new FormData();
     formData.append('id', this.signForm.value.id);
     formData.append('oldusername', this.signForm.value.oldusername);
+    formData.append('oldpassword', this.signForm.value.oldpassword);
     formData.append('username', this.signForm.value.username);
     formData.append('password', this.signForm.value.password);
     formData.append('password2', this.signForm.value.password2);

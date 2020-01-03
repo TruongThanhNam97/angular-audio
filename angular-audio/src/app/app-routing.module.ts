@@ -13,6 +13,7 @@ import { CategoriesComponent } from './pages/categories/categories.component';
 import { EditCategoryComponent } from './pages/edit-category/edit-category.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { EditProfileComponent } from './pages/edit-profile/edit-profile.component';
+import { EditSongsComponent } from './pages/edit-songs/edit-songs.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/albums', pathMatch: 'full' },
@@ -24,6 +25,7 @@ const routes: Routes = [
     children: [
       { path: 'upload', component: FormUploadComponent },
       { path: 'edit-profile', component: EditProfileComponent },
+      { path: 'edit-songs', component: EditSongsComponent },
     ]
   },
   { path: 'albums', component: ListUsersComponent },
