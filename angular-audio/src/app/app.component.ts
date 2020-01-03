@@ -66,6 +66,10 @@ export class AppComponent implements OnInit {
     this.router.navigate(['/upload']);
   }
 
+  onDashBoard() {
+    this.router.navigate(['/dashboard/upload']);
+  }
+
   onUploadCateGory() {
     this.router.navigate(['/upload-category']);
   }

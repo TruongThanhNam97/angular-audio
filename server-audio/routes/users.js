@@ -115,4 +115,47 @@ router.post('/login', (req, res, next) => {
   });
 });
 
+//@route    POST /users/update
+//@desc     Update user
+//@access   Private
+router.post('/update', passport.authenticate('jwt', { session: false }), upload.any(), (req, res, next) => {
+  const { errors, isValid } = validateRegisterInput(req.body);
+  // Check Validation
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+  const { id, oldusername, username, password } = req.body;
+  userModel.findOne({ username: username }).then(user => {
+    if (user && user.username !== oldusername) {
+      errors.username = 'Username already exists';
+      res.status(400).json(errors);
+    } else {
+      const user = { username, password };
+      if (req.files[0]) user.avatar = req.files[0].filename;
+      bcrypt.genSalt(10, (err, salt) => {
+        bcrypt.hash(user.password, salt, (err, hash) => {
+          if (err) throw err;
+          user.password = hash;
+          userModel.findOneAndUpdate({ _id: id }, { $set: user }, { new: true })
+            .then(user => {
+              const payload = {
+                id: user.id,
+                username: user.username,
+                numberOfReup: user.numberOfReup
+              };
+              if (user.avatar) payload.avatar = user.avatar;
+              // Sign Token
+              jwt.sign(payload, 'namkhuong', { expiresIn: 3600 }, (err, token) => {
+                res.status(200).json({
+                  success: true,
+                  token: 'Bearer ' + token
+                });
+              });
+            }).catch(err => console.log(err));
+        });
+      });
+    }
+  });
+});
+
 module.exports = router;

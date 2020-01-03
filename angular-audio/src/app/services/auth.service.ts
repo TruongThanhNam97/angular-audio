@@ -6,6 +6,7 @@ import decode from 'jwt-decode';
 import { DECODE_TOKEN } from '../interfaces/decode-token';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root'
@@ -40,6 +41,14 @@ export class AuthService {
         return this.http.post<any>(`${this.SERVER_URL}users/login`, data);
     }
 
+    update(data: any) {
+        return this.http.post<any>(`${this.SERVER_URL}users/update`, data, {
+            headers: {
+                Authorization: localStorage.getItem('jwtToken')
+            }
+        });
+    }
+
     register(data: any) {
         return this.http.post<any>(`${this.SERVER_URL}users/register`, data);
     }
@@ -65,6 +74,23 @@ export class AuthService {
         }
     }
 
+    setUpAfterUpdate(token: string) {
+        localStorage.removeItem('jwtToken');
+        localStorage.removeItem('reup');
+        clearTimeout(this.tokenTimer);
+        this.currentUser = decode(token);
+        this.currentUserSubject$.next(this.currentUser);
+        const expire = this.currentUser.exp;
+        const now = Math.round(new Date().getTime() / 1000);
+        this.tokenTimer = setTimeout(() => {
+            this.logOut();
+        }, (expire - now) * 1000);
+        localStorage.setItem('jwtToken', token);
+        if (!localStorage.getItem('reup')) {
+            localStorage.setItem('reup', this.currentUser.numberOfReup.toString());
+        }
+    }
+
     logOut() {
         localStorage.removeItem('jwtToken');
         localStorage.removeItem('reup');
@@ -86,5 +112,9 @@ export class AuthService {
 
     getCurrentUserSubject() {
         return this.currentUserSubject$.asObservable();
+    }
+
+    getCurrentUser() {
+        return this.currentUser;
     }
 }

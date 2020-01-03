@@ -33,8 +33,7 @@
       </li>
     </ul>
 
-    <div class="notify-processing"
-      *ngIf="currentUser && (reupDectected === 1 || reupDectected === 2)">
+    <div class="notify-processing" *ngIf="currentUser && (reupDectected === 1 || reupDectected === 2)">
       Reup Detected: {{ reupDectected }}
       <span class="pulse"></span>
     </div>
@@ -56,9 +55,9 @@
           style="display: flex;align-items: center;">
           <mat-icon mat-list-icon class="mr-2">cloud_upload</mat-icon>Upload category
         </div>
-        <div *ngIf="currentUser?.username !== 'superadmin'" (click)="onUploadMusic()" class="dropdown-item dropItem"
+        <div *ngIf="currentUser?.username !== 'superadmin'" (click)="onDashBoard()" class="dropdown-item dropItem"
           style="display: flex;align-items: center;">
-          <mat-icon mat-list-icon class="mr-2">cloud_upload</mat-icon>Upload music
+          <mat-icon mat-list-icon class="mr-2">person</mat-icon>Dashboard
         </div>
         <div (click)="onLogout()" class="dropdown-item dropItem" style="display: flex;align-items: center;">
           <mat-icon mat-list-icon class="mr-2">exit_to_app</mat-icon>Log out

@@ -11,10 +11,21 @@ import { ListUsersComponent } from './pages/list-users/list-users.component';
 import { UploadCategoryComponent } from './pages/upload-category/upload-category.component';
 import { CategoriesComponent } from './pages/categories/categories.component';
 import { EditCategoryComponent } from './pages/edit-category/edit-category.component';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { EditProfileComponent } from './pages/edit-profile/edit-profile.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/albums', pathMatch: 'full' },
-  { path: 'upload', component: FormUploadComponent, canActivate: [AuthGuard] },
+  {
+    path: 'dashboard',
+    component: DashboardComponent,
+    canActivate: [AuthGuard],
+    canActivateChild: [AuthGuard],
+    children: [
+      { path: 'upload', component: FormUploadComponent },
+      { path: 'edit-profile', component: EditProfileComponent },
+    ]
+  },
   { path: 'songs', component: PlayerComponent },
   { path: 'albums', component: ListUsersComponent },
   { path: 'albums/:id', component: PlayerComponent },

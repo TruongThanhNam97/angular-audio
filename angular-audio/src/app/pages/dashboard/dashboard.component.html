@@ -1,0 +1,23 @@
+<div class="container">
+  <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+    <li class="nav-item">
+      <a style="display: flex; align-items: center;" class="nav-link active" id="pills-home-tab" data-toggle="pill"
+        [routerLink]="['upload']" role="tab" aria-controls="pills-home" aria-selected="true">
+        <mat-icon mat-list-icon class="mr-2">cloud_upload</mat-icon>Upload songs
+      </a>
+    </li>
+    <li class="nav-item">
+      <a style="display: flex; align-items: center;" class="nav-link" id="pills-profile-tab" data-toggle="pill" [routerLink]="['edit-profile']" role="tab"
+        aria-controls="pills-profile" aria-selected="false">
+        <mat-icon mat-list-icon class="mr-2">person</mat-icon>Edit profile
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab"
+        aria-controls="pills-contact" aria-selected="false">Contact</a>
+    </li>
+  </ul>
+  <div class="tab-content" id="pills-tabContent">
+    <router-outlet></router-outlet>
+  </div>
+</div>

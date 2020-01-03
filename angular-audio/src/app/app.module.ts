@@ -20,6 +20,8 @@ import { UploadCategoryComponent } from './pages/upload-category/upload-category
 import { CategoriesComponent } from './pages/categories/categories.component';
 import { PlaylistPlayingComponent } from './pages/media-footer/playlist-playing/playlist-playing.component';
 import { EditCategoryComponent } from './pages/edit-category/edit-category.component';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { EditProfileComponent } from './pages/edit-profile/edit-profile.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +38,9 @@ import { EditCategoryComponent } from './pages/edit-category/edit-category.compo
     UploadCategoryComponent,
     CategoriesComponent,
     PlaylistPlayingComponent,
-    EditCategoryComponent
+    EditCategoryComponent,
+    DashboardComponent,
+    EditProfileComponent
   ],
   imports: [
     BrowserModule,
