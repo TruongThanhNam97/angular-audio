@@ -55,7 +55,11 @@ export class UploadCategoryComponent implements OnInit, OnDestroy {
     formData.append('avatar', this.signForm.value.avatar);
     this.uploadCategory.upload(formData).subscribe(
       _ => this.alertify.success('Upload successfully'),
-      _ => this.alertify.error('Failed'),
+      err => {
+        if ( err.error.name ) {
+          this.alertify.error(err.error.name);
+        }
+      },
       () => this.signForm.reset()
     );
   }

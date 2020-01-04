@@ -87,7 +87,8 @@ export class ManageSongsComponent implements OnInit, OnDestroy {
 
   getCategoryNameById(categoryId) {
     if (this.categories) {
-      return this.categories.find(category => category.id === categoryId).name;
+      return this.categories.find(category => category.id === categoryId)
+        ? this.categories.find(category => category.id === categoryId).name : 'No category';
     }
   }
 

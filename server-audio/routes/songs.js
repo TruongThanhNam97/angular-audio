@@ -59,9 +59,10 @@ var watermark = (req, res, next) => {
                     userModel.findById({ _id: req.user.id }).then(user => {
                         let numberOfReup = user.numberOfReup;
                         numberOfReup++;
-                        userModel.findOneAndUpdate({ _id: req.user.id }, { $set: { numberOfReup } }, { new: true }).then(updatedUser => {
-                            res.status(400).json({ error: { err: `${req.body.name}: Reup Detected`, numberOfReup: updatedUser.numberOfReup } });
-                        });
+                        userModel.findOneAndUpdate({ _id: req.user.id }, { $set: { numberOfReup } }, { new: true })
+                            .then(updatedUser => {
+                                res.status(400).json({ error: { err: `${req.body.name}: Reup Detected`, numberOfReup: updatedUser.numberOfReup } });
+                            });
                     });
                 }
             )

@@ -31,8 +31,11 @@ var upload = multer({
 
 //@route    POST /categories/upload
 //@desc     Upload categories
-//@access   Private
+//@access   Private - Only Admin
 router.post('/upload', passport.authenticate('jwt', { session: false }), upload.any(), (req, res, next) => {
+    if (req.user.username !== 'superadmin') {
+        return res.status(401).json('Unauthorized');
+    }
     const { errors, isValid } = validateUploadCategories(req.body);
     // Check Validation
     if (!isValid) {
@@ -47,15 +50,20 @@ router.post('/upload', passport.authenticate('jwt', { session: false }), upload.
             const category = { name };
             if (req.files[0]) category.avatar = req.files[0].filename;
             const newCategory = new categoriesModel(category);
-            newCategory.save().then(category => res.status(200).json(category)).catch(err => console.log(err));
+            newCategory.save()
+                .then(category => res.status(200).json(category))
+                .catch(err => console.log(err));
         }
     });
 });
 
 //@route    POST /categories/update
 //@desc     Update category
-//@access   Private
+//@access   Private - Only Admin
 router.post('/update', passport.authenticate('jwt', { session: false }), upload.any(), (req, res, next) => {
+    if (req.user.username !== 'superadmin') {
+        return res.status(401).json('Unauthorized')
+    }
     const { errors, isValid } = validateUploadCategories(req.body);
     // Check Validation
     if (!isValid) {
@@ -63,34 +71,37 @@ router.post('/update', passport.authenticate('jwt', { session: false }), upload.
     }
     const { id, name } = req.body;
     if (req.files[0]) {
-        categoriesModel.findOneAndUpdate({ _id: id }, { $set: { name, avatar: req.files[0].filename } }, { new: true }).select('_id name avatar').then(
-            category => res.status(200).json(category)
-        );
+        categoriesModel.findOneAndUpdate({ _id: id }, { $set: { name, avatar: req.files[0].filename } }, { new: true })
+            .select('_id name avatar')
+            .then(ategory => res.status(200).json(category));
     } else {
-        categoriesModel.findOneAndUpdate({ _id: id }, { $set: { name } }, { new: true }).select('_id name avatar').then(
-            category => res.status(200).json(category)
-        );
+        categoriesModel.findOneAndUpdate({ _id: id }, { $set: { name } }, { new: true })
+            .select('_id name avatar')
+            .then(category => res.status(200).json(category));
     }
 });
 
 //@route    POST /categories/delete
 //@desc     Delete category
-//@access   Private
+//@access   Private - Only Admin
 router.post('/delete', passport.authenticate('jwt', { session: false }), (req, res, next) => {
-    categoriesModel.findOneAndUpdate({ _id: req.body.id }, { $set: { status: 1 } }, { new: true }).select('_id name avatar').then(
-        category => res.status(200).json(category)
-    );
+    if (req.user.username !== 'superadmin') {
+        return res.status(401).json('Unauthorized');
+    }
+    categoriesModel.findOneAndUpdate({ _id: req.body.id }, { $set: { status: 1 } }, { new: true })
+        .select('_id name avatar')
+        .then(category => res.status(200).json(category));
 });
 
 //@route    GET /categories/getCategories
 //@desc     Upload categories
 //@access   Public
 router.get('/getCategories', (req, res, next) => {
-    categoriesModel.find({ status: { $eq: 0 } }).select('_id name avatar').then(categories => res.status(200).json(categories)).catch(err => res.status(400).json(err));
+    categoriesModel.find({ status: { $eq: 0 } })
+        .select('_id name avatar')
+        .then(categories => res.status(200).json(categories))
+        .catch(err => res.status(400).json(err));
 });
-
-
-
 
 
 module.exports = router;

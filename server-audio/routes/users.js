@@ -78,7 +78,9 @@ router.post('/register', upload.any(), (req, res, next) => {
         bcrypt.hash(newUser.password, salt, (err, hash) => {
           if (err) throw err;
           newUser.password = hash;
-          newUser.save().then(user => res.status(200).json(user)).catch(err => console.log(err));
+          newUser.save()
+            .then(user => res.status(200).json(user))
+            .catch(err => console.log(err));
         });
       });
     }
@@ -141,7 +143,6 @@ router.post('/update', passport.authenticate('jwt', { session: false }), upload.
     return res.status(400).json(errors);
   }
   const { id, oldusername, username, password, oldpassword } = req.body;
-  console.log(req.user);
   userModel.findOne({ username: username }).then(user => {
     if (!user) {
       return res.status(404).json('User Not Found');
