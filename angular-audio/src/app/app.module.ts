@@ -26,6 +26,7 @@ import { EditSongsComponent } from './pages/edit-songs/edit-songs.component';
 import { ManageCategoriesComponent } from './pages/manage-categories/manage-categories.component';
 import { ManageSongsComponent } from './pages/manage-songs/manage-songs.component';
 import { PopupEditSongComponent } from './pages/manage-songs/popup-edit-song/popup-edit-song.component';
+import { ManageUserComponent } from './pages/manage-user/manage-user.component';
 
 @NgModule({
   declarations: [
@@ -48,7 +49,8 @@ import { PopupEditSongComponent } from './pages/manage-songs/popup-edit-song/pop
     EditSongsComponent,
     ManageCategoriesComponent,
     ManageSongsComponent,
-    PopupEditSongComponent
+    PopupEditSongComponent,
+    ManageUserComponent
   ],
   imports: [
     BrowserModule,

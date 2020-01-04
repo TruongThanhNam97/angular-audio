@@ -37,7 +37,23 @@ var upload = multer({
 //@desc     GET all users
 //@access   Public
 router.get('/', (req, res, next) => {
-  userModel.find({ numberOfReup: { $lt: 3 }, username: { $ne: 'superadmin' } }).select('username avatar').then(users => res.status(200).json(users)).catch(() => res.status(404).json({ notFound: 'Users not found' }));
+  userModel.find({ numberOfReup: { $lt: 3 }, username: { $ne: 'superadmin' } })
+    .select('username avatar')
+    .then(users => res.status(200).json(users))
+    .catch(() => res.status(404).json({ notFound: 'Users not found' }));
+});
+
+//@route    GET /users/getAllUsers
+//@desc     GET all users
+//@access   Private
+router.get('/getAllUsers', passport.authenticate('jwt', { session: false }), (req, res, next) => {
+  if (req.user.username !== 'superadmin') {
+    return res.status(401).json('Unauthorized');
+  }
+  userModel.find({ username: { $ne: 'superadmin' } })
+    .select('_id username avatar numberOfReup')
+    .then(users => res.status(200).json(users))
+    .catch(() => res.status(404).json({ notFound: 'Users not found' }));
 });
 
 //@route    POST /users/register
@@ -168,6 +184,56 @@ router.post('/update', passport.authenticate('jwt', { session: false }), upload.
       });
     }
   });
+});
+
+//@route    POST /users/unban
+//@desc     Unban user
+//@access   Private
+router.post('/unban', passport.authenticate('jwt', { session: false }), upload.any(), (req, res, next) => {
+  if (req.user.username !== 'superadmin') {
+    return res.status(401).json('Unauthorized');
+  }
+  const { id } = req.body;
+  userModel.findOne({ _id: id }).then(user => {
+    if (!user) {
+      return res.status(404).json('User not found');
+    }
+    if (user.username === 'superadmin') {
+      return res.status(401).json('Not allow');
+    }
+    if (user.numberOfReup !== 3) {
+      return res.status(400).json('User have not banned yet');
+    }
+    userModel.findOneAndUpdate({ _id: id }, { $set: { numberOfReup: 2 } }, { new: true })
+      .select('_id username avatar numberOfReup')
+      .then(user => res.status(200).json(user))
+      .catch(err => console.log(err));
+  }).catch(err => console.log(err));
+});
+
+//@route    POST /users/ban
+//@desc     Ban user
+//@access   Private
+router.post('/ban', passport.authenticate('jwt', { session: false }), upload.any(), (req, res, next) => {
+  if (req.user.username !== 'superadmin') {
+    return res.status(401).json('Unauthorized');
+  }
+  const { id } = req.body;
+  userModel.findOne({ _id: id }).then(user => {
+    if (!user) {
+      return res.status(404).json('User not found');
+    }
+    if (user.numberOfReup === 3) {
+      return res.status(400).json('User have already banned');
+    }
+    if (user.username === 'superadmin') {
+      return res.status(401).json('Not allow');
+    }
+    userModel.findOneAndUpdate({ _id: id }, { $set: { numberOfReup: 3 } }, { new: true })
+      .select('_id username avatar numberOfReup')
+      .then(user => res.status(200).json(user))
+      .catch(err => console.log(err));
+  }).catch(err => console.log(err));
 });
 
 module.exports = router;

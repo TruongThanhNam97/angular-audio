@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col-12">
       <ng-container *ngIf="mySongs && mySongs.length >0; else elseTemplate1">
-        <table class="table table-striped table-inverse table-bordered table-hover">
+        <table class="table table-striped table-inverse table-bordered table-hover" style="text-align: center;">
           <thead class="thead-inverse">
             <tr>
               <th>Song Name</th>
@@ -13,11 +13,11 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let song of mySongs; let i = index;"
-              [ngStyle]="{'background-color': !song.categoryId ? '#17a2b8' : ''}">
+            <tr *ngFor="let song of mySongs; let i = index;">
               <td>{{ song.name }}</td>
               <td>{{ song.artist }}</td>
-              <td>{{   song.categoryId ? getCategoryNameById(song.categoryId) : 'No category' }}</td>
+              <td [ngStyle]="{'background-color': !song.categoryId ? '#ffc107' : ''}">
+                {{ song.categoryId ? getCategoryNameById(song.categoryId) : 'No category' }}</td>
               <td>{{ song.userName }}</td>
               <td>
                 <button class="btn btn-warning mr-2" (click)="onEdit(song)">

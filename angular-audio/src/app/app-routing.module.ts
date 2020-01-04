@@ -16,6 +16,7 @@ import { EditProfileComponent } from './pages/edit-profile/edit-profile.componen
 import { EditSongsComponent } from './pages/edit-songs/edit-songs.component';
 import { ManageCategoriesComponent } from './pages/manage-categories/manage-categories.component';
 import { ManageSongsComponent } from './pages/manage-songs/manage-songs.component';
+import { ManageUserComponent } from './pages/manage-user/manage-user.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/categories', pathMatch: 'full' },
@@ -45,6 +46,11 @@ const routes: Routes = [
   {
     path: 'manage-songs',
     component: ManageSongsComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'manage-user',
+    component: ManageUserComponent,
     canActivate: [AuthGuard]
   },
   { path: 'categories', component: CategoriesComponent },

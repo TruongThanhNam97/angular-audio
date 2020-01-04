@@ -52,7 +52,7 @@ export class ManageSongsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.currentUser = this.authService.getCurrentUser();
-    this.loadAllSongs(this.currentUser.id);
+    this.loadAllSongs();
     this.categoryService.getCategories().pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(categories => {
@@ -91,7 +91,7 @@ export class ManageSongsComponent implements OnInit, OnDestroy {
     }
   }
 
-  loadAllSongs(userId: string) {
+  loadAllSongs() {
     this.cloudService.getAllSongs().pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(songs => {

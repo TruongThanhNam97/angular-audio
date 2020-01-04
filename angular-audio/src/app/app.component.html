@@ -11,6 +11,10 @@
           <a class="nav-link" [routerLink]="['/manage-songs']" [routerLinkActive]="'active'"
             [routerLinkActiveOptions]="{ exact: true }">MANGE SONG</a>
         </li>
+        <li *ngIf="currentUser?.username === 'superadmin'" class="nav-item">
+          <a class="nav-link" [routerLink]="['/manage-user']" [routerLinkActive]="'active'"
+            [routerLinkActiveOptions]="{ exact: true }">MANGE USER</a>
+        </li>
         <li *ngIf="currentUser?.username !== 'superadmin'" class="nav-item">
           <a class="nav-link" [routerLink]="['/categories']" [routerLinkActive]="'active'"
             [routerLinkActiveOptions]="{ exact: true }">CATEGORIES</a>
