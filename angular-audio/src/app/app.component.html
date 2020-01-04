@@ -4,20 +4,20 @@
     <div class="collapse navbar-collapse" id="collapsibleNavId">
       <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
         <li *ngIf="currentUser?.username === 'superadmin'" class="nav-item">
-          <a class="nav-link" [routerLink]="['/upload-category']" [routerLinkActive]="'active'"
-            [routerLinkActiveOptions]="{ exact: true }">UPLOAD CATEGORY</a>
+          <a class="nav-link" [routerLink]="['/manage-categories/upload-category']" [routerLinkActive]="'active'"
+            [routerLinkActiveOptions]="{ exact: true }">MANGE CATEGORY</a>
         </li>
         <li *ngIf="currentUser?.username === 'superadmin'" class="nav-item">
-          <a class="nav-link" [routerLink]="['/edit-category']" [routerLinkActive]="'active'"
-            [routerLinkActiveOptions]="{ exact: true }">EDIT CATEGORY</a>
-        </li>
-        <li *ngIf="currentUser?.username !== 'superadmin'" class="nav-item">
-          <a class="nav-link" [routerLink]="['/albums']" [routerLinkActive]="'active'"
-            [routerLinkActiveOptions]="{ exact: true }">ALBUM</a>
+          <a class="nav-link" [routerLink]="['/manage-songs']" [routerLinkActive]="'active'"
+            [routerLinkActiveOptions]="{ exact: true }">MANGE SONG</a>
         </li>
         <li *ngIf="currentUser?.username !== 'superadmin'" class="nav-item">
           <a class="nav-link" [routerLink]="['/categories']" [routerLinkActive]="'active'"
             [routerLinkActiveOptions]="{ exact: true }">CATEGORIES</a>
+        </li>
+        <li *ngIf="currentUser?.username !== 'superadmin'" class="nav-item">
+          <a class="nav-link" [routerLink]="['/albums']" [routerLinkActive]="'active'"
+            [routerLinkActiveOptions]="{ exact: true }">ALBUM</a>
         </li>
       </ul>
     </div>
@@ -51,10 +51,10 @@
           alt="{{ currentUser['username'] }}">
         Welcome {{currentUser.username}}</div>
       <div class="dropdown-menu" aria-labelledby="dropdownId">
-        <div *ngIf="currentUser?.username === 'superadmin'" (click)="onUploadCateGory()" class="dropdown-item dropItem"
+        <!-- <div *ngIf="currentUser?.username === 'superadmin'" (click)="onUploadCateGory()" class="dropdown-item dropItem"
           style="display: flex;align-items: center;">
           <mat-icon mat-list-icon class="mr-2">cloud_upload</mat-icon>Upload category
-        </div>
+        </div> -->
         <div *ngIf="currentUser?.username !== 'superadmin'" (click)="onDashBoard()" class="dropdown-item dropItem"
           style="display: flex;align-items: center;">
           <mat-icon mat-list-icon class="mr-2">person</mat-icon>Dashboard

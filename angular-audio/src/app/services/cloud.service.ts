@@ -16,9 +16,34 @@ export class CloudService {
 
   private currentPlayListSubject$: Subject<any> = new Subject();
 
+  private updatedSong: any;
+  private updatedSongSubject$: Subject<any> = new Subject();
+
   constructor(private http: HttpClient) {
     this.SERVER_URL = environment.SERVER_URL;
     this.SERVER_URL_SOUND = environment.SERVER_URL_SOUND;
+  }
+
+  getAllSongs() {
+    return this.http.get(`${this.SERVER_URL}getAllSongs`).pipe(
+      map((files: any) => {
+        const result = files.reduce((acc, cur) => {
+          const obj = {
+            id: cur._id,
+            url: this.SERVER_URL_SOUND + cur.url,
+            name: cur.name,
+            artist: cur.artist,
+            nameToDownload: cur.url,
+            userId: cur.userId,
+            userName: cur.userName,
+            categoryId: cur.categoryId ? cur.categoryId : null
+          };
+          acc.push(obj);
+          return acc;
+        }, []);
+        return result;
+      })
+    );
   }
 
   getSongsByUserId(id: string) {
@@ -33,7 +58,7 @@ export class CloudService {
             nameToDownload: cur.url,
             userId: cur.userId,
             userName: cur.userName,
-            categoryId: cur.categoryId
+            categoryId: cur.categoryId ? cur.categoryId : null
           };
           acc.push(obj);
           return acc;
@@ -88,7 +113,7 @@ export class CloudService {
           nameToDownload: song.url,
           userId: song.userId,
           userName: song.userName,
-          categoryId: song.categoryId
+          categoryId: song.categoryId ? song.categoryId : null
         };
       })
     );
@@ -120,6 +145,19 @@ export class CloudService {
 
   updateCurrentPlayList() {
     this.currentPlayListSubject$.next(this.currentPlayList);
+  }
+
+  setUpdatedSong(song) {
+    this.updatedSong = { ...song };
+    this.updatedSongSubject$.next(this.updatedSong);
+  }
+
+  getUpdatedSongSubject() {
+    return this.updatedSongSubject$.asObservable();
+  }
+
+  setCurrentPlayList(files) {
+    this.currentPlayList = [...files];
   }
 
 

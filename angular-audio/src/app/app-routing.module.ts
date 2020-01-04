@@ -14,24 +14,39 @@ import { EditCategoryComponent } from './pages/edit-category/edit-category.compo
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { EditProfileComponent } from './pages/edit-profile/edit-profile.component';
 import { EditSongsComponent } from './pages/edit-songs/edit-songs.component';
+import { ManageCategoriesComponent } from './pages/manage-categories/manage-categories.component';
+import { ManageSongsComponent } from './pages/manage-songs/manage-songs.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/albums', pathMatch: 'full' },
+  { path: '', redirectTo: '/categories', pathMatch: 'full' },
   {
     path: 'dashboard',
     component: DashboardComponent,
     canActivate: [AuthGuard],
     canActivateChild: [AuthGuard],
     children: [
-      { path: 'upload', component: FormUploadComponent },
       { path: 'edit-profile', component: EditProfileComponent },
-      { path: 'edit-songs', component: EditSongsComponent },
+      { path: 'upload-song', component: FormUploadComponent },
+      { path: 'edit-song', component: EditSongsComponent }
     ]
   },
   { path: 'albums', component: ListUsersComponent },
   { path: 'albums/:id', component: PlayerComponent },
-  { path: 'upload-category', component: UploadCategoryComponent, canActivate: [AuthGuard] },
-  { path: 'edit-category', component: EditCategoryComponent, canActivate: [AuthGuard] },
+  {
+    path: 'manage-categories',
+    component: ManageCategoriesComponent,
+    canActivate: [AuthGuard],
+    canActivateChild: [AuthGuard],
+    children: [
+      { path: 'upload-category', component: UploadCategoryComponent },
+      { path: 'edit-category', component: EditCategoryComponent },
+    ]
+  },
+  {
+    path: 'manage-songs',
+    component: ManageSongsComponent,
+    canActivate: [AuthGuard]
+  },
   { path: 'categories', component: CategoriesComponent },
   { path: 'categories/:id', component: PlayerComponent },
   { path: 'login', component: LoginComponent, canActivate: [LoginGuard] },

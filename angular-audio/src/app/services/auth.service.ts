@@ -68,9 +68,9 @@ export class AuthService {
             localStorage.setItem('reup', this.currentUser.numberOfReup.toString());
         }
         if (this.currentUser.username === 'superadmin') {
-            this.router.navigate(['/upload-category']);
+            this.router.navigate(['/manage-categories/upload-category']);
         } else {
-            this.router.navigate(['/albums']);
+            this.router.navigate(['/categories']);
         }
     }
 

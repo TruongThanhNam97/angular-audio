@@ -1,4 +1,4 @@
-<div class="container mt-4">
+<div *ngIf="signForm">
   <form [formGroup]="signForm" (submit)="onSubmit()">
     <div class="form-group">
       <input [ngClass]="{'is-invalid': signForm.get('name').touched && signForm.get('name').invalid}" type="text"

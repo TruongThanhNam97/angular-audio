@@ -34,15 +34,14 @@ export class EditSongsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.currentUser = this.authService.getCurrentUser();
-    console.log(this.currentUser);
     this.loadSongsByUserId(this.currentUser.id);
-    this.categoryService.getCategories().pipe(
-      takeUntil(this.destroySubscription$)
-    ).subscribe(categories => {
-      this.categories = categories;
-      console.log(this.categories);
-      this.initializeForm();
-    });
+    // this.categoryService.getCategories().pipe(
+    //   takeUntil(this.destroySubscription$)
+    // ).subscribe(categories => {
+    //   this.categories = categories;
+    //   this.initializeForm();
+    // });
+    this.initializeForm();
   }
 
   ngOnDestroy() {
@@ -54,7 +53,6 @@ export class EditSongsComponent implements OnInit, OnDestroy {
       takeUntil(this.destroySubscription$)
     ).subscribe(songs => {
       this.mySongs = songs;
-      console.log(this.mySongs);
     });
   }
 
@@ -62,8 +60,7 @@ export class EditSongsComponent implements OnInit, OnDestroy {
     this.signForm = new FormGroup({
       id: new FormControl(null, [Validators.required]),
       name: new FormControl(null, [Validators.required, Validators.maxLength(50)]),
-      artist: new FormControl(null, [Validators.required, Validators.maxLength(50)]),
-      categoryId: new FormControl(null, [Validators.required])
+      artist: new FormControl(null, [Validators.required, Validators.maxLength(50)])
     });
   }
 
@@ -71,8 +68,7 @@ export class EditSongsComponent implements OnInit, OnDestroy {
     this.signForm.patchValue({
       id: song.id,
       name: song.name,
-      artist: song.artist,
-      categoryId: song.categoryId
+      artist: song.artist
     });
   }
 

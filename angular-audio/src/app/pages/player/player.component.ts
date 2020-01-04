@@ -97,14 +97,6 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.audioService.updateCurrentFile1({ index, file });
     this.audioService.stop();
     this.audioService.playStream(file.url).subscribe();
-    // if (this.username && this.selectedAlbum === this.username) {
-    //   this.categoryService.resetSelectedCategory();
-    //   this.album.setSelectedAlbum(this.username);
-    // }
-    // if (this.categoryName && this.selectedCategory === this.categoryName) {
-    //   this.album.resetSelectedAlbum();
-    //   this.categoryService.setSelectedCategory(this.categoryName);
-    // }
   }
 
   openDialog(file: any): void {

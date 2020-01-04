@@ -39,8 +39,7 @@ var saveSongMetadata = (req, res, next) => {
         name: req.body.name,
         artist: req.body.artist,
         userId: req.user.id,
-        userName: req.user.username,
-        categoryId: req.body.categoryId
+        userName: req.user.username
     };
     return new songModel(newSong)
         .save()
@@ -72,7 +71,16 @@ var watermark = (req, res, next) => {
 
 router.post("/upload", passport.authenticate('jwt', { session: false }), upload.any(), watermark);
 
-/* GET songs */
+/* GET all songs */
+router.get("/getAllSongs", (req, res, next) => {
+    songModel
+        .find({ status: { $eq: 0 } })
+        .select('_id url name artist userId userName categoryId')
+        .then(songs => res.status(200).json(songs))
+        .catch(err => res.status(404).json({ notfound: "Not found songs" }));
+});
+
+/* GET songs by user id */
 router.get("/getSongs", (req, res, next) => {
     songModel
         .find({ userId: { $eq: req.query.id }, status: { $eq: 0 } })
@@ -81,7 +89,7 @@ router.get("/getSongs", (req, res, next) => {
         .catch(err => res.status(404).json({ notfound: "Not found songs" }));
 });
 
-/* GET songs */
+/* GET songs by category id*/
 router.get("/getSongsByCategory", (req, res, next) => {
     songModel
         .find({ categoryId: { $eq: req.query.id }, status: { $eq: 0 } })
@@ -94,7 +102,7 @@ router.get("/getSongsByCategory", (req, res, next) => {
 router.post("/edit-song", passport.authenticate('jwt', { session: false }), (req, res, next) => {
     const { id, name, artist, categoryId } = req.body;
     songModel.findOne({ _id: id }).then(song => {
-        if (song.userId.toString() !== req.user._id.toString()) {
+        if (song.userId.toString() !== req.user._id.toString() && req.user.username !== 'superadmin') {
             return res.status(401).json('Unauthorized');
         }
         songModel.findOneAndUpdate({ _id: id }, { $set: { name, artist, categoryId } }, { new: true })
@@ -107,7 +115,7 @@ router.post("/edit-song", passport.authenticate('jwt', { session: false }), (req
 router.post("/delete-song", passport.authenticate('jwt', { session: false }), (req, res, next) => {
     const { id } = req.body;
     songModel.findOne({ _id: id }).then(song => {
-        if (song.userId.toString() !== req.user._id.toString()) {
+        if (song.userId.toString() !== req.user._id.toString() && req.user.username !== 'superadmin') {
             return res.status(401).json('Unauthorized');
         }
         songModel.findOneAndUpdate({ _id: id }, { $set: { status: 1 } }, { new: true })

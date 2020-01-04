@@ -43,12 +43,13 @@ export class FormUploadComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.categoryService.getCategories().pipe(
-      take(1)
-    ).subscribe(categories => {
-      this.categories = categories;
-      this.initializeForm();
-    });
+    // this.categoryService.getCategories().pipe(
+    //   take(1)
+    // ).subscribe(categories => {
+    //   this.categories = categories;
+    //   this.initializeForm();
+    // });
+    this.initializeForm();
   }
 
   onSelectFile(e) {
@@ -60,8 +61,7 @@ export class FormUploadComponent implements OnInit {
         const formGroup = new FormGroup({
           name: new FormControl(song.split('-')[0], [Validators.required, Validators.maxLength(50)]),
           artist: new FormControl(song.split('-')[1], [Validators.required, Validators.maxLength(50)]),
-          file: new FormControl(file, [this.validateFile.bind(this)]),
-          categoryId: new FormControl(this.categories[0].id)
+          file: new FormControl(file, [this.validateFile.bind(this)])
         });
         (this.signForm.get('arrSongs') as FormArray).push(formGroup);
       }
@@ -93,7 +93,6 @@ export class FormUploadComponent implements OnInit {
     formData.append('name', control.value.name);
     formData.append('artist', control.value.artist);
     formData.append('file', control.value.file);
-    formData.append('categoryId', control.value.categoryId);
     this.alertify.success('Waiting processing');
     this.uploadService.uploadSong(formData).pipe(
       takeUntil(this.destroySubscription$)

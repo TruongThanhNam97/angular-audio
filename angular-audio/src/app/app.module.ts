@@ -23,6 +23,9 @@ import { EditCategoryComponent } from './pages/edit-category/edit-category.compo
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { EditProfileComponent } from './pages/edit-profile/edit-profile.component';
 import { EditSongsComponent } from './pages/edit-songs/edit-songs.component';
+import { ManageCategoriesComponent } from './pages/manage-categories/manage-categories.component';
+import { ManageSongsComponent } from './pages/manage-songs/manage-songs.component';
+import { PopupEditSongComponent } from './pages/manage-songs/popup-edit-song/popup-edit-song.component';
 
 @NgModule({
   declarations: [
@@ -42,7 +45,10 @@ import { EditSongsComponent } from './pages/edit-songs/edit-songs.component';
     EditCategoryComponent,
     DashboardComponent,
     EditProfileComponent,
-    EditSongsComponent
+    EditSongsComponent,
+    ManageCategoriesComponent,
+    ManageSongsComponent,
+    PopupEditSongComponent
   ],
   imports: [
     BrowserModule,
@@ -55,7 +61,8 @@ import { EditSongsComponent } from './pages/edit-songs/edit-songs.component';
   entryComponents: [
     PopupComponent,
     PopupBanComponent,
-    PlaylistPlayingComponent
+    PlaylistPlayingComponent,
+    PopupEditSongComponent
   ],
   providers: [],
   bootstrap: [AppComponent]
