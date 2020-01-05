@@ -28,6 +28,10 @@ import { ManageSongsComponent } from './pages/manage-songs/manage-songs.componen
 import { PopupEditSongComponent } from './pages/manage-songs/popup-edit-song/popup-edit-song.component';
 import { ManageUserComponent } from './pages/manage-user/manage-user.component';
 import { PopupThreeTypesComponent } from './pages/player/popup-three-types/popup-three-types.component';
+import { ManageArtistComponent } from './pages/manage-artist/manage-artist.component';
+import { EditArtistComponent } from './pages/edit-artist/edit-artist.component';
+import { UploadArtistComponent } from './pages/upload-artist/upload-artist.component';
+import { ArtistsComponent } from './pages/artists/artists.component';
 
 @NgModule({
   declarations: [
@@ -52,7 +56,11 @@ import { PopupThreeTypesComponent } from './pages/player/popup-three-types/popup
     ManageSongsComponent,
     PopupEditSongComponent,
     ManageUserComponent,
-    PopupThreeTypesComponent
+    PopupThreeTypesComponent,
+    ManageArtistComponent,
+    EditArtistComponent,
+    UploadArtistComponent,
+    ArtistsComponent
   ],
   imports: [
     BrowserModule,

@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { CategoryService } from 'src/app/services/categories.service';
 import { AuthService } from 'src/app/services/auth.service';
@@ -10,9 +10,8 @@ import { MatDialog } from '@angular/material';
 import { PopupEditSongComponent } from './popup-edit-song/popup-edit-song.component';
 import { AudioService } from 'src/app/services/audio.service';
 import { AlbumService } from 'src/app/services/album.service';
-import { DownloadService } from 'src/app/services/download.service';
-import { saveAs } from 'file-saver';
 import { PopupThreeTypesComponent } from '../player/popup-three-types/popup-three-types.component';
+import { ArtistsService } from 'src/app/services/artists.service';
 
 @Component({
   selector: 'app-manage-songs',
@@ -24,22 +23,22 @@ export class ManageSongsComponent implements OnInit, OnDestroy {
   signForm: FormGroup;
 
   categories: any[];
+  mySongs: any[];
+  artists: any[];
 
   destroySubscription$: Subject<boolean> = new Subject();
 
   currentUser: any;
 
-  mySongs: any[];
-
-  username: string = null;
-
   selectedAlbum: string;
-
   selectedCategory: string;
+  selectedArtist: string;
 
   currentFile: any = {};
 
   categoryName: string = null;
+  username: string = null;
+  artistName: string = null;
 
   constructor(
     private categoryService: CategoryService,
@@ -48,7 +47,8 @@ export class ManageSongsComponent implements OnInit, OnDestroy {
     private alertifyService: AlertifyService,
     public dialog: MatDialog,
     private audioService: AudioService,
-    private album: AlbumService
+    private album: AlbumService,
+    private artistsService: ArtistsService
   ) { }
 
   ngOnInit() {
@@ -58,6 +58,11 @@ export class ManageSongsComponent implements OnInit, OnDestroy {
       takeUntil(this.destroySubscription$)
     ).subscribe(categories => {
       this.categories = categories;
+    });
+    this.artistsService.getArtists().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(artists => {
+      this.artists = artists;
     });
     this.cloudService.getUpdatedSongSubject().pipe(
       takeUntil(this.destroySubscription$)
@@ -74,13 +79,16 @@ export class ManageSongsComponent implements OnInit, OnDestroy {
 
   setUpAudio() {
     this.audioService.triggerDestroyGeneral();
+
     this.selectedAlbum = this.album.getSelectedAlbum();
     this.selectedCategory = this.categoryService.getSelectedCategory();
+    this.selectedArtist = this.artistsService.getSelectedArtist();
 
     this.currentFile = this.audioService.getCurrentFile();
-    if (this.audioService.getPlayMode() && ((this.username !== this.selectedAlbum) || (this.categoryName !== this.selectedCategory))) {
-      this.currentFile = {};
-    }
+    // if (this.audioService.getPlayMode() && ((this.username !== this.selectedAlbum) || (this.categoryName !== this.selectedCategory)
+    //   || (this.artistName !== this.selectedArtist))) {
+    //   this.currentFile = {};
+    // }
     this.audioService.getCurrentFileSubject2().pipe(takeUntil(this.audioService.getDestroyGeneralSubject$())).subscribe((v: any) => {
       this.openFile(v.file, v.index);
     });
@@ -90,6 +98,13 @@ export class ManageSongsComponent implements OnInit, OnDestroy {
     if (this.categories) {
       return this.categories.find(category => category.id === categoryId)
         ? this.categories.find(category => category.id === categoryId).name : 'No category';
+    }
+  }
+
+  getMainArtistNameById(artistId) {
+    if (this.artists) {
+      return this.artists.find(artist => artist.id === artistId)
+        ? this.artists.find(artist => artist.id === artistId).name : 'No artist';
     }
   }
 
@@ -104,7 +119,7 @@ export class ManageSongsComponent implements OnInit, OnDestroy {
   }
 
   onEdit(song: any) {
-    this.dialog.open(PopupEditSongComponent, { data: { song, categories: this.categories } });
+    this.dialog.open(PopupEditSongComponent, { data: { song, categories: this.categories, artists: this.artists } });
   }
 
   onDelete(song: any, index: number) {
@@ -118,7 +133,8 @@ export class ManageSongsComponent implements OnInit, OnDestroy {
 
   openFile(file, index) {
     this.audioService.updatePlayMode();
-    if (this.username && this.selectedAlbum === this.username || this.categoryName && this.selectedCategory === this.categoryName) {
+    if (this.username && this.selectedAlbum === this.username || this.categoryName && this.selectedCategory === this.categoryName
+      || this.artistName && this.selectedArtist === this.artistName) {
       this.currentFile = { index, file };
     }
     this.audioService.updateCurrentFile1({ index, file });
@@ -127,16 +143,9 @@ export class ManageSongsComponent implements OnInit, OnDestroy {
   }
 
   update() {
-    if (this.username) {
-      this.categoryService.resetSelectedCategory();
-      this.album.setSelectedAlbum(this.username);
-      this.selectedAlbum = this.username;
-    }
-    if (this.categoryName) {
-      this.album.resetSelectedAlbum();
-      this.categoryService.setSelectedCategory(this.categoryName);
-      this.selectedCategory = this.categoryName;
-    }
+    this.categoryService.resetSelectedCategory();
+    this.artistsService.resetSelectedArtist();
+    this.album.resetSelectedAlbum();
     this.cloudService.updateCurrentPlayList();
   }
 

@@ -3,6 +3,7 @@
   <mat-toolbar color="primary" class="main-toolbar">
     <span *ngIf="username">Albums of {{ username }}</span>
     <span *ngIf="categoryName">Songs of {{ categoryName }}</span>
+    <span *ngIf="artistName">Songs of {{ artistName }}</span>
   </mat-toolbar>
   <div class="content" style="display: flex;margin-top: 50px;">
     <div class="logo" style="width: 20%;">
@@ -14,8 +15,8 @@
       <mat-list *ngIf="!loading" color="primary" style="width: 1200px;margin: auto;">
         <h3 mat-subheader>Songs</h3>
         <mat-list-item *ngFor="let file of files; let i = index">
-          <mat-icon class="music-icon" (click)="update();openFile(file, i)" style="cursor: pointer;background-color: #FF4081;"
-            color="primary" mat-list-icon>music_note
+          <mat-icon class="music-icon" (click)="update();openFile(file, i)"
+            style="cursor: pointer;background-color: #FF4081;" color="primary" mat-list-icon>music_note
           </mat-icon>
           <h4 mat-line>{{ file.name }}</h4>
           <h5 mat-line>by {{ file.artist }}</h5>

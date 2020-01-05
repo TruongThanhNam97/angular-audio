@@ -17,6 +17,10 @@ import { EditSongsComponent } from './pages/edit-songs/edit-songs.component';
 import { ManageCategoriesComponent } from './pages/manage-categories/manage-categories.component';
 import { ManageSongsComponent } from './pages/manage-songs/manage-songs.component';
 import { ManageUserComponent } from './pages/manage-user/manage-user.component';
+import { ManageArtistComponent } from './pages/manage-artist/manage-artist.component';
+import { UploadArtistComponent } from './pages/upload-artist/upload-artist.component';
+import { EditArtistComponent } from './pages/edit-artist/edit-artist.component';
+import { ArtistsComponent } from './pages/artists/artists.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/categories', pathMatch: 'full' },
@@ -44,6 +48,16 @@ const routes: Routes = [
     ]
   },
   {
+    path: 'manage-artists',
+    component: ManageArtistComponent,
+    canActivate: [AuthGuard],
+    canActivateChild: [AuthGuard],
+    children: [
+      { path: 'upload-artist', component: UploadArtistComponent },
+      { path: 'edit-artist', component: EditArtistComponent },
+    ]
+  },
+  {
     path: 'manage-songs',
     component: ManageSongsComponent,
     canActivate: [AuthGuard]
@@ -55,6 +69,8 @@ const routes: Routes = [
   },
   { path: 'categories', component: CategoriesComponent },
   { path: 'categories/:id', component: PlayerComponent },
+  { path: 'artists', component: ArtistsComponent },
+  { path: 'artists/:id', component: PlayerComponent },
   { path: 'login', component: LoginComponent, canActivate: [LoginGuard] },
   { path: 'register', component: RegisterComponent, canActivate: [LoginGuard] },
   { path: 'page-not-found', component: PageNotFoundComponent },

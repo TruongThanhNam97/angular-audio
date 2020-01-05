@@ -1,5 +1,6 @@
 <div *ngIf="signForm">
-  <ng-container *ngIf="data.categories && data.categories.length > 0; else elseTemplate">
+  <ng-container
+    *ngIf="data.categories && data.artists && data.categories.length > 0 && data.artists.length > 0; else elseTemplate">
     <div class="container" *ngIf="signForm">
       <form [formGroup]="signForm" (submit)="onSubmit()">
         <div class="form-group">
@@ -19,22 +20,29 @@
           </span>
         </div>
         <div class="form-group row">
-          <div class="col-7">
+          <div class="col-6">
             <select class="form-control" formControlName="categoryId">
               <option *ngFor="let category of data.categories" [value]="category.id">{{ category.name }}
               </option>
             </select>
           </div>
-          <div class="col-5">
-            <button [disabled]="signForm.invalid" class="btn btn-info ml-3">Save file</button>
+          <div class="col-6">
+            <select class="form-control" formControlName="artistId">
+              <option *ngFor="let artist of data.artists" [value]="artist.id">{{ artist.name }}
+              </option>
+            </select>
           </div>
         </div>
+        <button [disabled]="signForm.invalid" class="btn btn-info btn-block">Save file</button>
       </form>
     </div>
   </ng-container>
   <ng-template #elseTemplate>
-    <div class="container">
-      No categories. Waiting admin to update cateogories...
+    <div *ngIf="data.categories && data.categories.length === 0" class="container">
+      No categories. Please update cateogories...
+    </div>
+    <div *ngIf="data.artists && data.artists.length === 0" class="container">
+      No artists. Please update artists...
     </div>
   </ng-template>
 </div>

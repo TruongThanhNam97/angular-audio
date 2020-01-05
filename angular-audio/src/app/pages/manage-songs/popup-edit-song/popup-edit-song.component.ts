@@ -27,7 +27,8 @@ export class PopupEditSongComponent implements OnInit, OnDestroy {
       id: this.data.song.id,
       name: this.data.song.name,
       artist: this.data.song.artist,
-      categoryId: this.data.song.categoryId
+      categoryId: this.data.song.categoryId,
+      artistId: this.data.song.artistId
     });
   }
 
@@ -40,7 +41,8 @@ export class PopupEditSongComponent implements OnInit, OnDestroy {
       id: new FormControl(null, [Validators.required]),
       name: new FormControl(null, [Validators.required, Validators.maxLength(50)]),
       artist: new FormControl(null, [Validators.required, Validators.maxLength(50)]),
-      categoryId: new FormControl(null, [Validators.required])
+      categoryId: new FormControl(null, [Validators.required]),
+      artistId: new FormControl(null, [Validators.required])
     });
   }
 

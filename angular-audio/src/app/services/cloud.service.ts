@@ -36,7 +36,8 @@ export class CloudService {
             nameToDownload: cur.url,
             userId: cur.userId,
             userName: cur.userName,
-            categoryId: cur.categoryId ? cur.categoryId : null
+            categoryId: cur.categoryId ? cur.categoryId : null,
+            artistId: cur.artistId ? cur.artistId : null
           };
           acc.push(obj);
           return acc;
@@ -98,6 +99,31 @@ export class CloudService {
     );
   }
 
+  getSongsByArtistId(id: string) {
+    return this.http.get(this.SERVER_URL + 'getSongsByArtist', { params: { id } }).pipe(
+      map((files: any) => {
+        const result = files.reduce((acc, cur) => {
+          const obj = {
+            url: this.SERVER_URL_SOUND + cur.url,
+            name: cur.name,
+            artist: cur.artist,
+            nameToDownload: cur.url,
+            userId: cur.userId,
+            userName: cur.userName
+          };
+          acc.push(obj);
+          return acc;
+        }, []);
+        return result;
+      }),
+      tap(files => {
+        this.allowGetSongs = false;
+        this.currentPlayList = [...files];
+        // this.currentPlayListSubject$.next(this.currentPlayList);
+      })
+    );
+  }
+
   updateSong(data) {
     return this.http.post(`${this.SERVER_URL}edit-song`, data, {
       headers: {
@@ -113,7 +139,8 @@ export class CloudService {
           nameToDownload: song.url,
           userId: song.userId,
           userName: song.userName,
-          categoryId: song.categoryId ? song.categoryId : null
+          categoryId: song.categoryId ? song.categoryId : null,
+          artistId: song.artistId ? song.artistId : null
         };
       })
     );

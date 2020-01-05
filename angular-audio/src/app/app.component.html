@@ -8,6 +8,10 @@
             [routerLinkActiveOptions]="{ exact: true }">MANGE CATEGORY</a>
         </li>
         <li *ngIf="currentUser?.username === 'superadmin'" class="nav-item">
+          <a class="nav-link" [routerLink]="['/manage-artists/upload-artist']" [routerLinkActive]="'active'"
+            [routerLinkActiveOptions]="{ exact: true }">MANGE ARTIST</a>
+        </li>
+        <li *ngIf="currentUser?.username === 'superadmin'" class="nav-item">
           <a class="nav-link" [routerLink]="['/manage-songs']" [routerLinkActive]="'active'"
             [routerLinkActiveOptions]="{ exact: true }">MANGE SONG</a>
         </li>
@@ -18,6 +22,10 @@
         <li *ngIf="currentUser?.username !== 'superadmin'" class="nav-item">
           <a class="nav-link" [routerLink]="['/categories']" [routerLinkActive]="'active'"
             [routerLinkActiveOptions]="{ exact: true }">CATEGORIES</a>
+        </li>
+        <li *ngIf="currentUser?.username !== 'superadmin'" class="nav-item">
+          <a class="nav-link" [routerLink]="['/artists']" [routerLinkActive]="'active'"
+            [routerLinkActiveOptions]="{ exact: true }">ARTISTS</a>
         </li>
         <li *ngIf="currentUser?.username !== 'superadmin'" class="nav-item">
           <a class="nav-link" [routerLink]="['/albums']" [routerLinkActive]="'active'"

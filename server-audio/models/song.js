@@ -7,6 +7,7 @@ const schema = new mongoose.Schema({
     userId: String,
     userName: String,
     categoryId: String,
+    artistId: String,
     status: {
         type: Number,
         default: 0,

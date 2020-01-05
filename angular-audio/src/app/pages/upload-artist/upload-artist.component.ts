@@ -1,16 +1,16 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
-import { CategoryService } from 'src/app/services/categories.service';
+import { ArtistsService } from 'src/app/services/artists.service';
 import { AlertifyService } from 'src/app/services/alertify.service';
 import { takeUntil } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-upload-category',
-  templateUrl: './upload-category.component.html',
-  styleUrls: ['./upload-category.component.scss']
+  selector: 'app-upload-artist',
+  templateUrl: './upload-artist.component.html',
+  styleUrls: ['./upload-artist.component.scss']
 })
-export class UploadCategoryComponent implements OnInit, OnDestroy {
+export class UploadArtistComponent implements OnInit, OnDestroy {
 
   signForm: FormGroup;
 
@@ -18,7 +18,7 @@ export class UploadCategoryComponent implements OnInit, OnDestroy {
 
   destroySubscription$: Subject<boolean> = new Subject();
 
-  constructor(private uploadCategory: CategoryService, private alertify: AlertifyService) { }
+  constructor(private artistsService: ArtistsService, private alertify: AlertifyService) { }
 
   ngOnInit() {
     this.initializeForm();
@@ -35,13 +35,6 @@ export class UploadCategoryComponent implements OnInit, OnDestroy {
     });
   }
 
-  onChange(e) {
-    this.signForm.patchValue({
-      avatar: e.target.files[0]
-    });
-    e.target.value = null;
-  }
-
   validateSelectFile(control: FormControl): { [key: string]: boolean } {
     if (control.value) {
       const lastIndex = control.value.name.lastIndexOf('.');
@@ -50,11 +43,18 @@ export class UploadCategoryComponent implements OnInit, OnDestroy {
     }
   }
 
+  onChange(e) {
+    this.signForm.patchValue({
+      avatar: e.target.files[0]
+    });
+    e.target.value = null;
+  }
+
   onSubmit() {
     const formData = new FormData();
     formData.append('name', this.signForm.value.name);
     formData.append('avatar', this.signForm.value.avatar);
-    this.uploadCategory.upload(formData).pipe(
+    this.artistsService.upload(formData).pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(
       _ => this.alertify.success('Upload successfully'),
