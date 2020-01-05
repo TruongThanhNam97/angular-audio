@@ -12,6 +12,7 @@ import { AudioService } from 'src/app/services/audio.service';
 import { AlbumService } from 'src/app/services/album.service';
 import { DownloadService } from 'src/app/services/download.service';
 import { saveAs } from 'file-saver';
+import { PopupThreeTypesComponent } from '../player/popup-three-types/popup-three-types.component';
 
 @Component({
   selector: 'app-manage-songs',
@@ -47,8 +48,8 @@ export class ManageSongsComponent implements OnInit, OnDestroy {
     private alertifyService: AlertifyService,
     public dialog: MatDialog,
     private audioService: AudioService,
-    private album: AlbumService,
-    private download: DownloadService) { }
+    private album: AlbumService
+  ) { }
 
   ngOnInit() {
     this.currentUser = this.authService.getCurrentUser();
@@ -140,9 +141,7 @@ export class ManageSongsComponent implements OnInit, OnDestroy {
   }
 
   downloadFile(data) {
-    this.download.downloadFile(data.nameToDownload).subscribe(blob => {
-      saveAs(blob, `${data.name}-${data.artist}.wav`);
-    }, err => console.log(err));
+    this.dialog.open(PopupThreeTypesComponent, { data });
   }
 
 }

@@ -28,7 +28,7 @@ export class FormUploadComponent implements OnInit {
 
   destroySubscription$: Subject<boolean> = new Subject();
 
-  typeFileMusic = ['mp3', 'MP3', 'wav', 'WAV'];
+  typeFileMusic = ['mp3', 'MP3', 'wav', 'WAV', 'm4a', 'M4A', 'flac', 'FLAC', 'mp4', 'MP4'];
 
   categories: any;
 

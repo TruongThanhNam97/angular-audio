@@ -16,8 +16,6 @@ export class EditSongsComponent implements OnInit, OnDestroy {
 
   signForm: FormGroup;
 
-  typeFileMusic = ['mp3', 'MP3', 'wav', 'WAV'];
-
   categories: any;
 
   destroySubscription$: Subject<boolean> = new Subject();

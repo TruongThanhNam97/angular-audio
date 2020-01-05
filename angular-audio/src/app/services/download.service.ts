@@ -14,11 +14,12 @@ export class DownloadService {
         this.SERVER_URL_SOUND = environment.SERVER_URL_SOUND;
     }
 
-    downloadFile(nameToDownload: string): Observable<any> {
+    downloadFile(data): Observable<any> {
         return this.http.get(`${this.SERVER_URL}download/song`, {
             responseType: 'blob',
             params: {
-                nameToDownload
+                nameToDownload: data.nameToDownload,
+                typeFile: data.typeFile
             }
         });
     }

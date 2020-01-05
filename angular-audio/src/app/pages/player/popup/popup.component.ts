@@ -1,8 +1,7 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
 import { PlayerComponent } from '../player.component';
-import { DownloadService } from 'src/app/services/download.service';
-import { saveAs } from 'file-saver';
+import { PopupThreeTypesComponent } from '../popup-three-types/popup-three-types.component';
 
 @Component({
   selector: 'app-popup',
@@ -14,16 +13,14 @@ export class PopupComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<PlayerComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private download: DownloadService
+    public dialog: MatDialog
   ) { }
 
   ngOnInit() {
   }
 
   downloadFile() {
-    this.download.downloadFile(this.data.nameToDownload).subscribe(blob => {
-      saveAs(blob, `${this.data.name}-${this.data.artist}.wav`);
-    }, err => console.log(err));
+    this.dialog.open(PopupThreeTypesComponent, { data: this.data });
     this.dialogRef.close();
   }
 

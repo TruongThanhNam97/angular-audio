@@ -27,6 +27,7 @@ import { ManageCategoriesComponent } from './pages/manage-categories/manage-cate
 import { ManageSongsComponent } from './pages/manage-songs/manage-songs.component';
 import { PopupEditSongComponent } from './pages/manage-songs/popup-edit-song/popup-edit-song.component';
 import { ManageUserComponent } from './pages/manage-user/manage-user.component';
+import { PopupThreeTypesComponent } from './pages/player/popup-three-types/popup-three-types.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +51,8 @@ import { ManageUserComponent } from './pages/manage-user/manage-user.component';
     ManageCategoriesComponent,
     ManageSongsComponent,
     PopupEditSongComponent,
-    ManageUserComponent
+    ManageUserComponent,
+    PopupThreeTypesComponent
   ],
   imports: [
     BrowserModule,
@@ -64,7 +66,8 @@ import { ManageUserComponent } from './pages/manage-user/manage-user.component';
     PopupComponent,
     PopupBanComponent,
     PlaylistPlayingComponent,
-    PopupEditSongComponent
+    PopupEditSongComponent,
+    PopupThreeTypesComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

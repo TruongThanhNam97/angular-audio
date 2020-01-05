@@ -19,7 +19,7 @@ var storage = multer.diskStorage({
 var upload = multer({
     storage: storage,
     fileFilter: (req, file, cb) => {
-        if (file.originalname.match(/\.(mp3|MP3|wav|WAV)$/)) {
+        if (file.originalname.match(/\.(mp3|MP3|wav|WAV|m4A|M4A|flac|FLAC|mp4|MP4)$/)) {
             cb(null, true);
         } else {
             cb(null, false);
@@ -34,8 +34,10 @@ router.get("/", passport.authenticate('jwt', { session: false }), (req, res, nex
 
 /* POST song */
 var saveSongMetadata = (req, res, next) => {
+    const lastIndefOfPoint = next.lastIndexOf('.');
+    const fileName = next.slice(0, lastIndefOfPoint);
     const newSong = {
-        url: next.split('.')[0] + '.wav',
+        url: `${fileName}.mp3`,
         name: req.body.name,
         artist: req.body.artist,
         userId: req.user.id,
@@ -59,6 +61,9 @@ var watermark = (req, res, next) => {
                     userModel.findById({ _id: req.user.id }).then(user => {
                         let numberOfReup = user.numberOfReup;
                         numberOfReup++;
+                        if (numberOfReup > 3) {
+                            return res.status(400).json('');
+                        }
                         userModel.findOneAndUpdate({ _id: req.user.id }, { $set: { numberOfReup } }, { new: true })
                             .then(updatedUser => {
                                 res.status(400).json({ error: { err: `${req.body.name}: Reup Detected`, numberOfReup: updatedUser.numberOfReup } });
@@ -127,7 +132,7 @@ router.post("/delete-song", passport.authenticate('jwt', { session: false }), (r
 
 /* Download song */
 router.get("/download/song", (req, res, next) => {
-    const file = path.resolve(__dirname, `../public/watermark-songs/${req.query.nameToDownload}`);
+    const file = path.resolve(__dirname, `../public/watermark-songs/${req.query.typeFile}/${req.query.nameToDownload}`);
     res.download(file);
 });
 
