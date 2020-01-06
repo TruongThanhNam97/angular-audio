@@ -1,6 +1,6 @@
 <div class="container">
   <form [formGroup]="signForm" (submit)="onSubmit()">
-    <div class="form-group">
+    <div class="form-group" style="display: none;">
       <input [ngClass]="{'is-invalid': signForm.get('username').touched && signForm.get('username').invalid}"
         type="text" class="form-control" placeholder="Username" formControlName="username">
       <span class="invalid-feedback" *ngIf="signForm.get('username').touched && signForm.get('username').invalid">
