@@ -31,6 +31,10 @@
           <a class="nav-link" [routerLink]="['/albums']" [routerLinkActive]="'active'"
             [routerLinkActiveOptions]="{ exact: true }">ALBUM</a>
         </li>
+        <li *ngIf="currentUser &&   currentUser?.username !== 'superadmin'" class="nav-item">
+          <a class="nav-link" [routerLink]="['/dashboard/upload-song']" [routerLinkActive]="'active'"
+            [routerLinkActiveOptions]="{ exact: true }">DASHBOARD</a>
+        </li>
       </ul>
     </div>
 

@@ -113,7 +113,6 @@ export class PlayerComponent implements OnInit, OnDestroy {
   }
 
   onLikeSong(song: any) {
-    console.log(song);
     return this.cloudService.likeSong({ id: song.id }).pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(song => {

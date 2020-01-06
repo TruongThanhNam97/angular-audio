@@ -1,5 +1,5 @@
 <div class="container">
-  <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+  <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist" style="display: flex; justify-content: center;">
     <li class="nav-item">
       <a style="display: flex; align-items: center;" class="nav-link active" id="pills-home-tab" data-toggle="pill"
         [routerLink]="['upload-song']" role="tab" aria-controls="pills-home" aria-selected="true">
@@ -31,7 +31,7 @@
         [routerLink]="['my-favorite-songs', currentUser.id ]"
         [queryParams]="{ username: currentUser.username, favoriteMode: 'true', displayButtonBack: 'false'}" role="tab"
         aria-controls="pills-profile" aria-selected="false">
-        <mat-icon mat-list-icon class="mr-2">library_music</mat-icon>My favorite songs
+        <mat-icon mat-list-icon class="mr-2">favorite</mat-icon>My favorite songs
       </a>
     </li>
   </ul>

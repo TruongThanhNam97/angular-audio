@@ -63,7 +63,7 @@ var watermark = (req, res, next) => {
                         let numberOfReup = user.numberOfReup;
                         numberOfReup++;
                         if (numberOfReup > 3) {
-                            return res.status(400).json('');
+                            return res.status(400).json({ error: { err: 'Cannot upload music' } });
                         }
                         userModel.findOneAndUpdate({ _id: req.user.id }, { $set: { numberOfReup } }, { new: true })
                             .then(updatedUser => {
