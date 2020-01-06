@@ -7,6 +7,8 @@ import { AlbumService } from 'src/app/services/album.service';
 import { CategoryService } from 'src/app/services/categories.service';
 import { PopupComponent } from '../../player/popup/popup.component';
 import { takeUntil } from 'rxjs/operators';
+import { AuthService } from 'src/app/services/auth.service';
+import { CloudService } from 'src/app/services/cloud.service';
 
 @Component({
   selector: 'app-playlist-playing',
@@ -18,24 +20,26 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
   files: any;
   state: StreamState;
   currentFile: any = {};
+  currentUser: any;
   destroySubscription$: Subject<boolean> = new Subject();
   loading = false;
   username: string;
   id: string;
   categoryName: string;
 
-  test = 0;
-
   constructor(
     private audioService: AudioService,
     public dialog: MatDialog,
     private album: AlbumService,
     private categoryService: CategoryService,
+    private authService: AuthService,
     private cdt: ChangeDetectorRef,
+    private cloudService: CloudService,
     @Inject(MAT_BOTTOM_SHEET_DATA) public data: any
   ) { }
 
   ngOnInit() {
+    this.currentUser = this.authService.getCurrentUser();
     this.files = [...this.data];
     this.currentFile = this.audioService.getCurrentFile();
     this.audioService.getCurrentFileSubject2().pipe(
@@ -44,6 +48,23 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
       this.currentFile = { index: v.index, file: v.file };
       this.cdt.detectChanges();
     });
+    this.cloudService.getUpdatedSongsAfterLikingSubject().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(files => this.files = [...files]);
+  }
+
+  isLiked(song: any): boolean {
+    return song.likedUsers.filter(like => like.user === this.currentUser.id).length > 0;
+  }
+
+  onLikeSong(song: any) {
+    return this.cloudService.likeSong({ id: song.id }).pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(song => {
+      const index = this.files.findIndex(item => item.id === song.id);
+      this.files = [...this.files.filter((v, i) => i < index), { ...song }, ...this.files.filter((v, i) => i > index)];
+      this.cloudService.getUpdatedSongsAfterLikingSubject().next(this.files);
+    }, err => console.log(err));
   }
 
   ngOnDestroy() {
@@ -56,6 +77,8 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
     this.audioService.updateCurrentFile1({ index, file });
     this.audioService.stop();
     this.audioService.playStream(file.url).subscribe();
+
+    this.cloudService.getCurrentFileSubject().next(this.currentFile);
   }
 
   openDialog(file: any): void {

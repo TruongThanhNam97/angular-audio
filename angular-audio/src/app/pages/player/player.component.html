@@ -1,5 +1,5 @@
 <div class="container">
-  <div (click)="onBack()" class="btn btn-secondary mt-1 mb-1">Back</div>
+  <div *ngIf="!displayButtonBack" (click)="onBack()" class="btn btn-secondary mt-1 mb-1">Back</div>
   <mat-toolbar color="primary" class="main-toolbar">
     <span *ngIf="username">Albums of {{ username }}</span>
     <span *ngIf="categoryName">Songs of {{ categoryName }}</span>
@@ -23,6 +23,16 @@
           <mat-icon color="primary" *ngIf="currentFile && currentFile?.index === i && !state?.error">volume_up
           </mat-icon>
           <h6 *ngIf="currentFile && currentFile?.index === i && state?.error">ERROR</h6>
+          <mat-icon (click)="onLikeSong(file)" matTooltip="Like"
+            *ngIf=" currentUser && currentUser.username !== 'superadmin' && !isLiked(file)" style="cursor: pointer;"
+            class="more-icon" color="primary">
+            favorite_border
+          </mat-icon>
+          <mat-icon (click)="onLikeSong(file)" matTooltip="Unlike"
+            *ngIf="currentUser && currentUser.username !== 'superadmin' && isLiked(file)" style="cursor: pointer;"
+            class="more-icon" color="primary">
+            favorite
+          </mat-icon>
           <mat-icon (click)="openDialog(file)" style="cursor: pointer;" class="more-icon" color="primary">more_horiz
           </mat-icon>
           <mat-divider></mat-divider>

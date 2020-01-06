@@ -32,7 +32,9 @@ const routes: Routes = [
     children: [
       { path: 'edit-profile', component: EditProfileComponent },
       { path: 'upload-song', component: FormUploadComponent },
-      { path: 'edit-song', component: EditSongsComponent }
+      { path: 'edit-song', component: EditSongsComponent },
+      { path: 'my-songs/:id', component: PlayerComponent },
+      { path: 'my-favorite-songs/:id', component: PlayerComponent }
     ]
   },
   { path: 'albums', component: ListUsersComponent },

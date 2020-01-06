@@ -82,25 +82,36 @@ router.post("/upload", passport.authenticate('jwt', { session: false }), upload.
 router.get("/getAllSongs", (req, res, next) => {
     songModel
         .find({ status: { $eq: 0 } })
-        .select('_id url name artist userId userName categoryId artistId')
+        .select('_id url name artist userId userName categoryId artistId likedUsers')
         .then(songs => res.status(200).json(songs))
         .catch(err => res.status(404).json({ notfound: "Not found songs" }));
 });
 
 /* GET songs by user id */
 router.get("/getSongs", (req, res, next) => {
-    songModel
-        .find({ userId: { $eq: req.query.id }, status: { $eq: 0 } })
-        .select('_id url name artist userId userName categoryId artistId')
-        .then(songs => res.status(200).json(songs))
-        .catch(err => res.status(404).json({ notfound: "Not found songs" }));
+    if (req.query.favoriteMode === 'true') {
+        userModel.findById({ _id: req.query.id })
+            .populate('likedSongs.song', ['_id', 'url', 'name', 'artist', 'userId', 'userName', 'categoryId', 'artistId', 'likedUsers'])
+            .then(user => {
+                if (!user) {
+                    return res.status(404).json('User not found');
+                }
+                res.status(200).json(user.likedSongs);
+            }).catch(err => console.log(err));
+    } else {
+        songModel
+            .find({ userId: { $eq: req.query.id }, status: { $eq: 0 } })
+            .select('_id url name artist userId userName categoryId artistId likedUsers')
+            .then(songs => res.status(200).json(songs))
+            .catch(err => res.status(404).json({ notfound: "Not found songs" }));
+    }
 });
 
 /* GET songs by category id*/
 router.get("/getSongsByCategory", (req, res, next) => {
     songModel
         .find({ categoryId: { $eq: req.query.id }, status: { $eq: 0 } })
-        .select('_id url name artist userId userName categoryId artistId')
+        .select('_id url name artist userId userName categoryId artistId likedUsers')
         .then(songs => res.status(200).json(songs))
         .catch(err => res.status(404).json({ notfound: "Not found songs" }));
 });
@@ -109,7 +120,7 @@ router.get("/getSongsByCategory", (req, res, next) => {
 router.get("/getSongsByArtist", (req, res, next) => {
     songModel
         .find({ artistId: { $eq: req.query.id }, status: { $eq: 0 } })
-        .select('_id url name artist userId userName categoryId artistId')
+        .select('_id url name artist userId userName categoryId artistId likedUsers')
         .then(songs => res.status(200).json(songs))
         .catch(err => res.status(404).json({ notfound: "Not found songs" }));
 });
@@ -122,7 +133,7 @@ router.post("/edit-song", passport.authenticate('jwt', { session: false }), (req
             return res.status(401).json('Unauthorized');
         }
         songModel.findOneAndUpdate({ _id: id }, { $set: { name, artist, categoryId, artistId } }, { new: true })
-            .select('_id url name artist userId userName categoryId artistId')
+            .select('_id url name artist userId userName categoryId artistId likedUsers')
             .then(song => res.status(200).json(song)).catch(err => console.log(err));
     });
 });
@@ -135,7 +146,7 @@ router.post("/delete-song", passport.authenticate('jwt', { session: false }), (r
             return res.status(401).json('Unauthorized');
         }
         songModel.findOneAndUpdate({ _id: id }, { $set: { status: 1 } }, { new: true })
-            .select('_id url name artist userId userName categoryId artistId')
+            .select('_id url name artist userId userName categoryId artistId likedUsers')
             .then(song => res.status(200).json({})).catch(err => console.log(err));
     });
 });
@@ -144,6 +155,47 @@ router.post("/delete-song", passport.authenticate('jwt', { session: false }), (r
 router.get("/download/song", (req, res, next) => {
     const file = path.resolve(__dirname, `../public/watermark-songs/${req.query.typeFile}/${req.query.nameToDownload}`);
     res.download(file);
+});
+
+
+/* Like song */
+router.post("/like-song", passport.authenticate('jwt', { session: false }), (req, res, next) => {
+    const { id } = req.body;
+    songModel.findById({ _id: id }).then(song => {
+        if (!song) {
+            return res.status(404).json('Not found');
+        }
+        let likedUsers = [...song.likedUsers];
+        let likeMode = true;
+        if (likedUsers.filter(like => like.user.toString() === req.user._id.toString()).length > 0) {
+            // Unlike
+            const index = likedUsers.findIndex(like => like.user.toString() === req.user._id.toString());
+            song.likedUsers = song.likedUsers.filter((like, i) => i !== index);
+            song.save().then(updatedSong => res.status(200).json(updatedSong)).catch(err => console.log(err));
+            likeMode = false;
+        } else {
+            // Like
+            song.likedUsers = [...song.likedUsers, { user: req.user._id }];
+            song.save().then(updatedSong => res.status(200).json(updatedSong)).catch(err => console.log(err));
+        }
+
+        userModel.findById({ _id: req.user._id }).then(user => {
+            if (user) {
+                let likedSongs = [...user.likedSongs];
+                if (!likeMode) {
+                    // Unlike
+                    const index = likedSongs.findIndex(like => like.song.toString() === song._id.toString());
+                    user.likedSongs = user.likedSongs.filter((like, i) => i !== index);
+                    user.save();
+                } else {
+                    // Like
+                    user.likedSongs = [...user.likedSongs, { song: song._id }];
+                    user.save();
+                }
+            }
+        }).catch(err => console.log(err));
+
+    }).catch(err => console.log(err));
 });
 
 module.exports = router;

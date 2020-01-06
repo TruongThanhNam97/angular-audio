@@ -49,6 +49,7 @@ export class MediaFooterComponent implements OnInit {
     this.audioService.getVolumeSubject().subscribe((volume: number) => this.volume = volume);
     this.audioService.getMuteSubject().subscribe((mute: boolean) => this.mute = mute);
     this.audioService.getLoopSubject().subscribe((loop: boolean) => this.loop = loop);
+    this.cloudService.getUpdatedSongsAfterLikingSubject().subscribe(files => this.files = [...files]);
   }
 
   pause() {

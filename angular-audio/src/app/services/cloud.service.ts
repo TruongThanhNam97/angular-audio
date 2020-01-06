@@ -19,9 +19,24 @@ export class CloudService {
   private updatedSong: any;
   private updatedSongSubject$: Subject<any> = new Subject();
 
+  private updatedSongsAfterLikingSubject$: Subject<any> = new Subject();
+
+  private currentFileSubject$: Subject<any> = new Subject();
+
+  private selectedFavoriteSongs: string;
+
+
   constructor(private http: HttpClient) {
     this.SERVER_URL = environment.SERVER_URL;
     this.SERVER_URL_SOUND = environment.SERVER_URL_SOUND;
+  }
+
+  getCurrentFileSubject() {
+    return this.currentFileSubject$;
+  }
+
+  getUpdatedSongsAfterLikingSubject() {
+    return this.updatedSongsAfterLikingSubject$;
   }
 
   getAllSongs() {
@@ -37,7 +52,8 @@ export class CloudService {
             userId: cur.userId,
             userName: cur.userName,
             categoryId: cur.categoryId ? cur.categoryId : null,
-            artistId: cur.artistId ? cur.artistId : null
+            artistId: cur.artistId ? cur.artistId : null,
+            likedUsers: cur.likedUsers
           };
           acc.push(obj);
           return acc;
@@ -59,7 +75,36 @@ export class CloudService {
             nameToDownload: cur.url,
             userId: cur.userId,
             userName: cur.userName,
-            categoryId: cur.categoryId ? cur.categoryId : null
+            categoryId: cur.categoryId ? cur.categoryId : null,
+            likedUsers: cur.likedUsers
+          };
+          acc.push(obj);
+          return acc;
+        }, []);
+        return result;
+      }),
+      tap(files => {
+        this.allowGetSongs = false;
+        this.currentPlayList = [...files];
+        // this.currentPlayListSubject$.next(this.currentPlayList);
+      })
+    );
+  }
+
+  getFavoriteSongsByUserId(id: string) {
+    return this.http.get(this.SERVER_URL + 'getSongs', { params: { id, favoriteMode: 'true' } }).pipe(
+      map((files: any) => {
+        const result = files.reduce((acc, cur) => {
+          const obj = {
+            id: cur.song._id,
+            url: this.SERVER_URL_SOUND + cur.song.url,
+            name: cur.song.name,
+            artist: cur.song.artist,
+            nameToDownload: cur.song.url,
+            userId: cur.song.userId,
+            userName: cur.song.userName,
+            categoryId: cur.song.categoryId ? cur.song.categoryId : null,
+            likedUsers: cur.song.likedUsers
           };
           acc.push(obj);
           return acc;
@@ -79,12 +124,14 @@ export class CloudService {
       map((files: any) => {
         const result = files.reduce((acc, cur) => {
           const obj = {
+            id: cur._id,
             url: this.SERVER_URL_SOUND + cur.url,
             name: cur.name,
             artist: cur.artist,
             nameToDownload: cur.url,
             userId: cur.userId,
-            userName: cur.userName
+            userName: cur.userName,
+            likedUsers: cur.likedUsers
           };
           acc.push(obj);
           return acc;
@@ -104,12 +151,14 @@ export class CloudService {
       map((files: any) => {
         const result = files.reduce((acc, cur) => {
           const obj = {
+            id: cur._id,
             url: this.SERVER_URL_SOUND + cur.url,
             name: cur.name,
             artist: cur.artist,
             nameToDownload: cur.url,
             userId: cur.userId,
-            userName: cur.userName
+            userName: cur.userName,
+            likedUsers: cur.likedUsers
           };
           acc.push(obj);
           return acc;
@@ -140,7 +189,8 @@ export class CloudService {
           userId: song.userId,
           userName: song.userName,
           categoryId: song.categoryId ? song.categoryId : null,
-          artistId: song.artistId ? song.artistId : null
+          artistId: song.artistId ? song.artistId : null,
+          likedUsers: song.likedUsers
         };
       })
     );
@@ -152,6 +202,29 @@ export class CloudService {
         Authorization: localStorage.getItem('jwtToken')
       }
     });
+  }
+
+  likeSong(data) {
+    return this.http.post(`${this.SERVER_URL}like-song`, data, {
+      headers: {
+        Authorization: localStorage.getItem('jwtToken')
+      }
+    }).pipe(
+      map((song: any) => {
+        return {
+          id: song._id,
+          url: this.SERVER_URL_SOUND + song.url,
+          name: song.name,
+          artist: song.artist,
+          nameToDownload: song.url,
+          userId: song.userId,
+          userName: song.userName,
+          categoryId: song.categoryId ? song.categoryId : null,
+          artistId: song.artistId ? song.artistId : null,
+          likedUsers: song.likedUsers
+        };
+      })
+    );
   }
 
   getCurrentPlayList() {
@@ -185,6 +258,18 @@ export class CloudService {
 
   setCurrentPlayList(files) {
     this.currentPlayList = [...files];
+  }
+
+  setSelectedFavoriteSongs(favoriteSong) {
+    this.selectedFavoriteSongs = favoriteSong;
+  }
+
+  getSelectedFavoriteSongs() {
+    return this.selectedFavoriteSongs;
+  }
+
+  resetSelectedFavoriteSongs() {
+    this.selectedFavoriteSongs = null;
   }
 
 

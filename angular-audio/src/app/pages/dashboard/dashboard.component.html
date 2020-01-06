@@ -18,6 +18,22 @@
         <mat-icon mat-list-icon class="mr-2">person</mat-icon>Edit profile
       </a>
     </li>
+    <li class="nav-item">
+      <a style="display: flex; align-items: center;" class="nav-link" id="pills-profile-tab" data-toggle="pill"
+        [routerLink]="['my-songs', currentUser.id ]"
+        [queryParams]="{ username: currentUser.username, displayButtonBack: 'false'}" role="tab"
+        aria-controls="pills-profile" aria-selected="false">
+        <mat-icon mat-list-icon class="mr-2">library_music</mat-icon>My songs
+      </a>
+    </li>
+    <li class="nav-item">
+      <a style="display: flex; align-items: center;" class="nav-link" id="pills-profile-tab" data-toggle="pill"
+        [routerLink]="['my-favorite-songs', currentUser.id ]"
+        [queryParams]="{ username: currentUser.username, favoriteMode: 'true', displayButtonBack: 'false'}" role="tab"
+        aria-controls="pills-profile" aria-selected="false">
+        <mat-icon mat-list-icon class="mr-2">library_music</mat-icon>My favorite songs
+      </a>
+    </li>
   </ul>
   <div class="tab-content" id="pills-tabContent">
     <router-outlet></router-outlet>

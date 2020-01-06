@@ -12,7 +12,15 @@ const schema = new mongoose.Schema({
         type: Number,
         default: 0,
         required: true
-    }
+    },
+    likedUsers: [
+        {
+            user: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'users'
+            }
+        }
+    ]
 }, { versionKey: false });
 
 module.exports = mongoose.model('songs', schema);
