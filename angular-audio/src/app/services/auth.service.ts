@@ -6,7 +6,8 @@ import decode from 'jwt-decode';
 import { DECODE_TOKEN } from '../interfaces/decode-token';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
+import { CloudService } from './cloud.service';
 
 @Injectable({
     providedIn: 'root'
@@ -24,7 +25,7 @@ export class AuthService {
 
     private reupDectectedSubject$: Subject<number> = new Subject();
 
-    constructor(private http: HttpClient, private router: Router) {
+    constructor(private http: HttpClient, private router: Router, private cloudService: CloudService) {
         this.SERVER_URL = environment.SERVER_URL;
         this.SERVER_URL_SOUND = environment.SERVER_URL_SOUND;
     }
@@ -70,7 +71,17 @@ export class AuthService {
         if (this.currentUser.username === 'superadmin') {
             this.router.navigate(['/manage-categories/upload-category']);
         } else {
-            this.router.navigate(['/categories']);
+            this.cloudService.getBlockedSongs().pipe(
+                map((blockedSongs: any[]) => {
+                    const result = [];
+                    blockedSongs.forEach(blockedSong => result.push(blockedSong.id));
+                    return result;
+                }),
+                take(1)
+            ).subscribe(blockedSongs => {
+                this.cloudService.setBlockedSongsOfUser(blockedSongs);
+                this.router.navigate(['/categories']);
+            });
         }
     }
 
@@ -100,6 +111,7 @@ export class AuthService {
         this.isAuthenticatedSubject$.next(this.isAuthenticated);
         this.currentUserSubject$.next(this.currentUser);
         this.router.navigate(['/login']);
+        this.cloudService.setBlockedSongsOfUser([]);
     }
 
     isAuthenticate(): boolean {

@@ -1,25 +1,29 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AudioService } from 'src/app/services/audio.service';
 import { CloudService } from 'src/app/services/cloud.service';
 import { StreamState } from '../../interfaces/stream-state';
 import { MatDialog, MatBottomSheet } from '@angular/material';
 import { PopupComponent } from '../player/popup/popup.component';
 import { PlaylistPlayingComponent } from './playlist-playing/playlist-playing.component';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-media-footer',
   templateUrl: './media-footer.component.html',
   styleUrls: ['./media-footer.component.scss']
 })
-export class MediaFooterComponent implements OnInit {
+export class MediaFooterComponent implements OnInit, OnDestroy {
   state: StreamState;
   currentFile: any = {};
-  files: any;
+  files: any[];
   volume = 1;
   mute = false;
   previousVolume: number;
   loop = false;
   randomMode = false;
+
+  destroySubscription$: Subject<boolean> = new Subject();
 
   constructor(
     private audioService: AudioService,
@@ -30,12 +34,21 @@ export class MediaFooterComponent implements OnInit {
 
   ngOnInit() {
     this.files = this.cloudService.getCurrentPlayList();
-    this.cloudService.getCurrentPlayListSubject().subscribe(files => this.files = [...files]);
+    this.cloudService.getCurrentPlayListSubject().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(files => this.files = [...files]);
     this.currentFile = this.audioService.getCurrentFile();
-    this.audioService.getCurrentFileSubject1().subscribe(
+    this.audioService.getResetCurrentFileSubject().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(currentFile => this.currentFile = currentFile);
+    this.audioService.getCurrentFileSubject1().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(
       (file: any) => this.currentFile = { ...file }
     );
-    this.audioService.getState().subscribe(state => {
+    this.audioService.getState().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(state => {
       this.state = state;
       if (this.state.readableCurrentTime === this.state.readableDuration
         && this.state.readableCurrentTime !== '' && this.state.readableDuration !== '') {
@@ -46,10 +59,34 @@ export class MediaFooterComponent implements OnInit {
         }
       }
     });
-    this.audioService.getVolumeSubject().subscribe((volume: number) => this.volume = volume);
-    this.audioService.getMuteSubject().subscribe((mute: boolean) => this.mute = mute);
-    this.audioService.getLoopSubject().subscribe((loop: boolean) => this.loop = loop);
-    this.cloudService.getUpdatedSongsAfterLikingSubject().subscribe(files => this.files = [...files]);
+    this.audioService.getVolumeSubject().pipe(takeUntil(this.destroySubscription$)).subscribe((volume: number) => this.volume = volume);
+    this.audioService.getMuteSubject().pipe(takeUntil(this.destroySubscription$)).subscribe((mute: boolean) => this.mute = mute);
+    this.audioService.getLoopSubject().pipe(takeUntil(this.destroySubscription$)).subscribe((loop: boolean) => this.loop = loop);
+    this.cloudService.getUpdatedSongsAfterLikingSubject()
+      .pipe(takeUntil(this.destroySubscription$)).subscribe(files => this.files = [...files]);
+    this.cloudService.getBlockedSongsAfterBlockSubject().pipe(takeUntil(this.destroySubscription$)).subscribe(blockedSong => {
+      this.files = this.files.filter(song => song.id !== blockedSong.id);
+      const newIndex = this.files.findIndex(file => file.id === this.currentFile.file.id);
+      if (blockedSong.id === this.currentFile.file.id) {
+        const nextIndex = this.currentFile.index;
+        const preIndex = this.currentFile.index - 1;
+        if (this.files[nextIndex]) {
+          this.next1();
+        } else if (this.files[preIndex]) {
+          this.previous1();
+        } else {
+          this.audioService.resetCurentFile();
+          this.audioService.closePlayMode();
+          this.audioService.stop();
+        }
+      } else if (newIndex !== this.currentFile.index) {
+        this.audioService.getResetCurrentFileSubject().next({ index: newIndex, file: this.currentFile.file });
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this.destroySubscription$.next(true);
   }
 
   pause() {
@@ -70,10 +107,29 @@ export class MediaFooterComponent implements OnInit {
       this.audioService.updateCurrentFile2({ index, file });
     }
   }
+
+  next1() {
+    const index = this.currentFile.index;
+    if (index <= this.files.length - 1) {
+      const file = this.files[index];
+      this.audioService.updateCurrentFile2({ index, file });
+    }
+  }
+
   previous() {
     const index = this.currentFile.index - 1;
     const file = this.files[index];
-    this.audioService.updateCurrentFile2({ index, file });
+    if (file) {
+      this.audioService.updateCurrentFile2({ index, file });
+    }
+  }
+
+  previous1() {
+    const index = this.currentFile.index - 1;
+    const file = this.files[index];
+    if (file) {
+      this.audioService.updateCurrentFile2({ index, file });
+    }
   }
 
   random() {

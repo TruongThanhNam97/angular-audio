@@ -83,6 +83,9 @@ export class PlayerComponent implements OnInit, OnDestroy {
       }
     });
     this.currentFile = this.audioService.getCurrentFile();
+    this.audioService.getResetCurrentFileSubject().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(currentFile => this.currentFile = currentFile);
     if (this.audioService.getPlayMode() && ((this.username !== this.selectedAlbum) || (this.categoryName !== this.selectedCategory)
       || (this.artistName !== this.selectedArtist) || (this.favoriteMode !== this.selectedFavoriteMode))) {
       this.currentFile = {};
@@ -105,6 +108,12 @@ export class PlayerComponent implements OnInit, OnDestroy {
       if (this.isMatchCurrentPlayListAndCurrentPlayerAudio) {
         this.files = [...files];
       }
+    });
+    this.cloudService.getBlockedSongsAfterBlockSubject().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(blockedSong => {
+      this.files = this.files.filter(song => song.id !== blockedSong.id);
+      this.cloudService.setCurrentPlayList(this.files);
     });
   }
 

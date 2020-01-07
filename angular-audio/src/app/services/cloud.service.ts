@@ -26,6 +26,10 @@ export class CloudService {
   private selectedFavoriteSongs: string;
 
 
+  private blockedSongsOfUser: any[] = [];
+  private blockedSongsAfterBlockSubject$: Subject<any> = new Subject();
+
+
   constructor(private http: HttpClient) {
     this.SERVER_URL = environment.SERVER_URL;
     this.SERVER_URL_SOUND = environment.SERVER_URL_SOUND;
@@ -42,7 +46,7 @@ export class CloudService {
   getAllSongs() {
     return this.http.get(`${this.SERVER_URL}getAllSongs`).pipe(
       map((files: any) => {
-        const result = files.reduce((acc, cur) => {
+        let result = files.reduce((acc, cur) => {
           const obj = {
             id: cur._id,
             url: this.SERVER_URL_SOUND + cur.url,
@@ -58,6 +62,7 @@ export class CloudService {
           acc.push(obj);
           return acc;
         }, []);
+        result = result.filter(song => !this.blockedSongsOfUser.includes(song.id));
         return result;
       })
     );
@@ -66,7 +71,7 @@ export class CloudService {
   getSongsByUserId(id: string) {
     return this.http.get(this.SERVER_URL + 'getSongs', { params: { id } }).pipe(
       map((files: any) => {
-        const result = files.reduce((acc, cur) => {
+        let result = files.reduce((acc, cur) => {
           const obj = {
             id: cur._id,
             url: this.SERVER_URL_SOUND + cur.url,
@@ -81,6 +86,7 @@ export class CloudService {
           acc.push(obj);
           return acc;
         }, []);
+        result = result.filter(song => !this.blockedSongsOfUser.includes(song.id));
         return result;
       }),
       tap(files => {
@@ -94,7 +100,7 @@ export class CloudService {
   getFavoriteSongsByUserId(id: string) {
     return this.http.get(this.SERVER_URL + 'getSongs', { params: { id, favoriteMode: 'true' } }).pipe(
       map((files: any) => {
-        const result = files.reduce((acc, cur) => {
+        let result = files.reduce((acc, cur) => {
           const obj = {
             id: cur.song._id,
             url: this.SERVER_URL_SOUND + cur.song.url,
@@ -109,6 +115,7 @@ export class CloudService {
           acc.push(obj);
           return acc;
         }, []);
+        result = result.filter(song => !this.blockedSongsOfUser.includes(song.id));
         return result;
       }),
       tap(files => {
@@ -122,7 +129,7 @@ export class CloudService {
   getSongsByCategoryId(id: string) {
     return this.http.get(this.SERVER_URL + 'getSongsByCategory', { params: { id } }).pipe(
       map((files: any) => {
-        const result = files.reduce((acc, cur) => {
+        let result = files.reduce((acc, cur) => {
           const obj = {
             id: cur._id,
             url: this.SERVER_URL_SOUND + cur.url,
@@ -136,6 +143,7 @@ export class CloudService {
           acc.push(obj);
           return acc;
         }, []);
+        result = result.filter(song => !this.blockedSongsOfUser.includes(song.id));
         return result;
       }),
       tap(files => {
@@ -149,7 +157,7 @@ export class CloudService {
   getSongsByArtistId(id: string) {
     return this.http.get(this.SERVER_URL + 'getSongsByArtist', { params: { id } }).pipe(
       map((files: any) => {
-        const result = files.reduce((acc, cur) => {
+        let result = files.reduce((acc, cur) => {
           const obj = {
             id: cur._id,
             url: this.SERVER_URL_SOUND + cur.url,
@@ -163,6 +171,7 @@ export class CloudService {
           acc.push(obj);
           return acc;
         }, []);
+        result = result.filter(song => !this.blockedSongsOfUser.includes(song.id));
         return result;
       }),
       tap(files => {
@@ -272,5 +281,28 @@ export class CloudService {
     this.selectedFavoriteSongs = null;
   }
 
+  getBlockedSongs() {
+    return this.http.get(`${this.SERVER_URL}getBlockedSongs`, {
+      headers: {
+        Authorization: localStorage.getItem('jwtToken')
+      }
+    });
+  }
+
+  blockSong(data) {
+    return this.http.post(`${this.SERVER_URL}block-song`, data, {
+      headers: {
+        Authorization: localStorage.getItem('jwtToken')
+      }
+    });
+  }
+
+  setBlockedSongsOfUser(blockedSongs) {
+    this.blockedSongsOfUser = [...blockedSongs];
+  }
+
+  getBlockedSongsAfterBlockSubject() {
+    return this.blockedSongsAfterBlockSubject$;
+  }
 
 }

@@ -198,4 +198,53 @@ router.post("/like-song", passport.authenticate('jwt', { session: false }), (req
     }).catch(err => console.log(err));
 });
 
+/* Block song */
+router.post("/block-song", passport.authenticate('jwt', { session: false }), (req, res, next) => {
+    const { id } = req.body;
+    songModel.findById({ _id: id }).then(song => {
+        if (!song) {
+            return res.status(404).json('Song not found');
+        }
+        let blockMode = true;
+        userModel.findById({ _id: req.user._id }).then(user => {
+            if (!user) {
+                return res.status(404).json('User not found');
+            }
+            let blockedSongs = [...user.blockedSongs];
+            let blockedUsers = [...song.blockedUsers];
+            if (blockedSongs.filter(block => block.song.toString() === id.toString()).length > 0) {
+                // Unblock
+                blockMode = false;
+                let index = blockedSongs.findIndex(block => block.song.toString() === id.toString());
+                user.blockedSongs = blockedSongs.filter((block, i) => i !== index);
+                user.save()
+                    .then(user => res.status(200).json(user.blockedSongs.map(block => (block.song))))
+                    .catch(err => console.log(err));
+
+                index = blockedUsers.findIndex(block => block.user.toString() === req.user._id.toString());
+                song.blockedUsers = blockedUsers.filter((block, i) => i !== index);
+                song.save();
+            } else {
+                // block
+                user.blockedSongs = [...blockedSongs, { song: id }];
+                user.save()
+                    .then(user => res.status(200).json(user.blockedSongs.map(block => (block.song))))
+                    .catch(err => console.log(err));
+                song.blockedUsers = [...blockedUsers, { user: req.user._id }];
+                song.save();
+            }
+        }).catch(err => console.log(err));
+    }).catch(err => console.log(err));
+});
+
+/* GET blocked songs of user */
+router.get('/getBlockedSongs', passport.authenticate('jwt', { session: false }), (req, res, next) => {
+    userModel.findById({ _id: req.user._id }).populate('blockedSongs.song', ['name', 'artist']).then(user => {
+        if (!user) {
+            return res.status(404).json('User not found');
+        }
+        res.status(200).json(user.blockedSongs.map(block => ({ id: block.song._id, name: block.song.name, artist: block.song.artist })));
+    }).catch(err => console.log(err));
+});
+
 module.exports = router;

@@ -32,6 +32,7 @@ import { ManageArtistComponent } from './pages/manage-artist/manage-artist.compo
 import { EditArtistComponent } from './pages/edit-artist/edit-artist.component';
 import { UploadArtistComponent } from './pages/upload-artist/upload-artist.component';
 import { ArtistsComponent } from './pages/artists/artists.component';
+import { ManageBlockedSongsComponent } from './pages/manage-blocked-songs/manage-blocked-songs.component';
 
 @NgModule({
   declarations: [
@@ -60,7 +61,8 @@ import { ArtistsComponent } from './pages/artists/artists.component';
     ManageArtistComponent,
     EditArtistComponent,
     UploadArtistComponent,
-    ArtistsComponent
+    ArtistsComponent,
+    ManageBlockedSongsComponent
   ],
   imports: [
     BrowserModule,

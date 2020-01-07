@@ -85,6 +85,8 @@ export class ManageSongsComponent implements OnInit, OnDestroy {
     this.selectedArtist = this.artistsService.getSelectedArtist();
 
     this.currentFile = this.audioService.getCurrentFile();
+    this.audioService.getResetCurrentFileSubject()
+      .pipe(takeUntil(this.destroySubscription$)).subscribe(currentFile => this.currentFile = currentFile);
     // if (this.audioService.getPlayMode() && ((this.username !== this.selectedAlbum) || (this.categoryName !== this.selectedCategory)
     //   || (this.artistName !== this.selectedArtist))) {
     //   this.currentFile = {};

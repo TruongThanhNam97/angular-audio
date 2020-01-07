@@ -42,6 +42,9 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
     this.currentUser = this.authService.getCurrentUser();
     this.files = [...this.data];
     this.currentFile = this.audioService.getCurrentFile();
+    this.audioService.getResetCurrentFileSubject().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(currentFile => this.currentFile = currentFile);
     this.audioService.getCurrentFileSubject2().pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe((v: any) => {
@@ -51,6 +54,12 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
     this.cloudService.getUpdatedSongsAfterLikingSubject().pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(files => this.files = [...files]);
+    this.cloudService.getBlockedSongsAfterBlockSubject().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(blockedSong => {
+      this.files = this.files.filter(song => song.id !== blockedSong.id);
+      this.cdt.detectChanges();
+    });
   }
 
   isLiked(song: any): boolean {

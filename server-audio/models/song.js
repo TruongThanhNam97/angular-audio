@@ -20,6 +20,14 @@ const schema = new mongoose.Schema({
                 ref: 'users'
             }
         }
+    ],
+    blockedUsers: [
+        {
+            user: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'users'
+            }
+        }
     ]
 }, { versionKey: false });
 

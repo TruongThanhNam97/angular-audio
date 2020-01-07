@@ -1,8 +1,14 @@
 <mat-list color="primary" style="width: 400px;">
-  <h5 style="text-align: center;margin: 0;">Song name: {{ data.name }}</h5>
-  <mat-list-item (click)="downloadFile()" class="feature" style="display: flex;justify-content: center; cursor: pointer;">
+  <h5 style="text-align: center;margin: 0;font-size: 20px;">Song name: {{ data.name }}</h5>
+  <mat-list-item (click)="downloadFile()" class="feature"
+    style="display: flex;justify-content: center; cursor: pointer;">
     <mat-icon color="primary" mat-list-icon>cloud_download</mat-icon>
     <h5 style="margin: 0;">Download</h5>
+  </mat-list-item>
+  <mat-list-item *ngIf="currentUser && currentUser.username !== 'superadmin'" (click)="onBlock()" class="feature"
+    style="display: flex;justify-content: center; cursor: pointer;">
+    <mat-icon color="primary" mat-list-icon>lock</mat-icon>
+    <h5 style="margin: 0;">Block</h5>
     <mat-divider></mat-divider>
   </mat-list-item>
 </mat-list>
