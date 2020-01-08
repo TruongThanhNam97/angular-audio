@@ -36,10 +36,14 @@
     </li>
     <li class="nav-item">
       <a style="display: flex; align-items: center;" class="nav-link" id="pills-profile-tab" data-toggle="pill"
-        [routerLink]="['blocked-songs']"
-        [queryParams]="{ username: currentUser.username, favoriteMode: 'true', displayButtonBack: 'false'}" role="tab"
-        aria-controls="pills-profile" aria-selected="false">
+        [routerLink]="['blocked-songs']" role="tab" aria-controls="pills-profile" aria-selected="false">
         <mat-icon mat-list-icon class="mr-2">lock</mat-icon>My blocked songs
+      </a>
+    </li>
+    <li class="nav-item">
+      <a style="display: flex; align-items: center;" class="nav-link" id="pills-profile-tab" data-toggle="pill"
+        [routerLink]="['manage-playlist']" role="tab" aria-controls="pills-profile" aria-selected="false">
+        <mat-icon mat-list-icon class="mr-2">queue_music</mat-icon>My playlist
       </a>
     </li>
   </ul>

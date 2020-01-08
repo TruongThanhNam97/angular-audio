@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -33,6 +33,10 @@ import { EditArtistComponent } from './pages/edit-artist/edit-artist.component';
 import { UploadArtistComponent } from './pages/upload-artist/upload-artist.component';
 import { ArtistsComponent } from './pages/artists/artists.component';
 import { ManageBlockedSongsComponent } from './pages/manage-blocked-songs/manage-blocked-songs.component';
+import { ManagePlaylistComponent } from './pages/manage-playlist/manage-playlist.component';
+import { PopupPlaylistComponent } from './pages/manage-playlist/popup-playlist/popup-playlist.component';
+import { PopupMoveSongToPlaylistComponent } from './pages/manage-playlist/popup-move-song-to-playlist/popup-move-song-to-playlist.component';
+import { FilterPlayListNamePipe } from './pages/manage-playlist/popup-move-song-to-playlist/pipe/filter-playlist-name.pipe';
 
 @NgModule({
   declarations: [
@@ -62,7 +66,11 @@ import { ManageBlockedSongsComponent } from './pages/manage-blocked-songs/manage
     EditArtistComponent,
     UploadArtistComponent,
     ArtistsComponent,
-    ManageBlockedSongsComponent
+    ManageBlockedSongsComponent,
+    ManagePlaylistComponent,
+    PopupPlaylistComponent,
+    PopupMoveSongToPlaylistComponent,
+    FilterPlayListNamePipe
   ],
   imports: [
     BrowserModule,
@@ -70,14 +78,17 @@ import { ManageBlockedSongsComponent } from './pages/manage-blocked-songs/manage
     BrowserAnimationsModule,
     MaterialModule,
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
+    FormsModule
   ],
   entryComponents: [
     PopupComponent,
     PopupBanComponent,
     PlaylistPlayingComponent,
     PopupEditSongComponent,
-    PopupThreeTypesComponent
+    PopupThreeTypesComponent,
+    PopupPlaylistComponent,
+    PopupMoveSongToPlaylistComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -9,6 +9,7 @@ import { PopupComponent } from '../../player/popup/popup.component';
 import { takeUntil } from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
 import { CloudService } from 'src/app/services/cloud.service';
+import { PlayListService } from 'src/app/services/playlist.service';
 
 @Component({
   selector: 'app-playlist-playing',
@@ -35,7 +36,8 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private cdt: ChangeDetectorRef,
     private cloudService: CloudService,
-    @Inject(MAT_BOTTOM_SHEET_DATA) public data: any
+    @Inject(MAT_BOTTOM_SHEET_DATA) public data: any,
+    private playlistService: PlayListService
   ) { }
 
   ngOnInit() {
@@ -49,6 +51,7 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
       takeUntil(this.destroySubscription$)
     ).subscribe((v: any) => {
       this.currentFile = { index: v.index, file: v.file };
+      // this.cloudService.setCurr
       this.cdt.detectChanges();
     });
     this.cloudService.getUpdatedSongsAfterLikingSubject().pipe(
@@ -60,6 +63,12 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
       this.files = this.files.filter(song => song.id !== blockedSong.id);
       this.cdt.detectChanges();
     });
+    this.playlistService.getListSongsAfterDeleteFromPlayListSubject().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(data => {
+      this.files = this.files.filter(song => song.id !== data.songId);
+      this.cdt.detectChanges();
+    });
   }
 
   isLiked(song: any): boolean {
@@ -69,9 +78,16 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
   onLikeSong(song: any) {
     return this.cloudService.likeSong({ id: song.id }).pipe(
       takeUntil(this.destroySubscription$)
-    ).subscribe(song => {
-      const index = this.files.findIndex(item => item.id === song.id);
-      this.files = [...this.files.filter((v, i) => i < index), { ...song }, ...this.files.filter((v, i) => i > index)];
+    ).subscribe(updatedSong => {
+      const index = this.files.findIndex(item => item.id === updatedSong.id);
+      this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
+      if (song.playlistId && song.playlistName) {
+        this.files = this.files.map(item => {
+          item.playlistId = song.playlistId;
+          item.playlistName = song.playlistName;
+          return item;
+        });
+      }
       this.cloudService.getUpdatedSongsAfterLikingSubject().next(this.files);
     }, err => console.log(err));
   }

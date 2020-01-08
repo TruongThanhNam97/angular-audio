@@ -12,6 +12,7 @@ import { CategoryService } from 'src/app/services/categories.service';
 import { ArtistsService } from 'src/app/services/artists.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { AlertifyService } from 'src/app/services/alertify.service';
+import { PlayListService } from 'src/app/services/playlist.service';
 
 @Component({
   selector: 'app-player',
@@ -30,11 +31,13 @@ export class PlayerComponent implements OnInit, OnDestroy {
   username: string = null;
   artistName: string = null;
   favoriteMode: string = null;
+  playlist: string = null;
   displayButtonBack: string = null;
   selectedAlbum: string;
   selectedCategory: string;
   selectedArtist: string;
   selectedFavoriteMode: string;
+  selectedPlayList: string;
 
   isMatchCurrentPlayListAndCurrentPlayerAudio: boolean;
 
@@ -48,7 +51,8 @@ export class PlayerComponent implements OnInit, OnDestroy {
     private categoryService: CategoryService,
     private artistsService: ArtistsService,
     private authService: AuthService,
-    private alertify: AlertifyService
+    private alertify: AlertifyService,
+    private playListService: PlayListService
   ) { }
 
   ngOnInit() {
@@ -59,6 +63,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.selectedCategory = this.categoryService.getSelectedCategory();
     this.selectedArtist = this.artistsService.getSelectedArtist();
     this.selectedFavoriteMode = this.cloudService.getSelectedFavoriteSongs();
+    this.selectedPlayList = this.playListService.getSelectedPlayList();
     this.route.params.subscribe(param => this.id = param.id);
     this.route.queryParams.subscribe(param => {
       if (param.displayButtonBack) {
@@ -81,13 +86,18 @@ export class PlayerComponent implements OnInit, OnDestroy {
         this.artistName = param.artistName;
         this.loadSongsByArtistId(this.id);
       }
+      if (param.playlist) {
+        this.playlist = param.playlist;
+        this.loadSongsByPlayList();
+      }
     });
     this.currentFile = this.audioService.getCurrentFile();
     this.audioService.getResetCurrentFileSubject().pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(currentFile => this.currentFile = currentFile);
     if (this.audioService.getPlayMode() && ((this.username !== this.selectedAlbum) || (this.categoryName !== this.selectedCategory)
-      || (this.artistName !== this.selectedArtist) || (this.favoriteMode !== this.selectedFavoriteMode))) {
+      || (this.artistName !== this.selectedArtist) || (this.favoriteMode !== this.selectedFavoriteMode)
+      || (this.playlist !== this.selectedPlayList))) {
       this.currentFile = {};
     } else {
       this.isMatchCurrentPlayListAndCurrentPlayerAudio = true;
@@ -115,6 +125,12 @@ export class PlayerComponent implements OnInit, OnDestroy {
       this.files = this.files.filter(song => song.id !== blockedSong.id);
       this.cloudService.setCurrentPlayList(this.files);
     });
+    this.playListService.getListSongsAfterDeleteFromPlayListSubject().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(data => {
+      this.files = this.files.filter(song => song.id !== data.songId);
+      this.cloudService.setCurrentPlayList(this.files);
+    });
   }
 
   isLiked(song: any): boolean {
@@ -127,6 +143,13 @@ export class PlayerComponent implements OnInit, OnDestroy {
     ).subscribe(song => {
       const index = this.files.findIndex(item => item.id === song.id);
       this.files = [...this.files.filter((v, i) => i < index), { ...song }, ...this.files.filter((v, i) => i > index)];
+      if (this.playlist) {
+        this.files = this.files.map(song => {
+          song.playlistId = this.id;
+          song.playlistName = this.playlist;
+          return song;
+        });
+      }
       if (this.isMatchCurrentPlayListAndCurrentPlayerAudio) {
         this.cloudService.getUpdatedSongsAfterLikingSubject().next(this.files);
       }
@@ -171,6 +194,11 @@ export class PlayerComponent implements OnInit, OnDestroy {
     }, err => { }, () => this.loading = false);
   }
 
+  loadSongsByPlayList() {
+    this.files = [...this.playListService.getListSongsOfPlayList()];
+    this.cloudService.setCurrentPlayList(this.files);
+  }
+
   ngOnDestroy() {
     this.destroySubscription$.next(true);
   }
@@ -178,7 +206,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
   openFile(file, index) {
     this.audioService.updatePlayMode();
     if (this.username && this.selectedAlbum === this.username || this.categoryName && this.selectedCategory === this.categoryName
-      || this.artistName && this.selectedArtist === this.artistName) {
+      || this.artistName && this.selectedArtist === this.artistName || this.playlist && this.selectedPlayList === this.playlist) {
       this.currentFile = { index, file };
     }
     this.audioService.updateCurrentFile1({ index, file });
@@ -209,6 +237,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
       this.categoryService.resetSelectedCategory();
       this.artistsService.resetSelectedArtist();
       this.cloudService.resetSelectedFavoriteSongs();
+      this.playListService.resetSelectedPlayList();
       this.album.setSelectedAlbum(this.username);
       this.selectedAlbum = this.username;
     }
@@ -216,6 +245,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
       this.album.resetSelectedAlbum();
       this.artistsService.resetSelectedArtist();
       this.cloudService.resetSelectedFavoriteSongs();
+      this.playListService.resetSelectedPlayList();
       this.categoryService.setSelectedCategory(this.categoryName);
       this.selectedCategory = this.categoryName;
     }
@@ -223,14 +253,24 @@ export class PlayerComponent implements OnInit, OnDestroy {
       this.album.resetSelectedAlbum();
       this.categoryService.resetSelectedCategory();
       this.cloudService.resetSelectedFavoriteSongs();
+      this.playListService.resetSelectedPlayList();
       this.artistsService.setSelectedArtist(this.artistName);
       this.selectedArtist = this.artistName;
     }
     if (this.favoriteMode) {
       this.categoryService.resetSelectedCategory();
       this.artistsService.resetSelectedArtist();
+      this.playListService.resetSelectedPlayList();
       this.cloudService.setSelectedFavoriteSongs(this.favoriteMode);
       this.selectedFavoriteMode = this.favoriteMode;
+    }
+    if (this.playlist) {
+      this.album.resetSelectedAlbum();
+      this.categoryService.resetSelectedCategory();
+      this.artistsService.resetSelectedArtist();
+      this.cloudService.resetSelectedFavoriteSongs();
+      this.playListService.setSelectedPlayList(this.playlist);
+      this.selectedPlayList = this.playlist;
     }
     this.cloudService.updateCurrentPlayList();
   }

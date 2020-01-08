@@ -59,17 +59,22 @@ var watermark = (req, res, next) => {
             watermarker.Watermark(filename,
                 () => saveSongMetadata(req, res, filename),
                 (err) => {
-                    userModel.findById({ _id: req.user.id }).then(user => {
-                        let numberOfReup = user.numberOfReup;
-                        numberOfReup++;
-                        if (numberOfReup > 3) {
-                            return res.status(400).json({ error: { err: 'Cannot upload music' } });
-                        }
-                        userModel.findOneAndUpdate({ _id: req.user.id }, { $set: { numberOfReup } }, { new: true })
-                            .then(updatedUser => {
-                                res.status(400).json({ error: { err: `${req.body.name}: Reup Detected`, numberOfReup: updatedUser.numberOfReup } });
-                            });
-                    });
+                    if (err.toString().includes('Reup detected')) {
+                        userModel.findById({ _id: req.user.id }).then(user => {
+                            let numberOfReup = user.numberOfReup;
+                            numberOfReup++;
+                            if (numberOfReup > 3) {
+                                return res.status(400).json({ error: { err: 'Cannot upload music' } });
+                            }
+                            userModel.findOneAndUpdate({ _id: req.user.id }, { $set: { numberOfReup } }, { new: true })
+                                .then(updatedUser => {
+                                    res.status(400).json({ error: { err: `${req.body.name}: Reup Detected`, numberOfReup: updatedUser.numberOfReup } });
+                                });
+                        });
+                    } else {
+                        console.log(err.toString());
+                        res.status(400).json({ error: { err: err.toString() } });
+                    }
                 }
             )
         }

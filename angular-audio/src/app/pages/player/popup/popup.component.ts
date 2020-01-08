@@ -7,6 +7,9 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AlertifyService } from 'src/app/services/alertify.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { PopupMoveSongToPlaylistComponent } from '../../manage-playlist/popup-move-song-to-playlist/popup-move-song-to-playlist.component';
+import { PlayListService } from 'src/app/services/playlist.service';
+import { ThrowStmt } from '@angular/compiler';
 
 @Component({
   selector: 'app-popup',
@@ -25,7 +28,8 @@ export class PopupComponent implements OnInit, OnDestroy {
     public dialog: MatDialog,
     private cloudService: CloudService,
     private alertify: AlertifyService,
-    private authService: AuthService
+    private authService: AuthService,
+    private playlistService: PlayListService
   ) { }
 
   ngOnInit() {
@@ -49,6 +53,26 @@ export class PopupComponent implements OnInit, OnDestroy {
       this.dialogRef.close();
       this.alertify.success('Block successfully');
       this.cloudService.getBlockedSongsAfterBlockSubject().next(this.data);
+    });
+  }
+
+  onAddSongToPlayList() {
+    this.dialog.open(PopupMoveSongToPlaylistComponent, { data: this.data });
+    this.dialogRef.close();
+  }
+
+  onDeleteSongFromPlayList() {
+    const data = {
+      playlistId: this.data.playlistId,
+      songId: this.data.id
+    };
+    this.playlistService.deleteSongFromPlayList(data).pipe(
+      takeUntil(this.destroySubscriptions)
+    ).subscribe(playlist => {
+      this.dialogRef.close();
+      this.alertify.success('Delete successfully');
+      this.playlistService.getUdatedPlayListAfterAddOrDeleteSongSubject().next(playlist);
+      this.playlistService.getListSongsAfterDeleteFromPlayListSubject().next({ playlist, songId: this.data.id });
     });
   }
 

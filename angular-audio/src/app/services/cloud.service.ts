@@ -301,6 +301,10 @@ export class CloudService {
     this.blockedSongsOfUser = [...blockedSongs];
   }
 
+  getBlockedSongsOfUser() {
+    return this.blockedSongsOfUser;
+  }
+
   getBlockedSongsAfterBlockSubject() {
     return this.blockedSongsAfterBlockSubject$;
   }
