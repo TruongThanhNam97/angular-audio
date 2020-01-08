@@ -22,6 +22,7 @@ import { UploadArtistComponent } from './pages/upload-artist/upload-artist.compo
 import { EditArtistComponent } from './pages/edit-artist/edit-artist.component';
 import { ArtistsComponent } from './pages/artists/artists.component';
 import { ManageBlockedSongsComponent } from './pages/manage-blocked-songs/manage-blocked-songs.component';
+import { ManagePlaylistComponent } from './pages/manage-playlist/manage-playlist.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/categories', pathMatch: 'full' },
@@ -37,6 +38,8 @@ const routes: Routes = [
       { path: 'my-songs/:id', component: PlayerComponent },
       { path: 'my-favorite-songs/:id', component: PlayerComponent },
       { path: 'blocked-songs', component: ManageBlockedSongsComponent },
+      { path: 'manage-playlist', component: ManagePlaylistComponent },
+      { path: 'manage-playlist/:id', component: PlayerComponent },
     ]
   },
   { path: 'albums', component: ListUsersComponent },

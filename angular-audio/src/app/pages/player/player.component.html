@@ -1,9 +1,11 @@
 <div class="container">
   <div *ngIf="!displayButtonBack" (click)="onBack()" class="btn btn-secondary mt-1 mb-1">Back</div>
+  <a *ngIf="displayButtonBack && playlist" [routerLink]="['../']" class="btn btn-secondary mt-1 mb-1">Back</a>
   <mat-toolbar color="primary" class="main-toolbar">
-    <span *ngIf="username">Albums of {{ username }}</span>
-    <span *ngIf="categoryName">Songs of {{ categoryName }}</span>
-    <span *ngIf="artistName">Songs of {{ artistName }}</span>
+    <span *ngIf="username">Album name: {{ username }}</span>
+    <span *ngIf="categoryName">Category name: {{ categoryName }}</span>
+    <span *ngIf="artistName">Artist name: {{ artistName }}</span>
+    <span *ngIf="playlist">Playlist name : {{ playlist }}</span>
   </mat-toolbar>
   <div class="content" style="display: flex;margin-top: 50px;">
     <div class="logo" style="width: 20%;">

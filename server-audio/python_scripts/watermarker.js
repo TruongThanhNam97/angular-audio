@@ -14,7 +14,7 @@ class Watermarker {
                 return next();
         });
         pyWatermarker.stderr.on('data', (data) => {
-            on_error();
+            on_error(data);
         })
     }
 }

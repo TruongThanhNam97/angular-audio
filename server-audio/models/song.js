@@ -28,6 +28,12 @@ const schema = new mongoose.Schema({
                 ref: 'users'
             }
         }
+    ],
+    listPlayLists: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'playlists'
+        }
     ]
 }, { versionKey: false });
 

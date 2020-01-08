@@ -7,6 +7,7 @@ import { PopupComponent } from '../player/popup/popup.component';
 import { PlaylistPlayingComponent } from './playlist-playing/playlist-playing.component';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { PlayListService } from 'src/app/services/playlist.service';
 
 @Component({
   selector: 'app-media-footer',
@@ -29,7 +30,8 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
     private audioService: AudioService,
     private cloudService: CloudService,
     private dialog: MatDialog,
-    private bottomSheet: MatBottomSheet
+    private bottomSheet: MatBottomSheet,
+    private playlistService: PlayListService
   ) { }
 
   ngOnInit() {
@@ -81,6 +83,29 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
         }
       } else if (newIndex !== this.currentFile.index) {
         this.audioService.getResetCurrentFileSubject().next({ index: newIndex, file: this.currentFile.file });
+        this.audioService.setCurrentFile({ index: newIndex, file: this.currentFile.file });
+      }
+    });
+    this.playlistService.getListSongsAfterDeleteFromPlayListSubject().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(data => {
+      this.files = this.files.filter(song => song.id !== data.songId);
+      const newIndex = this.files.findIndex(file => file.id === this.currentFile.file.id);
+      if (data.songId === this.currentFile.file.id) {
+        const nextIndex = this.currentFile.index;
+        const preIndex = this.currentFile.index - 1;
+        if (this.files[nextIndex]) {
+          this.next1();
+        } else if (this.files[preIndex]) {
+          this.previous1();
+        } else {
+          this.audioService.resetCurentFile();
+          this.audioService.closePlayMode();
+          this.audioService.stop();
+        }
+      } else if (newIndex !== this.currentFile.index) {
+        this.audioService.getResetCurrentFileSubject().next({ index: newIndex, file: this.currentFile.file });
+        this.audioService.setCurrentFile({ index: newIndex, file: this.currentFile.file });
       }
     });
   }

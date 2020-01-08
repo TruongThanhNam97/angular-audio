@@ -89,6 +89,10 @@ export class AudioService {
     return this.currentFile;
   }
 
+  setCurrentFile(file) {
+    this.currentFile = { ...file };
+  }
+
   resetCurentFile() {
     this.currentFile = {};
     this.resetCurrentFileSubject$.next(this.currentFile);
