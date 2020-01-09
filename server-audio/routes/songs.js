@@ -20,11 +20,14 @@ var storage = multer.diskStorage({
 var upload = multer({
     storage: storage,
     fileFilter: (req, file, cb) => {
-        if (file.originalname.match(/\.(mp3|MP3|wav|WAV|m4A|M4A|flac|FLAC|mp4|MP4)$/)) {
+        if (file.originalname.match(/\.(mp3|MP3|wav|WAV|m4A|M4A|flac|FLAC)$/)) {
             cb(null, true);
         } else {
             cb(null, false);
         }
+    },
+    limits: {
+        fileSize: 60000000
     }
 });
 

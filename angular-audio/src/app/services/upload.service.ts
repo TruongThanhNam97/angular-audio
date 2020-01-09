@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpEventType } from '@angular/common/http';
-import { map } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
 import { CloudService } from './cloud.service';
 import { environment } from 'src/environments/environment';
 import { Subject } from 'rxjs';
@@ -14,6 +13,7 @@ export class UploadService {
 
   private queueProcessing = 0;
   private queueProcessingSubject$: Subject<number> = new Subject();
+
 
   constructor(private http: HttpClient, private cloudService: CloudService) {
     this.SERVER_URL = environment.SERVER_URL;
@@ -30,6 +30,11 @@ export class UploadService {
 
   addQueueProcessing() {
     this.queueProcessing++;
+    this.queueProcessingSubject$.next(this.queueProcessing);
+  }
+
+  setAllQueueProcessing(numberOfSongs) {
+    this.queueProcessing = numberOfSongs;
     this.queueProcessingSubject$.next(this.queueProcessing);
   }
 

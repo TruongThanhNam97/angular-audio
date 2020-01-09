@@ -25,6 +25,7 @@ export class AuthService {
 
     private reupDectectedSubject$: Subject<number> = new Subject();
 
+
     constructor(private http: HttpClient, private router: Router, private cloudService: CloudService) {
         this.SERVER_URL = environment.SERVER_URL;
         this.SERVER_URL_SOUND = environment.SERVER_URL_SOUND;

@@ -8,7 +8,7 @@ import { PopupBanComponent } from '../login/popup-ban/popup-ban.component';
 import { FormGroup, FormArray, FormControl, Validators } from '@angular/forms';
 import { UploadService } from 'src/app/services/upload.service';
 import { takeUntil, take } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+import { Subject, concat, merge } from 'rxjs';
 import { CategoryService } from 'src/app/services/categories.service';
 
 @Component({
@@ -28,7 +28,7 @@ export class FormUploadComponent implements OnInit {
 
   destroySubscription$: Subject<boolean> = new Subject();
 
-  typeFileMusic = ['mp3', 'MP3', 'wav', 'WAV', 'm4a', 'M4A', 'flac', 'FLAC', 'mp4', 'MP4'];
+  typeFileMusic = ['mp3', 'MP3', 'wav', 'WAV', 'm4a', 'M4A', 'flac', 'FLAC'];
 
   categories: any;
 
@@ -61,7 +61,7 @@ export class FormUploadComponent implements OnInit {
         const formGroup = new FormGroup({
           name: new FormControl(song.split('-')[0], [Validators.required, Validators.maxLength(50)]),
           artist: new FormControl(song.split('-')[1], [Validators.required, Validators.maxLength(50)]),
-          file: new FormControl(file, [this.validateFile.bind(this)])
+          file: new FormControl(file, [this.validateFile.bind(this), this.validateFileSize.bind(this)])
         });
         (this.signForm.get('arrSongs') as FormArray).push(formGroup);
       }
@@ -71,9 +71,17 @@ export class FormUploadComponent implements OnInit {
 
   validateFile(control: FormControl): { [key: string]: boolean } {
     if (control.value) {
+      console.log(control.value);
       const lastIndex = control.value.name.lastIndexOf('.');
       const typeFile = control.value.name.slice(lastIndex + 1);
       return this.typeFileMusic.includes(typeFile) ? null : { invalid: true };
+    }
+  }
+
+  validateFileSize(control: FormControl): { [key: string]: boolean } {
+    if (control.value) {
+      const fileSize = (control.value.size / 1000000).toFixed(1);
+      return +fileSize <= 60 ? null : { invalidSize: true };
     }
   }
 
@@ -87,16 +95,26 @@ export class FormUploadComponent implements OnInit {
     return (this.signForm.get('arrSongs') as FormArray).controls;
   }
 
-  onSave(control: FormControl, index: number) {
-    this.uploadService.addQueueProcessing();
-    const formData = new FormData();
-    formData.append('name', control.value.name);
-    formData.append('artist', control.value.artist);
-    formData.append('file', control.value.file);
-    this.alertify.success('Waiting processing');
-    this.uploadService.uploadSong(formData).pipe(
-      takeUntil(this.destroySubscription$)
-    ).subscribe(
+  onRemove(index: number) {
+    (this.signForm.get('arrSongs') as FormArray).removeAt(index);
+  }
+
+  getStatusOfArrSongs() {
+    return (this.signForm.get('arrSongs') as FormArray).invalid;
+  }
+
+  saveAll() {
+    let arrOb$ = [];
+    const arrSongs = (this.signForm.get('arrSongs') as FormArray).value;
+    this.uploadService.setAllQueueProcessing(arrSongs.length);
+    arrSongs.forEach(song => {
+      const formData = new FormData();
+      formData.append('name', song.name);
+      formData.append('artist', song.artist);
+      formData.append('file', song.file);
+      arrOb$.push(this.uploadService.uploadSong(formData));
+    });
+    merge(...arrOb$).pipe(takeUntil(this.destroySubscription$)).subscribe(
       (res: any) => {
         const songName = res.song.name;
         this.alertify.success(`Song name: ${songName} has been processed`);
@@ -104,22 +122,23 @@ export class FormUploadComponent implements OnInit {
       },
       err => {
         this.uploadService.minusQueueProcessing();
-        localStorage.setItem('reup', err.error.error.numberOfReup);
-        this.authService.updateReupDectected(err.error.error.numberOfReup);
-        if (err.error.error.numberOfReup >= 3) {
-          this.authService.logOut();
-          this.dialog.open(PopupBanComponent, { data: 'Your account is banned' });
-        }
-        if (err.error.error.err !== 'Cannot upload music') {
+        if (err.error.error.numberOfReup) {
+          localStorage.setItem('reup', err.error.error.numberOfReup);
+          this.authService.updateReupDectected(err.error.error.numberOfReup);
+          if (err.error.error.numberOfReup >= 3) {
+            this.authService.logOut();
+            this.dialog.open(PopupBanComponent, { data: 'Your account is banned' });
+          }
+          if (err.error.error.err !== 'Cannot upload music') {
+            this.alertify.error(err.error.error.err);
+          }
+        } else {
+          console.log(err.error.error.err);
           this.alertify.error(err.error.error.err);
         }
       }
     );
-    (this.signForm.get('arrSongs') as FormArray).removeAt(index);
-  }
-
-  onRemove(index: number) {
-    (this.signForm.get('arrSongs') as FormArray).removeAt(index);
+    (this.signForm.get('arrSongs') as FormArray).clear();
   }
 
 }

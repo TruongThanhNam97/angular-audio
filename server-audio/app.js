@@ -4,6 +4,7 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var passport = require("passport");
+const rateLimit = require("express-rate-limit");
 
 var songsRouter = require("./routes/songs");
 var usersRouter = require("./routes/users");
@@ -24,9 +25,18 @@ mongoose
   )
   .then(v => console.log("Connect database successfully!"));
 
+// Set API rate limit for all request
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
+});
+
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jade");
+
+// apply api rate limiter to all request
+app.use(limiter);
 
 app.use(logger("dev"));
 app.use(express.json());
