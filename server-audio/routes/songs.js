@@ -37,46 +37,51 @@ router.get("/", passport.authenticate('jwt', { session: false }), (req, res, nex
 });
 
 /* POST song */
-var saveSongMetadata = (req, res, next) => {
-    const lastIndefOfPoint = next.lastIndexOf('.');
-    const fileName = next.slice(0, lastIndefOfPoint);
+var saveSongMetadata = (req, res, data) => {
+    const lastIndefOfPoint = data.fileName.lastIndexOf('.');
+    const fileName = data.fileName.slice(0, lastIndefOfPoint);
+    const count = data.count;
+    const arrFilesLength = data.arrFilesLength;
     const newSong = {
         url: `${fileName}.mp3`,
-        name: req.body.name,
-        artist: req.body.artist,
+        name: data.name,
+        artist: data.artist,
         userId: req.user.id,
         userName: req.user.username
     };
-    return new songModel(newSong)
-        .save()
-        .then(song => res.status(200).json({ song }))
-        .catch(err => res.status(400).json({ error: err }));
+    new songModel(newSong).save().then(song => {
+        if (count === arrFilesLength) {
+            userModel.findById({ _id: req.user.id }).then(user => {
+                res.status(200).json(user);
+            }).catch(err => console.log(err));
+        }
+    });
 };
 
 var watermark = (req, res, next) => {
-    let filename = req.files[0].filename;
     userModel.findById({ _id: req.user.id }).then(user => {
         if (user.numberOfReup >= 3) {
             res.status(400).json({ error: { err: 'Cannot upload music' } });
         } else {
-            watermarker.Watermark(filename,
-                () => saveSongMetadata(req, res, filename),
+            watermarker.Watermark(req,
+                (data) => saveSongMetadata(req, res, data),
                 (err) => {
-                    if (err.toString().includes('Reup detected')) {
+                    if (err.message.toString().includes('Reup detected')) {
+                        const count = err.count;
+                        const arrFilesLength = err.arrFilesLength;
                         userModel.findById({ _id: req.user.id }).then(user => {
                             let numberOfReup = user.numberOfReup;
                             numberOfReup++;
-                            if (numberOfReup > 3) {
-                                return res.status(400).json({ error: { err: 'Cannot upload music' } });
-                            }
-                            userModel.findOneAndUpdate({ _id: req.user.id }, { $set: { numberOfReup } }, { new: true })
-                                .then(updatedUser => {
-                                    res.status(400).json({ error: { err: `${req.body.name}: Reup Detected`, numberOfReup: updatedUser.numberOfReup } });
+                            if (numberOfReup <= 3) {
+                                userModel.findOneAndUpdate({ _id: req.user.id }, { $set: { numberOfReup } }, { new: true }).then(user => {
+                                    if (count === arrFilesLength || numberOfReup === 3) {
+                                        res.status(200).json(user);
+                                    }
                                 });
+                            }
                         });
                     } else {
-                        console.log(err.toString());
-                        res.status(400).json({ error: { err: err.toString() } });
+                        console.log(err.message.toString());
                     }
                 }
             )

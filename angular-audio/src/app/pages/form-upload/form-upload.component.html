@@ -50,7 +50,7 @@
 </ng-template> -->
 <div class="container mt-3" *ngIf="signForm">
   <form [formGroup]="signForm">
-    <div class="form-group" style="margin-bottom: 0;">
+    <div *ngIf="chooseFileMode" class="form-group" style="margin-bottom: 0;">
       <label for="btnFile" class="btn btn-success">Choose Files</label>
       <input (change)="onSelectFile($event)" type="file" class="form-control-file" id="btnFile" style="display: none;"
         multiple>
@@ -59,7 +59,8 @@
       60MB)</span>
     <button [disabled]="getStatusOfArrSongs()" type="button" (click)="saveAll()" *ngIf="getControls().length > 0"
       class="btn btn-secondary btn-block mb-5 mt-5">Submit all</button>
-    <div class="form-group mb-5" *ngFor="let control of getControls();let i = index;" [formArrayName]="'arrSongs'" style="padding: 15px;background: #f1f1f1;">
+    <div class="form-group mb-5" *ngFor="let control of getControls();let i = index;" [formArrayName]="'arrSongs'"
+      style="padding: 15px;background: #f1f1f1;">
       <div [formGroupName]="i">
         <div>
           <span>{{ control.value.file.name }}</span>

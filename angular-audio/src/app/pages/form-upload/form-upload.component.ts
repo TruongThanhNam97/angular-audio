@@ -32,6 +32,8 @@ export class FormUploadComponent implements OnInit {
 
   categories: any;
 
+  chooseFileMode: boolean;
+
   constructor(
     private alertify: AlertifyService,
     private authService: AuthService,
@@ -43,13 +45,11 @@ export class FormUploadComponent implements OnInit {
   }
 
   ngOnInit() {
-    // this.categoryService.getCategories().pipe(
-    //   take(1)
-    // ).subscribe(categories => {
-    //   this.categories = categories;
-    //   this.initializeForm();
-    // });
+    this.chooseFileMode = this.uploadService.getChooseFileMode();
     this.initializeForm();
+    this.uploadService.getChooseFileModeSubject().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(mode => this.chooseFileMode = mode);
   }
 
   onSelectFile(e) {
@@ -71,7 +71,6 @@ export class FormUploadComponent implements OnInit {
 
   validateFile(control: FormControl): { [key: string]: boolean } {
     if (control.value) {
-      console.log(control.value);
       const lastIndex = control.value.name.lastIndexOf('.');
       const typeFile = control.value.name.slice(lastIndex + 1);
       return this.typeFileMusic.includes(typeFile) ? null : { invalid: true };
@@ -104,41 +103,94 @@ export class FormUploadComponent implements OnInit {
   }
 
   saveAll() {
-    let arrOb$ = [];
+    const arrOb$ = [];
+    let arrNameArtist = [];
     const arrSongs = (this.signForm.get('arrSongs') as FormArray).value;
     this.uploadService.setAllQueueProcessing(arrSongs.length);
-    arrSongs.forEach(song => {
+    if (arrSongs.length <= 5) {
       const formData = new FormData();
-      formData.append('name', song.name);
-      formData.append('artist', song.artist);
-      formData.append('file', song.file);
-      arrOb$.push(this.uploadService.uploadSong(formData));
-    });
-    merge(...arrOb$).pipe(takeUntil(this.destroySubscription$)).subscribe(
-      (res: any) => {
-        const songName = res.song.name;
-        this.alertify.success(`Song name: ${songName} has been processed`);
-        this.uploadService.minusQueueProcessing();
-      },
-      err => {
-        this.uploadService.minusQueueProcessing();
-        if (err.error.error.numberOfReup) {
-          localStorage.setItem('reup', err.error.error.numberOfReup);
-          this.authService.updateReupDectected(err.error.error.numberOfReup);
-          if (err.error.error.numberOfReup >= 3) {
-            this.authService.logOut();
-            this.dialog.open(PopupBanComponent, { data: 'Your account is banned' });
+      arrSongs.forEach(song => {
+        arrNameArtist.push({ name: song.name, artist: song.artist });
+        formData.append('file', song.file);
+      });
+      formData.append('arrNameArtist', JSON.stringify(arrNameArtist));
+      this.chooseFileMode = false;
+      this.uploadService.setChooseFileMode(false);
+      this.uploadService.uploadSong(formData).subscribe(
+        (user: any) => {
+          if (user.numberOfReup !== 0) {
+            localStorage.setItem('reup', user.numberOfReup);
+            this.authService.updateReupDectected(user.numberOfReup);
+            if (user.numberOfReup >= 3) {
+              this.authService.logOut();
+              this.dialog.open(PopupBanComponent, { data: 'Your account is banned' });
+            }
           }
-          if (err.error.error.err !== 'Cannot upload music') {
-            this.alertify.error(err.error.error.err);
-          }
-        } else {
-          console.log(err.error.error.err);
-          this.alertify.error(err.error.error.err);
+        },
+        err => {
+          this.alertify.success('Complete processing');
+          this.uploadService.resetProcessing();
+          this.chooseFileMode = true;
+          this.uploadService.setChooseFileMode(true);
+        },
+        () => {
+          this.alertify.success('Complete processing');
+          this.uploadService.resetProcessing();
+          this.chooseFileMode = true;
+          this.uploadService.setChooseFileMode(true);
         }
-      }
-    );
+      );
+    } else {
+      let formData = new FormData();
+      let count = 0;
+      arrSongs.forEach((song, index, arr) => {
+        count++;
+        if (count === 5 || index === arr.length - 1) {
+          arrNameArtist.push({ name: song.name, artist: song.artist });
+          formData.append('arrNameArtist', JSON.stringify(arrNameArtist));
+          formData.append('file', song.file);
+          arrOb$.push(this.uploadService.uploadSong(formData));
+          count = 0;
+          formData = new FormData();
+          arrNameArtist = [];
+        } else {
+          arrNameArtist.push({ name: song.name, artist: song.artist });
+          formData.append('file', song.file);
+        }
+      });
+      this.chooseFileMode = false;
+      this.uploadService.setChooseFileMode(false);
+      concat(...arrOb$).subscribe(
+        (user: any) => {
+          this.uploadService.minusQueueProcessing();
+          if (user.numberOfReup !== 0) {
+            localStorage.setItem('reup', user.numberOfReup);
+            this.authService.updateReupDectected(user.numberOfReup);
+            if (user.numberOfReup >= 3) {
+              this.authService.logOut();
+              this.uploadService.resetProcessing();
+              this.chooseFileMode = true;
+              this.uploadService.setChooseFileMode(true);
+              this.dialog.open(PopupBanComponent, { data: 'Your account is banned' });
+            }
+          }
+        },
+        err => {
+          this.alertify.success('Complete processing');
+          this.uploadService.resetProcessing();
+          this.chooseFileMode = true;
+          this.uploadService.setChooseFileMode(true);
+        },
+        () => {
+          this.alertify.success('Complete processing');
+          this.uploadService.resetProcessing();
+          this.chooseFileMode = true;
+          this.uploadService.setChooseFileMode(true);
+        }
+      );
+    }
     (this.signForm.get('arrSongs') as FormArray).clear();
+    this.signForm.reset();
   }
 
 }

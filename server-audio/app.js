@@ -21,14 +21,14 @@ var config = require('./config.js');
 mongoose
   .connect(
     config.DB_STRING,
-    { useNewUrlParser: true }
+    { useNewUrlParser: true, useUnifiedTopology: true }
   )
   .then(v => console.log("Connect database successfully!"));
 
 // Set API rate limit for all request
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
+  windowMs: 1000, // 1s
+  max: 10 // limit each IP to 10 requests per windowMs
 });
 
 // view engine setup
