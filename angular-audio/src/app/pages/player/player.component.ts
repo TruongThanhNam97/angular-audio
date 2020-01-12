@@ -1,11 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { AudioService } from '../../services/audio.service';
 import { CloudService } from '../../services/cloud.service';
 import { StreamState } from '../../interfaces/stream-state';
 import { Subject } from 'rxjs';
 import { MatDialog } from '@angular/material';
 import { PopupComponent } from './popup/popup.component';
-import { takeUntil, take } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlbumService } from 'src/app/services/album.service';
 import { CategoryService } from 'src/app/services/categories.service';

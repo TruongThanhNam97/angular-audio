@@ -7,8 +7,8 @@ import { MatDialog } from '@angular/material';
 import { PopupBanComponent } from '../login/popup-ban/popup-ban.component';
 import { FormGroup, FormArray, FormControl, Validators } from '@angular/forms';
 import { UploadService } from 'src/app/services/upload.service';
-import { takeUntil, take } from 'rxjs/operators';
-import { Subject, concat, merge } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { Subject, concat } from 'rxjs';
 import { CategoryService } from 'src/app/services/categories.service';
 
 @Component({
@@ -102,6 +102,13 @@ export class FormUploadComponent implements OnInit {
     return (this.signForm.get('arrSongs') as FormArray).invalid;
   }
 
+  completeProcessing() {
+    this.alertify.success('Complete processing');
+    this.uploadService.resetProcessing();
+    this.chooseFileMode = true;
+    this.uploadService.setChooseFileMode(true);
+  }
+
   saveAll() {
     const arrOb$ = [];
     let arrNameArtist = [];
@@ -128,16 +135,10 @@ export class FormUploadComponent implements OnInit {
           }
         },
         err => {
-          this.alertify.success('Complete processing');
-          this.uploadService.resetProcessing();
-          this.chooseFileMode = true;
-          this.uploadService.setChooseFileMode(true);
+          this.completeProcessing();
         },
         () => {
-          this.alertify.success('Complete processing');
-          this.uploadService.resetProcessing();
-          this.chooseFileMode = true;
-          this.uploadService.setChooseFileMode(true);
+          this.completeProcessing();
         }
       );
     } else {
@@ -176,16 +177,10 @@ export class FormUploadComponent implements OnInit {
           }
         },
         err => {
-          this.alertify.success('Complete processing');
-          this.uploadService.resetProcessing();
-          this.chooseFileMode = true;
-          this.uploadService.setChooseFileMode(true);
+          this.completeProcessing();
         },
         () => {
-          this.alertify.success('Complete processing');
-          this.uploadService.resetProcessing();
-          this.chooseFileMode = true;
-          this.uploadService.setChooseFileMode(true);
+          this.completeProcessing();
         }
       );
     }

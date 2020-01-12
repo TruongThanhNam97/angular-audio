@@ -6,7 +6,7 @@ import { MatDialog, MAT_BOTTOM_SHEET_DATA } from '@angular/material';
 import { AlbumService } from 'src/app/services/album.service';
 import { CategoryService } from 'src/app/services/categories.service';
 import { PopupComponent } from '../../player/popup/popup.component';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, debounceTime } from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
 import { CloudService } from 'src/app/services/cloud.service';
 import { PlayListService } from 'src/app/services/playlist.service';

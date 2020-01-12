@@ -27,12 +27,12 @@
           <h6 *ngIf="currentFile && currentFile?.index === i && state?.error">ERROR</h6>
           <mat-icon (click)="onLikeSong(file)" matTooltip="Like"
             *ngIf=" currentUser && currentUser.username !== 'superadmin' && !isLiked(file)" style="cursor: pointer;"
-            class="more-icon" color="primary">
+            class="more-icon likeIcon" color="primary">
             favorite_border
           </mat-icon>
           <mat-icon (click)="onLikeSong(file)" matTooltip="Unlike"
             *ngIf="currentUser && currentUser.username !== 'superadmin' && isLiked(file)" style="cursor: pointer;"
-            class="more-icon" color="primary">
+            class="more-icon likeIcon" color="primary">
             favorite
           </mat-icon>
           <mat-icon (click)="openDialog(file)" style="cursor: pointer;" class="more-icon" color="primary">more_horiz
