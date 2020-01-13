@@ -34,6 +34,34 @@ const schema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'playlists'
         }
+    ],
+    comments: [
+        {
+            user: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'users'
+            },
+            text: {
+                type: String,
+                required: true
+            },
+            date: {
+                type: Date,
+                default: Date.now
+            },
+            liked: [
+                {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'users'
+                }
+            ],
+            unliked: [
+                {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'users'
+                }
+            ]
+        }
     ]
 }, { versionKey: false });
 

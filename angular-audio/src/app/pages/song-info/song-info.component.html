@@ -65,6 +65,7 @@
   <div (click)="onSeeComments()" class="btnComment" *ngIf="currentUser && currentUser.username !== 'superadmin'">
     <mat-icon matTooltip="See comments" color="primary" mat-list-icon class="mr-2">comment</mat-icon>
     Comments
+    <span class="comments">{{ formatComments(selectedSong.comments.length) }}</span>
   </div>
 </div>
 

@@ -43,7 +43,7 @@ export class AlertifyService {
             // language resources
             glossary: {
                 // dialogs default title
-                title: 'Audio',
+                title: 'Confirm',
                 // ok button text
                 ok: 'OK',
                 // cancel button text

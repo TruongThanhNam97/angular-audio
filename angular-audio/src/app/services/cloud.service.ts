@@ -32,10 +32,16 @@ export class CloudService {
   private selectedSong: any;
   private selectedSongId: string;
 
+  private updatedSongAfterAddCommentSubject$: Subject<any> = new Subject();
+
 
   constructor(private http: HttpClient) {
     this.SERVER_URL = environment.SERVER_URL;
     this.SERVER_URL_SOUND = environment.SERVER_URL_SOUND;
+  }
+
+  getUpdateSongAfterAddCommentSubject() {
+    return this.updatedSongAfterAddCommentSubject$;
   }
 
   getSelectedSongId() {
@@ -101,7 +107,8 @@ export class CloudService {
             userName: cur.userName,
             categoryId: cur.categoryId ? cur.categoryId : null,
             artistId: cur.artistId ? cur.artistId : null,
-            likedUsers: cur.likedUsers
+            likedUsers: cur.likedUsers,
+            comments: cur.comments ? cur.comments : []
           };
           acc.push(obj);
           return acc;
@@ -333,6 +340,50 @@ export class CloudService {
 
   getBlockedSongsAfterBlockSubject() {
     return this.blockedSongsAfterBlockSubject$;
+  }
+
+  addComment(data) {
+    return this.http.post(`${this.SERVER_URL}addComment`, data, {
+      headers: {
+        Authorization: localStorage.getItem('jwtToken')
+      }
+    }).pipe(
+      map((song: any) => ({
+        id: song._id,
+        url: this.SERVER_URL_SOUND + song.url,
+        name: song.name,
+        artist: song.artist,
+        nameToDownload: song.url,
+        userId: song.userId,
+        userName: song.userName,
+        categoryId: song.categoryId ? song.categoryId : null,
+        artistId: song.artistId ? song.artistId : null,
+        likedUsers: song.likedUsers,
+        comments: song.comments ? song.comments : []
+      }))
+    );
+  }
+
+  deleteComment(data) {
+    return this.http.post(`${this.SERVER_URL}deleteComment`, data, {
+      headers: {
+        Authorization: localStorage.getItem('jwtToken')
+      }
+    }).pipe(
+      map((song: any) => ({
+        id: song._id,
+        url: this.SERVER_URL_SOUND + song.url,
+        name: song.name,
+        artist: song.artist,
+        nameToDownload: song.url,
+        userId: song.userId,
+        userName: song.userName,
+        categoryId: song.categoryId ? song.categoryId : null,
+        artistId: song.artistId ? song.artistId : null,
+        likedUsers: song.likedUsers,
+        comments: song.comments ? song.comments : []
+      }))
+    );
   }
 
 }

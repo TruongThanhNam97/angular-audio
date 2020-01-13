@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { TimeAgoPipe } from 'time-ago-pipe';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -74,7 +75,8 @@ import { PopupCommentsComponent } from './pages/song-info/popup-comments/popup-c
     PopupMoveSongToPlaylistComponent,
     FilterPlayListNamePipe,
     SongInfoComponent,
-    PopupCommentsComponent
+    PopupCommentsComponent,
+    TimeAgoPipe
   ],
   imports: [
     BrowserModule,

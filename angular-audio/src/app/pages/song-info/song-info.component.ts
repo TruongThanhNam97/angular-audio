@@ -102,6 +102,9 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       }
     });
+    this.cloudService.getUpdateSongAfterAddCommentSubject().pipe(
+      takeUntil(this.destroySubsction$)
+    ).subscribe(song => this.selectedSong = { ...song });
   }
 
   ngAfterViewInit(): void {
@@ -119,6 +122,16 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
       return (likedUsers / 1000000).toFixed(1) + 'M';
     }
     return likedUsers;
+  }
+
+  formatComments(comments): string {
+    if (comments >= 1000) {
+      return (comments / 1000).toFixed(1) + 'K';
+    }
+    if (comments >= 1000000) {
+      return (comments / 1000000).toFixed(1) + 'M';
+    }
+    return comments;
   }
 
   onSeeAlbumOfUser() {
@@ -238,7 +251,7 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onSeeComments() {
-    this.dialog.open(PopupCommentsComponent);
+    this.dialog.open(PopupCommentsComponent, { data: this.selectedSong });
   }
 
 }

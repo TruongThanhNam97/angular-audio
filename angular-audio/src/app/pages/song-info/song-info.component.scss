@@ -46,6 +46,21 @@ p {
     align-items: center;
     width: 140px;
     cursor: pointer;
+    position: relative;
+    .comments {
+      position: absolute;
+      left: -9px;
+      top: 0px;
+      background: red;
+      color: white;
+      font-weight: bold;
+      width: 30px;
+      height: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 30%;
+    }
   }
   .btnAddToPlayList:hover {
     background: #c7c7c7;
