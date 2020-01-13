@@ -23,6 +23,7 @@ import { EditArtistComponent } from './pages/edit-artist/edit-artist.component';
 import { ArtistsComponent } from './pages/artists/artists.component';
 import { ManageBlockedSongsComponent } from './pages/manage-blocked-songs/manage-blocked-songs.component';
 import { ManagePlaylistComponent } from './pages/manage-playlist/manage-playlist.component';
+import { SongInfoComponent } from './pages/song-info/song-info.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/categories', pathMatch: 'full' },
@@ -78,6 +79,7 @@ const routes: Routes = [
   { path: 'categories/:id', component: PlayerComponent },
   { path: 'artists', component: ArtistsComponent },
   { path: 'artists/:id', component: PlayerComponent },
+  { path: 'song-info', component: SongInfoComponent },
   { path: 'login', component: LoginComponent, canActivate: [LoginGuard] },
   { path: 'register', component: RegisterComponent, canActivate: [LoginGuard] },
   { path: 'page-not-found', component: PageNotFoundComponent },

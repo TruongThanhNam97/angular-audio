@@ -55,6 +55,8 @@ export class AppComponent implements OnInit {
         localStorage.removeItem('jwtToken');
         localStorage.removeItem('reup');
       }
+    } else {
+      this.router.navigate(['/']);
     }
   }
 

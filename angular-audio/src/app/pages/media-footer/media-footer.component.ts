@@ -8,6 +8,7 @@ import { PlaylistPlayingComponent } from './playlist-playing/playlist-playing.co
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { PlayListService } from 'src/app/services/playlist.service';
+import { SongInfoService } from 'src/app/services/song-info.service';
 
 @Component({
   selector: 'app-media-footer',
@@ -31,7 +32,8 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
     private cloudService: CloudService,
     private dialog: MatDialog,
     private bottomSheet: MatBottomSheet,
-    private playlistService: PlayListService
+    private playlistService: PlayListService,
+    private songInfoService: SongInfoService
   ) { }
 
   ngOnInit() {
@@ -116,10 +118,12 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
 
   pause() {
     this.audioService.pause();
+    this.songInfoService.getModeSubject().next('displayBtnPlay');
   }
 
   play() {
     this.audioService.play();
+    this.songInfoService.getModeSubject().next('displayBtnPause');
   }
   stop() {
     this.audioService.stop();

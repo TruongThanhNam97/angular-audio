@@ -94,7 +94,7 @@ router.post('/delete', passport.authenticate('jwt', { session: false }), (req, r
 });
 
 //@route    GET /categories/getCategories
-//@desc     Upload categories
+//@desc     Get categories
 //@access   Public
 router.get('/getCategories', (req, res, next) => {
     categoriesModel.find({ status: { $eq: 0 } })
@@ -102,6 +102,17 @@ router.get('/getCategories', (req, res, next) => {
         .then(categories => res.status(200).json(categories))
         .catch(err => res.status(400).json(err));
 });
+
+//@route    GET /categories/getCategoryById
+//@desc     Get category by category id
+//@access   Public
+router.get('/getCategoryById', (req, res, next) => {
+    categoriesModel.find({ status: { $eq: 0 }, _id: { $eq: req.query.id } })
+        .select('_id name avatar')
+        .then(categories => res.status(200).json(categories))
+        .catch(err => res.status(400).json(err));
+});
+
 
 
 module.exports = router;

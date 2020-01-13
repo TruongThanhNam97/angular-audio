@@ -36,6 +36,24 @@ export class ArtistsService {
         );
     }
 
+    getArtistById(data) {
+        return this.http.get(`${this.SERVER_URL}artists/getArtistById`, {
+            params: {
+                id: data.id
+            }
+        }).pipe(
+            map((artists: any) => {
+                const result = artists.map(artist =>
+                    ({
+                        id: artist._id,
+                        name: artist.name,
+                        avatar: artist.avatar ? `${this.SERVER_URL_IMAGE}${artist.avatar}` : null
+                    }));
+                return result;
+            })
+        );
+    }
+
     updateArtist(data) {
         return this.http.post(`${this.SERVER_URL}artists/update`, data, {
             headers: {

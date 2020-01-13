@@ -104,4 +104,16 @@ router.get('/getArtists', (req, res, next) => {
 });
 
 
+//@route    GET /artists/getArtistById
+//@desc     Get artist by artist id
+//@access   Public
+router.get('/getArtistById', (req, res, next) => {
+    artistsModel.find({ status: { $eq: 0 }, _id: { $eq: req.query.id } })
+        .select('_id name avatar')
+        .then(artists => res.status(200).json(artists))
+        .catch(err => res.status(400).json(err));
+});
+
+
+
 module.exports = router;

@@ -58,6 +58,7 @@ export class AuthService {
     setUpAfterLogin(token: string) {
         this.isAuthenticated = true;
         this.currentUser = decode(token);
+        console.log(this.currentUser);
         this.isAuthenticatedSubject$.next(this.isAuthenticated);
         this.currentUserSubject$.next(this.currentUser);
         const expire = this.currentUser.exp;

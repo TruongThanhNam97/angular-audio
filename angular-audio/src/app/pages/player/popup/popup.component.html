@@ -1,27 +1,35 @@
 <mat-list color="primary" style="width: 400px;">
-  <h5 style="text-align: center;margin: 0;font-size: 20px;">Song name: {{ data.name }}</h5>
-  <mat-list-item (click)="downloadFile()" class="feature"
-    style="display: flex;justify-content: center; cursor: pointer;">
+  <div class="songInfo mb-2" style="cursor: pointer;" (click)="onSeeSongInfo()">
+    <div class="left">
+      <mat-icon class="infoIcon" color="primary" mat-list-icon>info</mat-icon>
+    </div>
+    <div class="right">
+      <p class="songName"><strong>{{ data.name }}</strong></p>
+      <div class="likedUsers">
+        <mat-icon class="more-icon mr-1" color="primary">
+          favorite_border
+        </mat-icon>
+        <span style="color:#929191;">{{ formatLikedUsers(data.likedUsers.length) }}</span>
+      </div>
+    </div>
+  </div>
+  <mat-list-item (click)="downloadFile()" class="feature" style="display: flex;justify-content: left; cursor: pointer;">
     <mat-icon color="primary" mat-list-icon>cloud_download</mat-icon>
     <h5 style="margin: 0;">Download</h5>
   </mat-list-item>
   <mat-list-item *ngIf="currentUser && currentUser.username !== 'superadmin'" (click)="onBlock()" class="feature"
-    style="display: flex;justify-content: center; cursor: pointer;">
+    style="display: flex;justify-content: left; cursor: pointer;">
     <mat-icon color="primary" mat-list-icon>lock</mat-icon>
     <h5 style="margin: 0;">Block</h5>
-    <mat-divider></mat-divider>
   </mat-list-item>
   <mat-list-item *ngIf="currentUser && currentUser.username !== 'superadmin'" (click)="onAddSongToPlayList()"
-    class="feature" style="display: flex;justify-content: center; cursor: pointer;">
+    class="feature" style="display: flex;justify-content: left; cursor: pointer;">
     <mat-icon color="primary" mat-list-icon>queue_music</mat-icon>
     <h5 style="margin: 0;">Add to playlist</h5>
-    <mat-divider></mat-divider>
   </mat-list-item>
   <mat-list-item *ngIf="currentUser && currentUser.username !== 'superadmin' && data.playlistId"
-    (click)="onDeleteSongFromPlayList()" class="feature"
-    style="display: flex;justify-content: center; cursor: pointer;">
+    (click)="onDeleteSongFromPlayList()" class="feature" style="display: flex;justify-content: left; cursor: pointer;">
     <mat-icon color="primary" mat-list-icon>queue_music</mat-icon>
     <h5 style="margin: 0;">Delete from {{ data.playlistName }}</h5>
-    <mat-divider></mat-divider>
   </mat-list-item>
 </mat-list>

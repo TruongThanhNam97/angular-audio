@@ -1,0 +1,107 @@
+<div class="container header-song-info">
+  <div class="left">
+    <img src="../../../assets/apple-music-note-800x420.jpg" style="width: 100%;height: 100%;"
+      alt="{{ selectedSong?.name }}">
+  </div>
+  <div class="right">
+    <h5 style="color: white;" class="mb-3">{{ selectedSong?.name }}</h5>
+    <p style="color: #a0a0a0">Album: <span (click)="onSeeAlbumOfUser()" class="info"
+        style="cursor: pointer;">{{ selectedSong?.userName }}</span></p>
+    <p style="color: #a0a0a0">Artist: <span (click)="onSeeArtistOfSong()" class="info"
+        style="cursor: pointer;">{{ artist ? artist.name : '' }}</span>
+    </p>
+    <p style="color: #a0a0a0;">Category: <span (click)="onSeeCategoryOfSong()" class="info"
+        style="cursor: pointer;">{{ category ? category.name : '' }}</span></p>
+    <div class="likedUsers">
+      <span class="liked-icon">{{ formatLikedUserOfSong(likedUsers)  }}</span>
+      <mat-icon class="more-icon like-icon ml-3">
+        favorite
+      </mat-icon>
+    </div>
+  </div>
+</div>
+<div class="container alertBlock" *ngIf="isBlocked">
+  <div class="alert alert-secondary wrap-alert-icon" role="alert">
+    <mat-icon color="primary" mat-list-icon class="mr-2">lock</mat-icon>
+    You have blocked this song
+  </div>
+</div>
+<div class="container listFeatures">
+  <div class="btn btn-primary btnPlayAudio">
+    <div *ngIf="!isPlay" style="display: flex;" (click)="openFile()">
+      <mat-icon mat-list-icon class="mr-2">play_circle_filled</mat-icon>
+      Play
+    </div>
+    <div *ngIf="isPlay" style="display: flex;" (click)="stopFile()">
+      <mat-icon mat-list-icon>pause</mat-icon>
+      Pause
+    </div>
+  </div>
+  <div *ngIf="currentUser && currentUser.username !== 'superadmin'" class="btnLikeSong" (click)="onLikeSong()"
+    style="cursor: pointer;">
+    <mat-icon matTooltip="UnLike" *ngIf="isLiked()" class="more-icon mr-2" color="primary">
+      favorite
+    </mat-icon>
+    <mat-icon matTooltip="Like" *ngIf="!isLiked()" class="more-icon mr-2" color="primary">
+      favorite_border
+    </mat-icon>
+    Like
+  </div>
+  <div (click)="onAddSongToPlayList()" class="btnAddToPlayList"
+    *ngIf="currentUser && currentUser.username !== 'superadmin'">
+    <mat-icon matTooltip="Add to playlist" color="primary" mat-list-icon class="mr-2">queue_music</mat-icon>
+    Add to playlist
+  </div>
+  <div (click)="onDownloadFile()" class="btnDownLoad" *ngIf="currentUser && currentUser.username !== 'superadmin'">
+    <mat-icon matTooltip="Download" color="primary" mat-list-icon class="mr-2">cloud_download</mat-icon>
+    Download
+  </div>
+  <div (click)="onBlock()" class="btnBlock" *ngIf="currentUser && currentUser.username !== 'superadmin'">
+    <mat-icon matTooltip="Block" color="primary" mat-list-icon class="mr-2" *ngIf="!isBlocked">lock</mat-icon>
+    <mat-icon matTooltip="UnBlock" color="primary" mat-list-icon class="mr-2" *ngIf="isBlocked">lock_open</mat-icon>
+    <span *ngIf="!isBlocked">Block</span>
+    <span *ngIf="isBlocked">UnBlock</span>
+  </div>
+  <div (click)="onSeeComments()" class="btnComment" *ngIf="currentUser && currentUser.username !== 'superadmin'">
+    <mat-icon matTooltip="See comments" color="primary" mat-list-icon class="mr-2">comment</mat-icon>
+    Comments
+  </div>
+</div>
+
+<!-- 
+<button matTooltip="Play" mat-button (click)="play()" [disabled]="state?.error" *ngIf="!state?.playing">
+  <mat-icon mat-list-icon>play_circle_filled</mat-icon>
+</button>
+<button matTooltip="Pause" mat-button (click)="pause()" *ngIf="state?.playing">
+  <mat-icon mat-list-icon>pause</mat-icon>
+</button> -->
+
+<!-- <mat-icon (click)="onLikeSong(file)" matTooltip="Like"
+  *ngIf=" currentUser && currentUser.username !== 'superadmin' && !isLiked(file)" style="cursor: pointer;"
+  class="more-icon" color="primary">
+  favorite_border
+</mat-icon>
+<mat-icon (click)="onLikeSong(file)" matTooltip="Unlike"
+  *ngIf="currentUser && currentUser.username !== 'superadmin' && isLiked(file)" style="cursor: pointer;"
+  class="more-icon" color="primary">
+  favorite
+</mat-icon> -->
+<!-- 
+<mat-list-item *ngIf="currentUser && currentUser.username !== 'superadmin'" (click)="onAddSongToPlayList()"
+  class="feature" style="display: flex;justify-content: left; cursor: pointer;">
+  <mat-icon color="primary" mat-list-icon>queue_music</mat-icon>
+  <h5 style="margin: 0;">Add to playlist</h5>
+</mat-list-item> -->
+
+
+<!-- <mat-list-item (click)="downloadFile()" class="feature" style="display: flex;justify-content: left; cursor: pointer;">
+  <mat-icon color="primary" mat-list-icon>cloud_download</mat-icon>
+  <h5 style="margin: 0;">Download</h5>
+</mat-list-item> -->
+
+
+<!-- <mat-list-item *ngIf="currentUser && currentUser.username !== 'superadmin'" (click)="onBlock()" class="feature"
+  style="display: flex;justify-content: left; cursor: pointer;">
+  <mat-icon color="primary" mat-list-icon>lock</mat-icon>
+  <h5 style="margin: 0;">Block</h5>
+</mat-list-item> -->

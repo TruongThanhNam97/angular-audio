@@ -29,10 +29,29 @@ export class CloudService {
   private blockedSongsOfUser: any[] = [];
   private blockedSongsAfterBlockSubject$: Subject<any> = new Subject();
 
+  private selectedSong: any;
+  private selectedSongId: string;
+
 
   constructor(private http: HttpClient) {
     this.SERVER_URL = environment.SERVER_URL;
     this.SERVER_URL_SOUND = environment.SERVER_URL_SOUND;
+  }
+
+  getSelectedSongId() {
+    return this.selectedSongId;
+  }
+
+  setSelectedSongId(id) {
+    this.selectedSongId = id;
+  }
+
+  setSelectedSong(song) {
+    this.selectedSong = { ...song };
+  }
+
+  getSelectedSong() {
+    return this.selectedSong;
   }
 
   getCurrentFileSubject() {
@@ -81,6 +100,7 @@ export class CloudService {
             userId: cur.userId,
             userName: cur.userName,
             categoryId: cur.categoryId ? cur.categoryId : null,
+            artistId: cur.artistId ? cur.artistId : null,
             likedUsers: cur.likedUsers
           };
           acc.push(obj);
@@ -110,6 +130,7 @@ export class CloudService {
             userId: cur.song.userId,
             userName: cur.song.userName,
             categoryId: cur.song.categoryId ? cur.song.categoryId : null,
+            artistId: cur.song.artistId ? cur.song.artistId : null,
             likedUsers: cur.song.likedUsers
           };
           acc.push(obj);
@@ -138,6 +159,8 @@ export class CloudService {
             nameToDownload: cur.url,
             userId: cur.userId,
             userName: cur.userName,
+            categoryId: cur.categoryId ? cur.categoryId : null,
+            artistId: cur.artistId ? cur.artistId : null,
             likedUsers: cur.likedUsers
           };
           acc.push(obj);
@@ -149,6 +172,7 @@ export class CloudService {
       tap(files => {
         this.allowGetSongs = false;
         this.currentPlayList = [...files];
+        console.log(this.currentPlayList);
         // this.currentPlayListSubject$.next(this.currentPlayList);
       })
     );
@@ -166,6 +190,8 @@ export class CloudService {
             nameToDownload: cur.url,
             userId: cur.userId,
             userName: cur.userName,
+            categoryId: cur.categoryId ? cur.categoryId : null,
+            artistId: cur.artistId ? cur.artistId : null,
             likedUsers: cur.likedUsers
           };
           acc.push(obj);

@@ -10,6 +10,7 @@ import { takeUntil } from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
 import { CloudService } from 'src/app/services/cloud.service';
 import { PlayListService } from 'src/app/services/playlist.service';
+import { AlertifyService } from 'src/app/services/alertify.service';
 
 @Component({
   selector: 'app-playlist-playing',
@@ -37,7 +38,8 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
     private cdt: ChangeDetectorRef,
     private cloudService: CloudService,
     @Inject(MAT_BOTTOM_SHEET_DATA) public data: any,
-    private playlistService: PlayListService
+    private playlistService: PlayListService,
+    private alertify: AlertifyService
   ) { }
 
   ngOnInit() {
@@ -89,6 +91,11 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
         });
       }
       this.cloudService.getUpdatedSongsAfterLikingSubject().next(this.files);
+      if (this.isLiked(updatedSong)) {
+        this.alertify.success('Like successfully');
+      } else {
+        this.alertify.success('UnLike successfully');
+      }
     }, err => console.log(err));
   }
 

@@ -37,7 +37,9 @@ export class PlayListService {
             userName: song.userName,
             likedUsers: song.likedUsers,
             playlistId: playlist._id,
-            playlistName: playlist.name
+            playlistName: playlist.name,
+            artistId: song.artistId ? song.artistId : null,
+            categoryId: song.categoryId ? song.categoryId : null
         }));
         this.listSongsOfPlayList = this.listSongsOfPlayList.filter(song => !blockedSongs.includes(song.id));
     }

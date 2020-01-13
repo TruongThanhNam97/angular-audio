@@ -37,6 +37,8 @@ import { ManagePlaylistComponent } from './pages/manage-playlist/manage-playlist
 import { PopupPlaylistComponent } from './pages/manage-playlist/popup-playlist/popup-playlist.component';
 import { PopupMoveSongToPlaylistComponent } from './pages/manage-playlist/popup-move-song-to-playlist/popup-move-song-to-playlist.component';
 import { FilterPlayListNamePipe } from './pages/manage-playlist/popup-move-song-to-playlist/pipe/filter-playlist-name.pipe';
+import { SongInfoComponent } from './pages/song-info/song-info.component';
+import { PopupCommentsComponent } from './pages/song-info/popup-comments/popup-comments.component';
 
 @NgModule({
   declarations: [
@@ -70,7 +72,9 @@ import { FilterPlayListNamePipe } from './pages/manage-playlist/popup-move-song-
     ManagePlaylistComponent,
     PopupPlaylistComponent,
     PopupMoveSongToPlaylistComponent,
-    FilterPlayListNamePipe
+    FilterPlayListNamePipe,
+    SongInfoComponent,
+    PopupCommentsComponent
   ],
   imports: [
     BrowserModule,
@@ -88,7 +92,8 @@ import { FilterPlayListNamePipe } from './pages/manage-playlist/popup-move-song-
     PopupEditSongComponent,
     PopupThreeTypesComponent,
     PopupPlaylistComponent,
-    PopupMoveSongToPlaylistComponent
+    PopupMoveSongToPlaylistComponent,
+    PopupCommentsComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

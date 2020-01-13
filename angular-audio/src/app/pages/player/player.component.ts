@@ -156,6 +156,11 @@ export class PlayerComponent implements OnInit, OnDestroy {
       if (!this.audioService.getPlayMode()) {
         this.cloudService.setCurrentPlayList(this.files);
       }
+      if (this.isLiked(song)) {
+        this.alertify.success('Like successfully');
+      } else {
+        this.alertify.success('UnLike successfully');
+      }
     }, err => console.log(err));
   }
 
@@ -197,6 +202,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
   loadSongsByPlayList() {
     this.files = [...this.playListService.getListSongsOfPlayList()];
     this.cloudService.setCurrentPlayList(this.files);
+    console.log(this.files);
   }
 
   ngOnDestroy() {
@@ -272,6 +278,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
       this.playListService.setSelectedPlayList(this.playlist);
       this.selectedPlayList = this.playlist;
     }
+    this.cloudService.setSelectedSongId('.');
     this.cloudService.updateCurrentPlayList();
   }
 }

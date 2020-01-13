@@ -1,0 +1,118 @@
+p {
+  margin-bottom: 5px;
+}
+
+.listFeatures {
+  display: flex;
+  width: 966px;
+  height: 60px;
+  padding: 10px 0;
+  border-bottom: 1px solid #b3b3b3;
+  .btnPlayAudio {
+    height: 40px;
+    width: 91px;
+    cursor: pointer;
+  }
+  .btnLikeSong {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100px;
+  }
+  .btnAddToPlayList {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 140px;
+    cursor: pointer;
+  }
+  .btnDownLoad {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 140px;
+    cursor: pointer;
+  }
+  .btnBlock {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 140px;
+    cursor: pointer;
+  }
+  .btnComment {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 140px;
+    cursor: pointer;
+  }
+  .btnAddToPlayList:hover {
+    background: #c7c7c7;
+  }
+  .btnLikeSong:hover {
+    background: #c7c7c7;
+  }
+  .btnDownLoad:hover {
+    background: #c7c7c7;
+  }
+  .btnBlock:hover {
+    background: #c7c7c7;
+  }
+  .btnComment:hover {
+    background: #c7c7c7;
+  }
+}
+
+.alertBlock {
+  width: 966px;
+  padding: 0;
+  .wrap-alert-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.header-song-info {
+  display: flex;
+  width: 966px;
+  height: 200px;
+  padding: 30px;
+  background-color: rgba(0, 0, 0, 0.65);
+  .left {
+    width: 20%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .right {
+    width: 80%;
+    padding-left: 15px;
+    position: relative;
+    .likedUsers {
+      height: auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      .liked-icon {
+        color: white;
+        font-size: 20px;
+        font-weight: bold;
+        .like-icon {
+          font-size: 35px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+      }
+    }
+    .info:hover {
+      color: white;
+    }
+  }
+}

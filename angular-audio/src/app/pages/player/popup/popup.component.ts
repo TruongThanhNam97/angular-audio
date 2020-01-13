@@ -10,6 +10,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { PopupMoveSongToPlaylistComponent } from '../../manage-playlist/popup-move-song-to-playlist/popup-move-song-to-playlist.component';
 import { PlayListService } from 'src/app/services/playlist.service';
 import { ThrowStmt } from '@angular/compiler';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-popup',
@@ -29,7 +30,8 @@ export class PopupComponent implements OnInit, OnDestroy {
     private cloudService: CloudService,
     private alertify: AlertifyService,
     private authService: AuthService,
-    private playlistService: PlayListService
+    private playlistService: PlayListService,
+    private router: Router
   ) { }
 
   ngOnInit() {
@@ -38,6 +40,22 @@ export class PopupComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.destroySubscriptions.next(true);
+  }
+
+  formatLikedUsers(likedUsers): string {
+    if (likedUsers >= 1000) {
+      return (likedUsers / 1000).toFixed(1) + 'K';
+    }
+    if (likedUsers >= 1000000) {
+      return (likedUsers / 1000000).toFixed(1) + 'M';
+    }
+    return likedUsers;
+  }
+
+  onSeeSongInfo() {
+    this.cloudService.setSelectedSong(this.data);
+    this.router.navigate(['/song-info'], { queryParams: { songId: this.data.id } });
+    this.dialogRef.close();
   }
 
   downloadFile() {
