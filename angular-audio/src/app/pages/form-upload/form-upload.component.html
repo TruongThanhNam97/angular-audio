@@ -1,4 +1,4 @@
-<ng-container *ngIf="categories && categories.length > 0; else elseTemplate">
+<!-- <ng-container *ngIf="categories && categories.length > 0; else elseTemplate">
   <div class="container mt-3" *ngIf="signForm">
     <form [formGroup]="signForm">
       <div class="form-group">
@@ -47,4 +47,52 @@
   <div class="container mt-3">
     No categories. Waiting admin to update cateogories...
   </div>
-</ng-template>
+</ng-template> -->
+<div class="container mt-3" *ngIf="signForm">
+  <form [formGroup]="signForm">
+    <div *ngIf="chooseFileMode" class="form-group" style="margin-bottom: 0;">
+      <label for="btnFile" class="btn btn-success">Choose Files</label>
+      <input (change)="onSelectFile($event)" type="file" class="form-control-file" id="btnFile" style="display: none;"
+        multiple>
+    </div>
+    <span style="color: gray;font-style: italic;">NK MP3 supports mp3, m4a, flac, wav file formats (Maximum size is
+      60MB)</span>
+    <button [disabled]="getStatusOfArrSongs()" type="button" (click)="saveAll()" *ngIf="getControls().length > 0"
+      class="btn btn-secondary btn-block mb-5 mt-5">Submit all</button>
+    <div class="form-group mb-5" *ngFor="let control of getControls();let i = index;" [formArrayName]="'arrSongs'"
+      style="padding: 15px;background: #f1f1f1;">
+      <div [formGroupName]="i">
+        <div>
+          <span>{{ control.value.file.name }}</span>
+          <span style="float: right;">{{ (control.value.file.size/1000000).toFixed(1) + ' MB' }}</span>
+        </div>
+        <div class="form-group">
+          <input [ngClass]="{'is-invalid': control.get('name').invalid}" type="text" class="form-control"
+            formControlName="name" placeholder="Song name">
+          <span class="invalid-feedback" *ngIf="control.get('name').invalid">
+            <span *ngIf="control.get('name').hasError('required')">Song name field is required</span>
+            <span *ngIf="control.get('name').hasError('maxlength')">Max length of song name field: 50</span>
+          </span>
+        </div>
+        <div class="form-group">
+          <input [ngClass]="{'is-invalid': control.get('artist').invalid}" type="text" class="form-control"
+            formControlName="artist" placeholder="Artist of song">
+          <span class="invalid-feedback" *ngIf="control.get('artist').invalid">
+            <span *ngIf="control.get('artist').hasError('required')">Artist field is required</span>
+            <span *ngIf="control.get('artist').hasError('maxlength')">Max length of artist field: 50</span>
+          </span>
+        </div>
+        <div class="form-group">
+          <button type="button" (click)="onRemove(i)" class="btn btn-danger mr-2">Remove</button>
+          <span style="color: #dc3545; font-size: 15px;" class="mr-2"
+            *ngIf="control.get('file').hasError('invalid')">File is
+            invalid</span>
+          <span style="color: #dc3545; font-size: 15px;" *ngIf="control.get('file').hasError('invalidSize')">File size
+            is invalid</span>
+          <!-- <button [disabled]="control.invalid" type="button" (click)="onSave(control,i)" class="btn btn-info ml-3">Save
+            file</button> -->
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

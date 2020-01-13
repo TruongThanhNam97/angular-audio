@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -20,6 +20,25 @@ import { UploadCategoryComponent } from './pages/upload-category/upload-category
 import { CategoriesComponent } from './pages/categories/categories.component';
 import { PlaylistPlayingComponent } from './pages/media-footer/playlist-playing/playlist-playing.component';
 import { EditCategoryComponent } from './pages/edit-category/edit-category.component';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { EditProfileComponent } from './pages/edit-profile/edit-profile.component';
+import { EditSongsComponent } from './pages/edit-songs/edit-songs.component';
+import { ManageCategoriesComponent } from './pages/manage-categories/manage-categories.component';
+import { ManageSongsComponent } from './pages/manage-songs/manage-songs.component';
+import { PopupEditSongComponent } from './pages/manage-songs/popup-edit-song/popup-edit-song.component';
+import { ManageUserComponent } from './pages/manage-user/manage-user.component';
+import { PopupThreeTypesComponent } from './pages/player/popup-three-types/popup-three-types.component';
+import { ManageArtistComponent } from './pages/manage-artist/manage-artist.component';
+import { EditArtistComponent } from './pages/edit-artist/edit-artist.component';
+import { UploadArtistComponent } from './pages/upload-artist/upload-artist.component';
+import { ArtistsComponent } from './pages/artists/artists.component';
+import { ManageBlockedSongsComponent } from './pages/manage-blocked-songs/manage-blocked-songs.component';
+import { ManagePlaylistComponent } from './pages/manage-playlist/manage-playlist.component';
+import { PopupPlaylistComponent } from './pages/manage-playlist/popup-playlist/popup-playlist.component';
+import { PopupMoveSongToPlaylistComponent } from './pages/manage-playlist/popup-move-song-to-playlist/popup-move-song-to-playlist.component';
+import { FilterPlayListNamePipe } from './pages/manage-playlist/popup-move-song-to-playlist/pipe/filter-playlist-name.pipe';
+import { SongInfoComponent } from './pages/song-info/song-info.component';
+import { PopupCommentsComponent } from './pages/song-info/popup-comments/popup-comments.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +55,26 @@ import { EditCategoryComponent } from './pages/edit-category/edit-category.compo
     UploadCategoryComponent,
     CategoriesComponent,
     PlaylistPlayingComponent,
-    EditCategoryComponent
+    EditCategoryComponent,
+    DashboardComponent,
+    EditProfileComponent,
+    EditSongsComponent,
+    ManageCategoriesComponent,
+    ManageSongsComponent,
+    PopupEditSongComponent,
+    ManageUserComponent,
+    PopupThreeTypesComponent,
+    ManageArtistComponent,
+    EditArtistComponent,
+    UploadArtistComponent,
+    ArtistsComponent,
+    ManageBlockedSongsComponent,
+    ManagePlaylistComponent,
+    PopupPlaylistComponent,
+    PopupMoveSongToPlaylistComponent,
+    FilterPlayListNamePipe,
+    SongInfoComponent,
+    PopupCommentsComponent
   ],
   imports: [
     BrowserModule,
@@ -44,12 +82,18 @@ import { EditCategoryComponent } from './pages/edit-category/edit-category.compo
     BrowserAnimationsModule,
     MaterialModule,
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
+    FormsModule
   ],
   entryComponents: [
     PopupComponent,
     PopupBanComponent,
-    PlaylistPlayingComponent
+    PlaylistPlayingComponent,
+    PopupEditSongComponent,
+    PopupThreeTypesComponent,
+    PopupPlaylistComponent,
+    PopupMoveSongToPlaylistComponent,
+    PopupCommentsComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

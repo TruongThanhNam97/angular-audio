@@ -1,8 +1,11 @@
 <div class="container">
-  <div (click)="onBack()" class="btn btn-secondary mt-1 mb-1">Back</div>
+  <div *ngIf="!displayButtonBack" (click)="onBack()" class="btn btn-secondary mt-1 mb-1">Back</div>
+  <a *ngIf="displayButtonBack && playlist" [routerLink]="['../']" class="btn btn-secondary mt-1 mb-1">Back</a>
   <mat-toolbar color="primary" class="main-toolbar">
-    <span *ngIf="username">Albums of {{ username }}</span>
-    <span *ngIf="categoryName">Songs of {{ categoryName }}</span>
+    <span *ngIf="username">Album name: {{ username }}</span>
+    <span *ngIf="categoryName">Category name: {{ categoryName }}</span>
+    <span *ngIf="artistName">Artist name: {{ artistName }}</span>
+    <span *ngIf="playlist">Playlist name : {{ playlist }}</span>
   </mat-toolbar>
   <div class="content" style="display: flex;margin-top: 50px;">
     <div class="logo" style="width: 20%;">
@@ -14,14 +17,24 @@
       <mat-list *ngIf="!loading" color="primary" style="width: 1200px;margin: auto;">
         <h3 mat-subheader>Songs</h3>
         <mat-list-item *ngFor="let file of files; let i = index">
-          <mat-icon class="music-icon" (click)="update();openFile(file, i)" style="cursor: pointer;background-color: #FF4081;"
-            color="primary" mat-list-icon>music_note
+          <mat-icon class="music-icon" (click)="update();openFile(file, i)"
+            style="cursor: pointer;background-color: #FF4081;" color="primary" mat-list-icon>music_note
           </mat-icon>
           <h4 mat-line>{{ file.name }}</h4>
           <h5 mat-line>by {{ file.artist }}</h5>
           <mat-icon color="primary" *ngIf="currentFile && currentFile?.index === i && !state?.error">volume_up
           </mat-icon>
           <h6 *ngIf="currentFile && currentFile?.index === i && state?.error">ERROR</h6>
+          <mat-icon (click)="onLikeSong(file)" matTooltip="Like"
+            *ngIf=" currentUser && currentUser.username !== 'superadmin' && !isLiked(file)" style="cursor: pointer;"
+            class="more-icon" color="primary">
+            favorite_border
+          </mat-icon>
+          <mat-icon (click)="onLikeSong(file)" matTooltip="Unlike"
+            *ngIf="currentUser && currentUser.username !== 'superadmin' && isLiked(file)" style="cursor: pointer;"
+            class="more-icon" color="primary">
+            favorite
+          </mat-icon>
           <mat-icon (click)="openDialog(file)" style="cursor: pointer;" class="more-icon" color="primary">more_horiz
           </mat-icon>
           <mat-divider></mat-divider>

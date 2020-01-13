@@ -1,0 +1,48 @@
+<div *ngIf="signForm">
+  <ng-container
+    *ngIf="data.categories && data.artists && data.categories.length > 0 && data.artists.length > 0; else elseTemplate">
+    <div class="container" *ngIf="signForm">
+      <form [formGroup]="signForm" (submit)="onSubmit()">
+        <div class="form-group">
+          <input [ngClass]="{'is-invalid': signForm.get('name').invalid && signForm.get('name').touched }" type="text"
+            class="form-control" formControlName="name" placeholder="Song name">
+          <span class="invalid-feedback" *ngIf="signForm.get('name').invalid">
+            <span *ngIf="signForm.get('name').hasError('required')">Song name field is required</span>
+            <span *ngIf="signForm.get('name').hasError('maxlength')">Max length of song name field: 50</span>
+          </span>
+        </div>
+        <div class="form-group">
+          <input [ngClass]="{'is-invalid': signForm.get('artist').invalid && signForm.get('artist').touched}"
+            type="text" class="form-control" formControlName="artist" placeholder="Artist of song">
+          <span class="invalid-feedback" *ngIf="signForm.get('artist').invalid">
+            <span *ngIf="signForm.get('artist').hasError('required')">Artist field is required</span>
+            <span *ngIf="signForm.get('artist').hasError('maxlength')">Max length of artist field: 50</span>
+          </span>
+        </div>
+        <div class="form-group row">
+          <div class="col-6">
+            <select class="form-control" formControlName="categoryId">
+              <option *ngFor="let category of data.categories" [value]="category.id">{{ category.name }}
+              </option>
+            </select>
+          </div>
+          <div class="col-6">
+            <select class="form-control" formControlName="artistId">
+              <option *ngFor="let artist of data.artists" [value]="artist.id">{{ artist.name }}
+              </option>
+            </select>
+          </div>
+        </div>
+        <button [disabled]="signForm.invalid" class="btn btn-info btn-block">Save file</button>
+      </form>
+    </div>
+  </ng-container>
+  <ng-template #elseTemplate>
+    <div *ngIf="data.categories && data.categories.length === 0" class="container">
+      No categories. Please update cateogories...
+    </div>
+    <div *ngIf="data.artists && data.artists.length === 0" class="container">
+      No artists. Please update artists...
+    </div>
+  </ng-template>
+</div>

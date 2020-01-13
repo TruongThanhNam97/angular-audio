@@ -1,0 +1,110 @@
+.album-image {
+  position: relative;
+  overflow: hidden;
+}
+.wrap-card:hover .album-image::before {
+  opacity: 1;
+}
+.wrap-card:hover .album-image::after {
+  opacity: 1;
+}
+.wrap-card:hover img {
+  transform: scale(1.2);
+}
+.album-image img {
+  transition: 0.4s;
+}
+.album-image::before {
+  content: "";
+  width: 100%;
+  height: 100%;
+  background-color: #000000c2;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transition: 0.4s;
+  z-index: 1;
+}
+.album-image::after {
+  font-family: FontAwesome;
+  content: "\f144";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: 0.4s;
+  z-index: 2;
+  color: white;
+  font-size: 50px;
+}
+
+.wrap-playlist {
+  position: relative;
+  width: 32%;
+  margin-right: 1%;
+  margin-bottom: 2%;
+  cursor: pointer;
+  .create-playlist {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(33deg, #5a1eae -7%, #ce267a 117%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 30px;
+  }
+}
+
+.playlist-item {
+  width: 32%;
+  margin-right: 1%;
+  margin-bottom: 2%;
+  cursor: pointer;
+  background: rgb(228, 228, 228);
+  position: relative;
+  .btnDeletePlayList {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: transparent;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-weight: bold;
+    transition: 0.4s;
+    opacity: 0;
+  }
+  .btnEditPlayList {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: transparent;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-weight: bold;
+    transition: 0.4s;
+    opacity: 0;
+  }
+}
+
+.playlist-item:hover .btnDeletePlayList {
+  opacity: 1;
+}
+
+.playlist-item:hover .btnEditPlayList {
+  opacity: 1;
+}

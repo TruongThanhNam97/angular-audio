@@ -46,6 +46,8 @@ export class AudioService {
 
   private loopSubject$ = new Subject();
 
+  private resetCurrentFileSubject$: Subject<any> = new Subject();
+
   constructor() { }
 
   getDestroyGeneralSubject$() {
@@ -87,6 +89,19 @@ export class AudioService {
     return this.currentFile;
   }
 
+  setCurrentFile(file) {
+    this.currentFile = { ...file };
+  }
+
+  resetCurentFile() {
+    this.currentFile = {};
+    this.resetCurrentFileSubject$.next(this.currentFile);
+  }
+
+  getResetCurrentFileSubject() {
+    return this.resetCurrentFileSubject$;
+  }
+
   updateCurrentFile1(file) {
     this.currentFile = { ...file };
     this.currentFileSubject$1.next(this.currentFile);
@@ -111,6 +126,11 @@ export class AudioService {
 
   updatePlayMode() {
     this.playMode = true;
+    this.playModeSubject$.next(this.playMode);
+  }
+
+  closePlayMode() {
+    this.playMode = false;
     this.playModeSubject$.next(this.playMode);
   }
 

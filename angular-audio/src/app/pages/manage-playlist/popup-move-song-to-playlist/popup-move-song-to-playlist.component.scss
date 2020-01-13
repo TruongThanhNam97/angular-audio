@@ -1,0 +1,12 @@
+.playlist-item {
+    cursor: pointer; 
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    border-bottom: 1px dashed gray;
+}
+
+.playlist-item:hover {
+   background-color: gray;
+}

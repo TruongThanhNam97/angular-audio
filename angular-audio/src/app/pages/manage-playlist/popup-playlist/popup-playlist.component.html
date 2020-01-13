@@ -1,0 +1,17 @@
+<form [formGroup]="signForm" (submit)="onSubmit()" *ngIf="data.mode !== 'delete'">
+  <div class="form-group">
+    <input [ngClass]="{'is-invalid': signForm.get('name').touched && signForm.get('name').invalid}" type="text"
+      class="form-control" placeholder="Playlist name" formControlName="name">
+    <span class="invalid-feedback" *ngIf="signForm.get('name').touched && signForm.get('name').invalid">
+      <span *ngIf="signForm.get('name').hasError('required')">Playlist name field is required</span>
+    </span>
+  </div>
+  <button [disabled]="signForm.invalid" class="btn btn-success btn-block">Submit</button>
+</form>
+<div *ngIf="data.mode === 'delete'">
+  <h5>Are you sure to delete {{ data.selected.name }}</h5>
+  <div class="mt-3" style="display: flex;justify-content: flex-end;">
+    <button (click)="onNo()" class="btn btn-secondary mr-2">No</button>
+    <button (click)="onYes()" class="btn btn-secondary">Yes</button>
+  </div>
+</div>

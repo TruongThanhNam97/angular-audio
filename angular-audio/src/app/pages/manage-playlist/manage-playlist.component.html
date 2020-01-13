@@ -1,0 +1,48 @@
+<!-- <ng-container *ngIf="listAlbums && listAlbums.length > 0; else elseTemplate">
+  <div class="container mt-5" style="display: flex;flex-wrap: wrap;">
+    <div (click)="onNavigateToSeeAlbum(album)" *ngFor="let album of listAlbums" class="card wrap-card"
+      style="width: 32%; margin-right: 1%; margin-bottom: 2%;cursor: pointer;  background: rgb(228, 228, 228);">
+      <div class="album-image">
+        <img style="height: 200px;"
+          src="{{ album['avatar'] ? SERVER_URL_IMAGE+album['avatar'] : '../../../../../assets/apple-music-note-800x420.jpg'  }}"
+          class="card-img-top" alt="{{ album.username }}">
+      </div>
+      <div class="card-body">
+        <h5 class="card-title">{{ album.username }}</h5>
+      </div>
+    </div>
+  </div>
+</ng-container>
+<ng-template #elseTemplate>
+  <div class="container mt-3">No albums</div>
+</ng-template> -->
+
+<div class="container" style="display: flex;flex-wrap: wrap;">
+  <div class="wrap-playlist">
+    <div class="create-playlist" (click)="onCreatePlayList()">
+      <div style="text-align: center;">
+        <mat-icon style="font-size: 100px; width: auto; height: auto;">playlist_add</mat-icon>
+        <br>
+        <p style="font-size: 20px;">Create new playlist</p>
+      </div>
+    </div>
+  </div>
+  <div *ngFor="let playList of playLists" class="playlist-item">
+    <div class="btnDeletePlayList" (click)="onDeletePlayList(playList)">
+      <mat-icon mat-list-icon>close</mat-icon>
+    </div>
+    <div class="btnEditPlayList" (click)="onEditPlayList(playList)">
+      <mat-icon mat-list-icon>more_horiz</mat-icon>
+    </div>
+    <div class="card wrap-card" (click)="onNavigateToSeePlayList(playList)">
+      <div class="album-image">
+        <img style="height: 200px;" src="{{ '../../../../../assets/apple-music-note-800x420.jpg'  }}"
+          class="card-img-top" alt="{{ playList.name }}">
+      </div>
+      <div class="card-body">
+        <h5 class="card-title">{{ playList.name }}</h5>
+        <span style="color: gray;" class="card-title">Created by {{ currentUser.username }}</span>
+      </div>
+    </div>
+  </div>
+</div>

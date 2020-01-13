@@ -16,26 +16,127 @@ export class CloudService {
 
   private currentPlayListSubject$: Subject<any> = new Subject();
 
+  private updatedSong: any;
+  private updatedSongSubject$: Subject<any> = new Subject();
+
+  private updatedSongsAfterLikingSubject$: Subject<any> = new Subject();
+
+  private currentFileSubject$: Subject<any> = new Subject();
+
+  private selectedFavoriteSongs: string;
+
+
+  private blockedSongsOfUser: any[] = [];
+  private blockedSongsAfterBlockSubject$: Subject<any> = new Subject();
+
+  private selectedSong: any;
+  private selectedSongId: string;
+
+
   constructor(private http: HttpClient) {
     this.SERVER_URL = environment.SERVER_URL;
     this.SERVER_URL_SOUND = environment.SERVER_URL_SOUND;
   }
 
-  getSongsByUserId(id: string) {
-    return this.http.get(this.SERVER_URL + 'getSongs', { params: { id } }).pipe(
+  getSelectedSongId() {
+    return this.selectedSongId;
+  }
+
+  setSelectedSongId(id) {
+    this.selectedSongId = id;
+  }
+
+  setSelectedSong(song) {
+    this.selectedSong = { ...song };
+  }
+
+  getSelectedSong() {
+    return this.selectedSong;
+  }
+
+  getCurrentFileSubject() {
+    return this.currentFileSubject$;
+  }
+
+  getUpdatedSongsAfterLikingSubject() {
+    return this.updatedSongsAfterLikingSubject$;
+  }
+
+  getAllSongs() {
+    return this.http.get(`${this.SERVER_URL}getAllSongs`).pipe(
       map((files: any) => {
-        const result = files.reduce((acc, cur) => {
+        let result = files.reduce((acc, cur) => {
           const obj = {
+            id: cur._id,
             url: this.SERVER_URL_SOUND + cur.url,
             name: cur.name,
             artist: cur.artist,
             nameToDownload: cur.url,
             userId: cur.userId,
-            userName: cur.userName
+            userName: cur.userName,
+            categoryId: cur.categoryId ? cur.categoryId : null,
+            artistId: cur.artistId ? cur.artistId : null,
+            likedUsers: cur.likedUsers
           };
           acc.push(obj);
           return acc;
         }, []);
+        result = result.filter(song => !this.blockedSongsOfUser.includes(song.id));
+        return result;
+      })
+    );
+  }
+
+  getSongsByUserId(id: string) {
+    return this.http.get(this.SERVER_URL + 'getSongs', { params: { id } }).pipe(
+      map((files: any) => {
+        let result = files.reduce((acc, cur) => {
+          const obj = {
+            id: cur._id,
+            url: this.SERVER_URL_SOUND + cur.url,
+            name: cur.name,
+            artist: cur.artist,
+            nameToDownload: cur.url,
+            userId: cur.userId,
+            userName: cur.userName,
+            categoryId: cur.categoryId ? cur.categoryId : null,
+            artistId: cur.artistId ? cur.artistId : null,
+            likedUsers: cur.likedUsers
+          };
+          acc.push(obj);
+          return acc;
+        }, []);
+        result = result.filter(song => !this.blockedSongsOfUser.includes(song.id));
+        return result;
+      }),
+      tap(files => {
+        this.allowGetSongs = false;
+        this.currentPlayList = [...files];
+        // this.currentPlayListSubject$.next(this.currentPlayList);
+      })
+    );
+  }
+
+  getFavoriteSongsByUserId(id: string) {
+    return this.http.get(this.SERVER_URL + 'getSongs', { params: { id, favoriteMode: 'true' } }).pipe(
+      map((files: any) => {
+        let result = files.reduce((acc, cur) => {
+          const obj = {
+            id: cur.song._id,
+            url: this.SERVER_URL_SOUND + cur.song.url,
+            name: cur.song.name,
+            artist: cur.song.artist,
+            nameToDownload: cur.song.url,
+            userId: cur.song.userId,
+            userName: cur.song.userName,
+            categoryId: cur.song.categoryId ? cur.song.categoryId : null,
+            artistId: cur.song.artistId ? cur.song.artistId : null,
+            likedUsers: cur.song.likedUsers
+          };
+          acc.push(obj);
+          return acc;
+        }, []);
+        result = result.filter(song => !this.blockedSongsOfUser.includes(song.id));
         return result;
       }),
       tap(files => {
@@ -49,24 +150,114 @@ export class CloudService {
   getSongsByCategoryId(id: string) {
     return this.http.get(this.SERVER_URL + 'getSongsByCategory', { params: { id } }).pipe(
       map((files: any) => {
-        const result = files.reduce((acc, cur) => {
+        let result = files.reduce((acc, cur) => {
           const obj = {
+            id: cur._id,
             url: this.SERVER_URL_SOUND + cur.url,
             name: cur.name,
             artist: cur.artist,
             nameToDownload: cur.url,
             userId: cur.userId,
-            userName: cur.userName
+            userName: cur.userName,
+            categoryId: cur.categoryId ? cur.categoryId : null,
+            artistId: cur.artistId ? cur.artistId : null,
+            likedUsers: cur.likedUsers
           };
           acc.push(obj);
           return acc;
         }, []);
+        result = result.filter(song => !this.blockedSongsOfUser.includes(song.id));
+        return result;
+      }),
+      tap(files => {
+        this.allowGetSongs = false;
+        this.currentPlayList = [...files];
+        console.log(this.currentPlayList);
+        // this.currentPlayListSubject$.next(this.currentPlayList);
+      })
+    );
+  }
+
+  getSongsByArtistId(id: string) {
+    return this.http.get(this.SERVER_URL + 'getSongsByArtist', { params: { id } }).pipe(
+      map((files: any) => {
+        let result = files.reduce((acc, cur) => {
+          const obj = {
+            id: cur._id,
+            url: this.SERVER_URL_SOUND + cur.url,
+            name: cur.name,
+            artist: cur.artist,
+            nameToDownload: cur.url,
+            userId: cur.userId,
+            userName: cur.userName,
+            categoryId: cur.categoryId ? cur.categoryId : null,
+            artistId: cur.artistId ? cur.artistId : null,
+            likedUsers: cur.likedUsers
+          };
+          acc.push(obj);
+          return acc;
+        }, []);
+        result = result.filter(song => !this.blockedSongsOfUser.includes(song.id));
         return result;
       }),
       tap(files => {
         this.allowGetSongs = false;
         this.currentPlayList = [...files];
         // this.currentPlayListSubject$.next(this.currentPlayList);
+      })
+    );
+  }
+
+  updateSong(data) {
+    return this.http.post(`${this.SERVER_URL}edit-song`, data, {
+      headers: {
+        Authorization: localStorage.getItem('jwtToken')
+      }
+    }).pipe(
+      map((song: any) => {
+        return {
+          id: song._id,
+          url: this.SERVER_URL_SOUND + song.url,
+          name: song.name,
+          artist: song.artist,
+          nameToDownload: song.url,
+          userId: song.userId,
+          userName: song.userName,
+          categoryId: song.categoryId ? song.categoryId : null,
+          artistId: song.artistId ? song.artistId : null,
+          likedUsers: song.likedUsers
+        };
+      })
+    );
+  }
+
+  deleteSong(data) {
+    return this.http.post(`${this.SERVER_URL}delete-song`, data, {
+      headers: {
+        Authorization: localStorage.getItem('jwtToken')
+      }
+    });
+  }
+
+  likeSong(data) {
+    return this.http.post(`${this.SERVER_URL}like-song`, data, {
+      headers: {
+        Authorization: localStorage.getItem('jwtToken')
+      }
+    }).pipe(
+      map((song: any) => {
+        return {
+          id: song._id,
+          url: this.SERVER_URL_SOUND + song.url,
+          name: song.name,
+          artist: song.artist,
+          nameToDownload: song.url,
+          userId: song.userId,
+          userName: song.userName,
+          categoryId: song.categoryId ? song.categoryId : null,
+          artistId: song.artistId ? song.artistId : null,
+          likedUsers: song.likedUsers
+        };
       })
     );
   }
@@ -91,5 +282,57 @@ export class CloudService {
     this.currentPlayListSubject$.next(this.currentPlayList);
   }
 
+  setUpdatedSong(song) {
+    this.updatedSong = { ...song };
+    this.updatedSongSubject$.next(this.updatedSong);
+  }
+
+  getUpdatedSongSubject() {
+    return this.updatedSongSubject$.asObservable();
+  }
+
+  setCurrentPlayList(files) {
+    this.currentPlayList = [...files];
+  }
+
+  setSelectedFavoriteSongs(favoriteSong) {
+    this.selectedFavoriteSongs = favoriteSong;
+  }
+
+  getSelectedFavoriteSongs() {
+    return this.selectedFavoriteSongs;
+  }
+
+  resetSelectedFavoriteSongs() {
+    this.selectedFavoriteSongs = null;
+  }
+
+  getBlockedSongs() {
+    return this.http.get(`${this.SERVER_URL}getBlockedSongs`, {
+      headers: {
+        Authorization: localStorage.getItem('jwtToken')
+      }
+    });
+  }
+
+  blockSong(data) {
+    return this.http.post(`${this.SERVER_URL}block-song`, data, {
+      headers: {
+        Authorization: localStorage.getItem('jwtToken')
+      }
+    });
+  }
+
+  setBlockedSongsOfUser(blockedSongs) {
+    this.blockedSongsOfUser = [...blockedSongs];
+  }
+
+  getBlockedSongsOfUser() {
+    return this.blockedSongsOfUser;
+  }
+
+  getBlockedSongsAfterBlockSubject() {
+    return this.blockedSongsAfterBlockSubject$;
+  }
 
 }

@@ -1,3 +1,40 @@
 .feature:hover {
-    background: #c7c7c7;
+  background: #c7c7c7;
+}
+.feature {
+  // border-bottom: 1px dashed #d0cfcf;
+}
+
+.songInfo {
+  display: flex;
+  height: 50px;
+  border-bottom: 1px dashed #d0cfcf;
+  .left {
+    width: 20%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .infoIcon {
+      font-size: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+  .right {
+    width: 80%;
+    .songName {
+      text-align: left;
+      margin: 0;
+      font-size: 15px;
+    }
+    .likedUsers {
+      height: auto;
+      display: flex;
+    }
+  }
+}
+
+.songInfo:hover {
+  background: #c7c7c7;
 }

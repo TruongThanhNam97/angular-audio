@@ -17,7 +17,23 @@ const schema = new mongoose.Schema({
     avatar: {
         type: String,
         required: false
-    }
+    },
+    likedSongs: [
+        {
+            song: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'songs'
+            }
+        }
+    ],
+    blockedSongs: [
+        {
+            song: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'songs'
+            }
+        }
+    ]
 }, { versionKey: false });
 
 module.exports = mongoose.model('users', schema);

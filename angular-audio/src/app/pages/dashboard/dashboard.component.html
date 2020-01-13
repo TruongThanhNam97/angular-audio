@@ -1,0 +1,53 @@
+<div class="container">
+  <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist" style="display: flex; justify-content: center;">
+    <li class="nav-item">
+      <a style="display: flex; align-items: center;" class="nav-link active" id="pills-home-tab" data-toggle="pill"
+        [routerLink]="['upload-song']" role="tab" aria-controls="pills-home" aria-selected="true">
+        <mat-icon mat-list-icon class="mr-2">cloud_upload</mat-icon>Upload songs
+      </a>
+    </li>
+    <li class="nav-item">
+      <a style="display: flex; align-items: center;" class="nav-link" id="pills-contact-tab" data-toggle="pill"
+        [routerLink]="['edit-song']" role="tab" aria-controls="pills-contact" aria-selected="false">
+        <mat-icon mat-list-icon class="mr-2">library_music</mat-icon>Edit songs
+      </a>
+    </li>
+    <li class="nav-item">
+      <a style="display: flex; align-items: center;" class="nav-link" id="pills-profile-tab" data-toggle="pill"
+        [routerLink]="['edit-profile']" role="tab" aria-controls="pills-profile" aria-selected="false">
+        <mat-icon mat-list-icon class="mr-2">person</mat-icon>Edit profile
+      </a>
+    </li>
+    <li class="nav-item">
+      <a style="display: flex; align-items: center;" class="nav-link" id="pills-profile-tab" data-toggle="pill"
+        [routerLink]="['my-songs', currentUser.id ]"
+        [queryParams]="{ username: currentUser.username, displayButtonBack: 'false'}" role="tab"
+        aria-controls="pills-profile" aria-selected="false">
+        <mat-icon mat-list-icon class="mr-2">library_music</mat-icon>My songs
+      </a>
+    </li>
+    <li class="nav-item">
+      <a style="display: flex; align-items: center;" class="nav-link" id="pills-profile-tab" data-toggle="pill"
+        [routerLink]="['my-favorite-songs', currentUser.id ]"
+        [queryParams]="{ username: currentUser.username, favoriteMode: 'true', displayButtonBack: 'false'}" role="tab"
+        aria-controls="pills-profile" aria-selected="false">
+        <mat-icon mat-list-icon class="mr-2">favorite</mat-icon>My favorite songs
+      </a>
+    </li>
+    <li class="nav-item">
+      <a style="display: flex; align-items: center;" class="nav-link" id="pills-profile-tab" data-toggle="pill"
+        [routerLink]="['blocked-songs']" role="tab" aria-controls="pills-profile" aria-selected="false">
+        <mat-icon mat-list-icon class="mr-2">lock</mat-icon>My blocked songs
+      </a>
+    </li>
+    <li class="nav-item">
+      <a style="display: flex; align-items: center;" class="nav-link" id="pills-profile-tab" data-toggle="pill"
+        [routerLink]="['manage-playlist']" role="tab" aria-controls="pills-profile" aria-selected="false">
+        <mat-icon mat-list-icon class="mr-2">queue_music</mat-icon>My playlist
+      </a>
+    </li>
+  </ul>
+  <div class="tab-content" id="pills-tabContent">
+    <router-outlet></router-outlet>
+  </div>
+</div>

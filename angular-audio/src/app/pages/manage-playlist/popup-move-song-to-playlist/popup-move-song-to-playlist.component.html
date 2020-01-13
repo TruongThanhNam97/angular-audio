@@ -1,0 +1,19 @@
+<form [formGroup]="signForm" (submit)="onSubmit()">
+  <div class="form-group">
+    <input type="text" class="form-control" placeholder="Playlist name" formControlName="name">
+    <!-- <span class="invalid-feedback" *ngIf="signForm.get('name').touched && signForm.get('name').invalid">
+      <span *ngIf="signForm.get('name').hasError('required')">Playlist name field is required</span>
+    </span> -->
+  </div>
+  <button [disabled]="signForm.invalid" class="btn btn-primary">Submit</button>
+</form>
+<div class="form-group">
+  <input type="text" class="form-control mt-3" placeholder="Search playlist" name="playlistName"
+    [(ngModel)]="playlistName">
+</div>
+<div style="max-height: 200px; overflow-y: scroll;" class="mt-3">
+  <div (click)="onAddToPlayList(playlist)" class="playlist-item"
+    *ngFor="let playlist of playLists | filterPlayListName:playlistName">
+    {{ playlist.name }}
+  </div>
+</div>

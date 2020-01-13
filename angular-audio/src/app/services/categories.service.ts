@@ -36,6 +36,24 @@ export class CategoryService {
         );
     }
 
+    getCategoryById(data) {
+        return this.http.get(`${this.SERVER_URL}categories/getCategoryById`, {
+            params: {
+                id: data.id
+            }
+        }).pipe(
+            map((categories: any) => {
+                const result = categories.map(category =>
+                    ({
+                        id: category._id,
+                        name: category.name,
+                        avatar: category.avatar ? `${this.SERVER_URL_IMAGE}${category.avatar}` : null
+                    }));
+                return result;
+            })
+        );
+    }
+
     updateCategory(data) {
         return this.http.post(`${this.SERVER_URL}categories/update`, data, {
             headers: {

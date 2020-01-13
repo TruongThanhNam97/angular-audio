@@ -55,6 +55,8 @@ export class AppComponent implements OnInit {
         localStorage.removeItem('jwtToken');
         localStorage.removeItem('reup');
       }
+    } else {
+      this.router.navigate(['/']);
     }
   }
 
@@ -66,7 +68,11 @@ export class AppComponent implements OnInit {
     this.router.navigate(['/upload']);
   }
 
+  onDashBoard() {
+    this.router.navigate(['/dashboard/upload-song']);
+  }
+
   onUploadCateGory() {
-    this.router.navigate(['/upload-category']);
+    this.router.navigate(['/manage-categories/upload-category']);
   }
 }

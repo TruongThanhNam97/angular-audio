@@ -3,6 +3,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { CategoryService } from 'src/app/services/categories.service';
 import { AlertifyService } from 'src/app/services/alertify.service';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-upload-category',
@@ -53,9 +54,15 @@ export class UploadCategoryComponent implements OnInit, OnDestroy {
     const formData = new FormData();
     formData.append('name', this.signForm.value.name);
     formData.append('avatar', this.signForm.value.avatar);
-    this.uploadCategory.upload(formData).subscribe(
+    this.uploadCategory.upload(formData).pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(
       _ => this.alertify.success('Upload successfully'),
-      _ => this.alertify.error('Failed'),
+      err => {
+        if (err.error.name) {
+          this.alertify.error(err.error.name);
+        }
+      },
       () => this.signForm.reset()
     );
   }
