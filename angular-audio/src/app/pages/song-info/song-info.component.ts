@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { CloudService } from 'src/app/services/cloud.service';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterEvent, NavigationEnd } from '@angular/router';
 import { ArtistsService } from 'src/app/services/artists.service';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, filter, take } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { CategoryService } from 'src/app/services/categories.service';
 import { AudioService } from 'src/app/services/audio.service';
@@ -86,7 +86,6 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       }
     });
-    console.log(this.selectedSong);
     if (this.selectedSong.playlistId) {
       this.selectedSong.playlistId = null;
     }
