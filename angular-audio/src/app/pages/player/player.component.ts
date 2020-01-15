@@ -13,6 +13,7 @@ import { ArtistsService } from 'src/app/services/artists.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { AlertifyService } from 'src/app/services/alertify.service';
 import { PlayListService } from 'src/app/services/playlist.service';
+import { SongInfoService } from 'src/app/services/song-info.service';
 
 @Component({
   selector: 'app-player',
@@ -52,7 +53,8 @@ export class PlayerComponent implements OnInit, OnDestroy {
     private artistsService: ArtistsService,
     private authService: AuthService,
     private alertify: AlertifyService,
-    private playListService: PlayListService
+    private playListService: PlayListService,
+    private songInfoService: SongInfoService
   ) { }
 
   ngOnInit() {
@@ -103,6 +105,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
       this.isMatchCurrentPlayListAndCurrentPlayerAudio = true;
     }
     this.audioService.getCurrentFileSubject2().pipe(takeUntil(this.audioService.getDestroyGeneralSubject$())).subscribe((v: any) => {
+      console.log(v);
       this.openFile(v.file, v.index);
     });
     this.cloudService.getCurrentFileSubject().pipe(
@@ -131,10 +134,20 @@ export class PlayerComponent implements OnInit, OnDestroy {
       this.files = this.files.filter(song => song.id !== data.songId);
       this.cloudService.setCurrentPlayList(this.files);
     });
+    this.cloudService.getUpdateSongAfterManipulatingSubject().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(updatedSong => {
+      if (this.files.filter(song => song.id === updatedSong.id).length > 0) {
+        const index = this.files.findIndex(song => song.id === updatedSong.id);
+        this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
+      }
+    });
   }
 
   isLiked(song: any): boolean {
-    return song.likedUsers.filter(like => like.user === this.currentUser.id).length > 0;
+    if (this.currentUser) {
+      return song.likedUsers.filter(like => like.user === this.currentUser.id).length > 0;
+    }
   }
 
   onLikeSong(song: any) {
@@ -161,6 +174,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
       } else {
         this.alertify.success('UnLike successfully');
       }
+      this.cloudService.getUpdateSongAfterManipulatingSubject().next(song);
     }, err => console.log(err));
   }
 
@@ -218,6 +232,8 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.audioService.stop();
     this.audioService.playStream(file.url).subscribe();
     this.isMatchCurrentPlayListAndCurrentPlayerAudio = true;
+    this.cloudService.setSelectedSongId(file.id);
+    // this.songInfoService.getModeSubject().next('displayBtnPlay');
     // this.cloudService.getUpdatedSongsAfterLikingSubject().next(this.files);
   }
 
@@ -237,7 +253,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     }
   }
 
-  update() {
+  update(file) {
     if (this.username) {
       this.categoryService.resetSelectedCategory();
       this.artistsService.resetSelectedArtist();
@@ -277,7 +293,8 @@ export class PlayerComponent implements OnInit, OnDestroy {
       this.playListService.setSelectedPlayList(this.playlist);
       this.selectedPlayList = this.playlist;
     }
-    this.cloudService.setSelectedSongId('.');
+    this.cloudService.setSelectedSongId(file.id);
+    this.songInfoService.setStatusAudio('play');
     this.cloudService.updateCurrentPlayList();
   }
 }

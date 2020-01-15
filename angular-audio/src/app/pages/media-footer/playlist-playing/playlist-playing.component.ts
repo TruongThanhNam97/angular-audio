@@ -11,6 +11,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { CloudService } from 'src/app/services/cloud.service';
 import { PlayListService } from 'src/app/services/playlist.service';
 import { AlertifyService } from 'src/app/services/alertify.service';
+import { SongInfoService } from 'src/app/services/song-info.service';
 
 @Component({
   selector: 'app-playlist-playing',
@@ -39,7 +40,8 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
     private cloudService: CloudService,
     @Inject(MAT_BOTTOM_SHEET_DATA) public data: any,
     private playlistService: PlayListService,
-    private alertify: AlertifyService
+    private alertify: AlertifyService,
+    private songInfoService: SongInfoService
   ) { }
 
   ngOnInit() {
@@ -74,7 +76,9 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
   }
 
   isLiked(song: any): boolean {
-    return song.likedUsers.filter(like => like.user === this.currentUser.id).length > 0;
+    if (this.currentUser) {
+      return song.likedUsers.filter(like => like.user === this.currentUser.id).length > 0;
+    }
   }
 
   onLikeSong(song: any) {
@@ -96,6 +100,7 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
       } else {
         this.alertify.success('UnLike successfully');
       }
+      this.cloudService.getUpdateSongAfterManipulatingSubject().next(updatedSong);
     }, err => console.log(err));
   }
 
@@ -104,13 +109,16 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
   }
 
   openFile(file, index) {
+    this.cloudService.setSelectedSongId(file.id);
+    this.songInfoService.getModeSubject().next('displayBtnPlay');
     this.audioService.updatePlayMode();
     this.currentFile = { index, file };
     this.audioService.updateCurrentFile1({ index, file });
     this.audioService.stop();
     this.audioService.playStream(file.url).subscribe();
-
     this.cloudService.getCurrentFileSubject().next(this.currentFile);
+    this.cloudService.getUpdateSongAfterManipulatingSubject().next({ ...file, displayBtn: 'displayBtnPause' });
+    this.songInfoService.setStatusAudio('play');
   }
 
   openDialog(file: any): void {

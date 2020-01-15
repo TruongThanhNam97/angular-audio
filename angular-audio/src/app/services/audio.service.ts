@@ -168,7 +168,7 @@ export class AudioService {
     this.stateChange.next(this.state);
   }
 
-  private resetState() {
+  resetState() {
     this.state = {
       playing: false,
       readableCurrentTime: '',

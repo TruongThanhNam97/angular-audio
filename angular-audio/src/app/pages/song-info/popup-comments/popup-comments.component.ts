@@ -71,7 +71,9 @@ export class PopupCommentsComponent implements OnInit, OnDestroy {
   }
 
   isMyComment(comment) {
-    return this.currentUser.id === comment.user._id;
+    if (this.currentUser) {
+      return this.currentUser.id === comment.user._id;
+    }
   }
 
   formatNumber(number): string {
@@ -164,7 +166,9 @@ export class PopupCommentsComponent implements OnInit, OnDestroy {
   }
 
   isReactedComment(listId: string[]): boolean {
-    return listId.filter(id => id === this.currentUser.id).length > 0;
+    if (this.currentUser) {
+      return listId.filter(id => id === this.currentUser.id).length > 0;
+    }
   }
 
 }
