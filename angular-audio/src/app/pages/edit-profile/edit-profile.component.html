@@ -1,15 +1,5 @@
 <div class="container">
   <form [formGroup]="signForm" (submit)="onSubmit()">
-    <div class="form-group" style="display: none;">
-      <input [ngClass]="{'is-invalid': signForm.get('username').touched && signForm.get('username').invalid}"
-        type="text" class="form-control" placeholder="Username" formControlName="username">
-      <span class="invalid-feedback" *ngIf="signForm.get('username').touched && signForm.get('username').invalid">
-        <span *ngIf="signForm.get('username').hasError('required')">Username field is required</span>
-        <span
-          *ngIf="signForm.get('username').hasError('minlength') || signForm.get('username').hasError('maxlength')">Username
-          must be between 10 and 30 characters</span>
-      </span>
-    </div>
     <div class="form-group">
       <input [ngClass]="{'is-invalid': signForm.get('oldpassword').touched && signForm.get('oldpassword').invalid}"
         type="password" class="form-control" placeholder="Old password" formControlName="oldpassword">

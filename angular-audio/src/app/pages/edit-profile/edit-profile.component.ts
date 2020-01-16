@@ -35,9 +35,7 @@ export class EditProfileComponent implements OnInit, OnDestroy {
   initializeForm() {
     this.signForm = new FormGroup({
       id: new FormControl(this.currentUser.id, [Validators.required]),
-      oldusername: new FormControl(this.currentUser.username, [Validators.required]),
       oldpassword: new FormControl(null, [Validators.required]),
-      username: new FormControl(this.currentUser.username, [Validators.required, Validators.minLength(10), Validators.maxLength(30)]),
       password: new FormControl(null, [Validators.required, Validators.minLength(6), Validators.maxLength(30)]),
       password2: new FormControl(null, [Validators.required]),
       avatar: new FormControl(null, [this.validateImage.bind(this)])
@@ -64,9 +62,7 @@ export class EditProfileComponent implements OnInit, OnDestroy {
   onSubmit() {
     const formData = new FormData();
     formData.append('id', this.signForm.value.id);
-    formData.append('oldusername', this.signForm.value.oldusername);
     formData.append('oldpassword', this.signForm.value.oldpassword);
-    formData.append('username', this.signForm.value.username);
     formData.append('password', this.signForm.value.password);
     formData.append('password2', this.signForm.value.password2);
     if (this.signForm.value.avatar) {
@@ -81,9 +77,7 @@ export class EditProfileComponent implements OnInit, OnDestroy {
         this.signForm.reset();
         this.currentUser = decode(response.token);
         this.signForm.patchValue({
-          id: this.currentUser.id,
-          oldusername: this.currentUser.username,
-          username: this.currentUser.username
+          id: this.currentUser.id
         });
       },
       error => {

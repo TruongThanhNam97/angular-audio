@@ -142,14 +142,10 @@ router.post('/update', passport.authenticate('jwt', { session: false }), upload.
   if (!isValid) {
     return res.status(400).json(errors);
   }
-  const { id, oldusername, username, password, oldpassword } = req.body;
-  userModel.findOne({ username: username }).then(user => {
+  const { id, password, oldpassword } = req.body;
+  userModel.findOne({ _id: id }).then(user => {
     if (!user) {
       return res.status(404).json('User Not Found');
-    }
-    if (user && user.username !== oldusername) {
-      errors.username = 'Username already exists';
-      return res.status(400).json(errors);
     }
     if (user._id.toString() !== req.user._id.toString()) {
       return res.status(401).json('Unauthorized');
@@ -158,7 +154,7 @@ router.post('/update', passport.authenticate('jwt', { session: false }), upload.
         if (!isMatch) {
           return res.status(400).json({ password: 'Old password is incorrect' });
         }
-        const user = { username, password };
+        const user = { password };
         if (req.files[0]) user.avatar = req.files[0].filename;
         bcrypt.genSalt(10, (err, salt) => {
           bcrypt.hash(user.password, salt, (err, hash) => {
