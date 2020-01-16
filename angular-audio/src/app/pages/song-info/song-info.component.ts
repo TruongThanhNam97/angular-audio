@@ -158,13 +158,17 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   formatComments(comments): string {
-    if (comments >= 1000) {
-      return (comments / 1000).toFixed(1) + 'K';
+    let result = comments.length;
+    comments.forEach(comment => {
+      result += comment.subComments.length;
+    });
+    if (result >= 1000) {
+      return (result / 1000).toFixed(1) + 'K';
     }
-    if (comments >= 1000000) {
-      return (comments / 1000000).toFixed(1) + 'M';
+    if (result >= 1000000) {
+      return (result / 1000000).toFixed(1) + 'M';
     }
-    return comments;
+    return result;
   }
 
   onSeeAlbumOfUser() {
@@ -271,7 +275,6 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
     this.cloudService.blockSong({ id: this.selectedSong.id }).pipe(
       takeUntil(this.destroySubsction$)
     ).subscribe(blockedSongs => {
-      console.log(blockedSongs);
       this.cloudService.setBlockedSongsOfUser(blockedSongs);
       this.cloudService.getBlockedSongsAfterBlockSubject().next(this.selectedSong);
       if (!this.isBlocked) {

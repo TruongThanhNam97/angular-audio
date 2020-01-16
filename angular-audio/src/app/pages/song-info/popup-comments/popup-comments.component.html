@@ -9,9 +9,19 @@
   </div>
   <div class="sub-header">
     <div class="left-sub-header">
-      <span class="numberComments">{{ formatNumber(data.comments.length)+' Comments' }}</span>
+      <span class="numberComments">{{ formatNumberOfComments(data.comments)+' Comments' }}</span>
     </div>
-    <div class="right-sub-header"></div>
+    <div class="right-sub-header">
+      <div class="filter-comment" (click)="openPopupSort()">
+        <mat-icon mat-list-icon class="mr-2 sort-icon">sort</mat-icon>
+        {{ filterBy }}
+        <mat-icon mat-list-icon class="ml-2 sort-icon">arrow_drop_down</mat-icon>
+      </div>
+      <div class="sort-popup" *ngIf="sortMode">
+        <div (click)="sortFeaturedComment()" class="option">Featured comment</div>
+        <div (click)="sortLatestComment()" class="option">Latest comment</div>
+      </div>
+    </div>
   </div>
   <div class="body">
     <div class="comment mb-4" *ngFor="let comment of data.comments; let i = index;">
@@ -20,44 +30,111 @@
           src="{{ comment.user.avatar ? SERVER_URL_IMAGE+comment.user.avatar : '../../../../../../assets/profile-default.jpg' }}"
           alt="{{ comment.user.username }}">
       </div>
-      <div class="right-comment">
-        <div class="wrap-username-dated">
-          <div class="username mr-2">{{comment.user.username}}</div>
-          <div class="date">{{ comment.date | timeAgo }}</div>
+      <div class="wrap-right-comment">
+        <div class="right-comment mb-3">
+          <div class="wrap-username-dated">
+            <div class="username mr-2">{{comment.user.username}}</div>
+            <div class="date">{{ comment.date | timeAgo }}</div>
+          </div>
+          <div class="wrap-text" *ngIf="indexToEdit !== i || !editMode">{{ comment.text }}</div>
+
+          <form class="wrap-text" *ngIf="indexToEdit === i && editMode">
+            <div class="form-group" [formGroup]="editForm">
+              <input appAutoFocus (keyup.enter)="onEditSubmit()" type="text" class="form-control"
+                placeholder="Write comment" formControlName="text">
+              <span class="btnCancel mr-2" (click)="onCancel()">Cancel</span>
+              <span class="btnEdit" (click)="onEditSubmit()">Save</span>
+            </div>
+          </form>
+
+          <div class="wrap-button">
+            <div class="btnLike mr-3" (click)="onLikeComment(comment)">
+              <mat-icon matTooltip="Like" style="color: #a0a0a0;" mat-list-icon class="mr-2"
+                *ngIf="!isReactedComment(comment.liked)">thumb_up</mat-icon>
+              <mat-icon matTooltip="Like" color="primary" mat-list-icon class="mr-2"
+                *ngIf="isReactedComment(comment.liked)">thumb_up</mat-icon>
+              <span style="color: #a0a0a0;">{{ formatNumber(comment.liked.length) }}</span>
+            </div>
+            <div class="btnUnlike mr-3" (click)="onUnlikeComment(comment)">
+              <mat-icon matTooltip="Unlike" color="warn" style="color: #a0a0a0;" mat-list-icon class="mr-2"
+                *ngIf="!isReactedComment(comment.unliked)">thumb_down
+              </mat-icon>
+              <mat-icon matTooltip="Unlike" color="warn" color="primary" mat-list-icon class="mr-2"
+                *ngIf="isReactedComment(comment.unliked)">thumb_down
+              </mat-icon>
+              <span style="color: #a0a0a0;">{{ formatNumber(comment.unliked.length) }}</span>
+            </div>
+            <span (click)="onDisplayReplyInputField(comment, i)" class="rep">Reply</span>
+          </div>
+          <div (click)="onDeleteComment(comment)" class="btnDeleteComment" *ngIf="isMyComment(comment)">
+            <mat-icon matTooltip="Delete comment" style="color: #a0a0a0;" mat-list-icon class="mr-2">delete</mat-icon>
+          </div>
+          <div (click)="onEditComment(comment, i)" class="btnEditComment" *ngIf="isMyComment(comment)">
+            <mat-icon matTooltip="Edit comment" style="color: #a0a0a0;" mat-list-icon class="mr-2">edit</mat-icon>
+          </div>
         </div>
-        <div class="wrap-text" *ngIf="indexToEdit !== i || !editMode">{{ comment.text }}</div>
-        <form class="wrap-text" *ngIf="indexToEdit === i && editMode">
-          <div class="form-group" [formGroup]="editForm">
-            <input appAutoFocus (keyup.enter)="onEditSubmit()" type="text" class="form-control"
-              placeholder="Write comment" formControlName="text">
-            <span class="btnCancel mr-2" (click)="onCancel()">Cancel</span>
-            <span class="btnEdit" (click)="onEditSubmit()">Save</span>
+
+        <div style="padding-left: 25px;" class="comment mb-3"
+          *ngFor="let subComment of data.comments[i].subComments; let subIndex = index;">
+          <div class="left-comment">
+            <img class="avatar"
+              src="{{ subComment.user.avatar ? SERVER_URL_IMAGE+subComment.user.avatar : '../../../../../../assets/profile-default.jpg' }}"
+              alt="{{ subComment.user.username }}">
+          </div>
+          <div class="wrap-right-comment">
+            <div class="right-comment">
+              <div class="wrap-username-dated">
+                <div class="username mr-2">{{subComment.user.username}}</div>
+                <div class="date">{{ subComment.date | timeAgo }}</div>
+              </div>
+              <div class="wrap-text" *ngIf="indexToEditReply !== subIndex || !editReplyMode">{{ subComment.text }}</div>
+              <form class="wrap-text" *ngIf="indexToEditReply === subIndex && editReplyMode && indexToEdit === i">
+                <div class="form-group" [formGroup]="editReplyForm">
+                  <input appAutoFocus (keyup.enter)="onEditReplySubmit()" type="text" class="form-control"
+                    placeholder="Write comment" formControlName="text">
+                  <span class="btnCancel mr-2" (click)="onCancel()">Cancel</span>
+                  <span class="btnEdit" (click)="onEditReplySubmit()">Save</span>
+                </div>
+              </form>
+              <div class="wrap-button">
+                <div class="btnLike mr-3" (click)="onLikeReplyComment(subComment,comment)">
+                  <mat-icon matTooltip="Like" style="color: #a0a0a0;" mat-list-icon class="mr-2"
+                    *ngIf="!isReactedComment(subComment.liked)">thumb_up</mat-icon>
+                  <mat-icon matTooltip="Like" color="primary" mat-list-icon class="mr-2"
+                    *ngIf="isReactedComment(subComment.liked)">thumb_up</mat-icon>
+                  <span style="color: #a0a0a0;">{{ formatNumber(subComment.liked.length) }}</span>
+                </div>
+                <div class="btnUnlike mr-3" (click)="onUnlikeSubComment(subComment,comment)">
+                  <mat-icon matTooltip="Unlike" color="warn" style="color: #a0a0a0;" mat-list-icon class="mr-2"
+                    *ngIf="!isReactedComment(subComment.unliked)">thumb_down
+                  </mat-icon>
+                  <mat-icon matTooltip="Unlike" color="warn" color="primary" mat-list-icon class="mr-2"
+                    *ngIf="isReactedComment(subComment.unliked)">thumb_down
+                  </mat-icon>
+                  <span style="color: #a0a0a0;">{{ formatNumber(subComment.unliked.length) }}</span>
+                </div>
+                <span (click)="onDisplayReplyInputField(comment, i)" class="rep">Reply</span>
+              </div>
+              <div (click)="onDeleteSubComment(subComment, comment)" class="btnDeleteComment"
+                *ngIf="isMyComment(subComment)">
+                <mat-icon matTooltip="Delete comment" style="color: #a0a0a0;" mat-list-icon class="mr-2">delete
+                </mat-icon>
+              </div>
+              <div (click)="onEditSubComment(subComment, comment, subIndex, i)" class="btnEditComment"
+                *ngIf="isMyComment(subComment)">
+                <mat-icon matTooltip="Edit comment" style="color: #a0a0a0;" mat-list-icon class="mr-2">edit</mat-icon>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <form [formGroup]="replyForm" style="padding-left: 25px;" *ngIf="indextoReply === i && replyMode">
+          <div class="form-group">
+            <input appAutoFocus (keyup.enter)="onReply()" type="text" class="form-control"
+              placeholder="Write a reply..." formControlName="text">
           </div>
         </form>
-        <div class="wrap-button">
-          <div class="btnLike mr-3" (click)="onLikeComment(comment)">
-            <mat-icon matTooltip="Like" style="color: #a0a0a0;" mat-list-icon class="mr-2"
-              *ngIf="!isReactedComment(comment.liked)">thumb_up</mat-icon>
-            <mat-icon matTooltip="Like" color="primary" mat-list-icon class="mr-2"
-              *ngIf="isReactedComment(comment.liked)">thumb_up</mat-icon>
-            <span style="color: #a0a0a0;">{{ formatNumber(comment.liked.length) }}</span>
-          </div>
-          <div class="btnUnlike" (click)="onUnlikeComment(comment)">
-            <mat-icon matTooltip="Unlike" color="warn" style="color: #a0a0a0;" mat-list-icon class="mr-2"
-              *ngIf="!isReactedComment(comment.unliked)">thumb_down
-            </mat-icon>
-            <mat-icon matTooltip="Unlike" color="warn" color="primary" mat-list-icon class="mr-2"
-              *ngIf="isReactedComment(comment.unliked)">thumb_down
-            </mat-icon>
-            <span style="color: #a0a0a0;">{{ formatNumber(comment.unliked.length) }}</span>
-          </div>
-        </div>
-        <div (click)="onDeleteComment(comment)" class="btnDeleteComment" *ngIf="isMyComment(comment)">
-          <mat-icon matTooltip="Delete comment" style="color: #a0a0a0;" mat-list-icon class="mr-2">delete</mat-icon>
-        </div>
-        <div (click)="onEditComment(comment, i)" class="btnEditComment" *ngIf="isMyComment(comment)">
-          <mat-icon matTooltip="Edit comment" style="color: #a0a0a0;" mat-list-icon class="mr-2">edit</mat-icon>
-        </div>
+
       </div>
     </div>
   </div>
@@ -66,7 +143,7 @@
     <form [formGroup]="signForm" (submit)="onSubmit()">
       <div class="form-group row" style="margin: 0;">
         <div class="col-10" style="padding: 0;">
-          <input type="text" class="form-control" placeholder="Write comment" formControlName="text">
+          <input type="text" class="form-control" placeholder="Write a comment..." formControlName="text">
         </div>
         <div class="col-2">
           <button [disabled]="signForm.invalid" class="btn btn-primary">Send</button>

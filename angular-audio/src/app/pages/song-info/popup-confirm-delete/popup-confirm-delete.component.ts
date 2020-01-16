@@ -33,14 +33,25 @@ export class PopupConfirmDeleteComponent implements OnInit, OnDestroy {
   }
 
   onDelete() {
-    this.cloudService.deleteComment({ songId: this.data.songId, commentId: this.data._id }).pipe(
-      takeUntil(this.destroySubscription$)
-    ).subscribe(song => {
-      this.cloudService.setSelectedSong(song);
-      this.cloudService.getUpdateSongAfterAddCommentSubject().next(song);
-      this.alertify.success('Delete comment successfully');
-      this.dialogRef.close();
-    });
+    if (!this.data.commentId) {
+      this.cloudService.deleteComment({ songId: this.data.songId, commentId: this.data._id }).pipe(
+        takeUntil(this.destroySubscription$)
+      ).subscribe(song => {
+        this.cloudService.setSelectedSong(song);
+        this.cloudService.getUpdateSongAfterAddCommentSubject().next(song);
+        this.alertify.success('Delete comment successfully');
+        this.dialogRef.close();
+      });
+    } else {
+      this.cloudService.deleteSubComment({ songId: this.data.songId, commentId: this.data.commentId, subCommentId: this.data._id }).pipe(
+        takeUntil(this.destroySubscription$)
+      ).subscribe(song => {
+        this.cloudService.setSelectedSong(song);
+        this.cloudService.getUpdateSongAfterAddCommentSubject().next(song);
+        this.alertify.success('Delete subComment successfully');
+        this.dialogRef.close();
+      });
+    }
   }
 
 }

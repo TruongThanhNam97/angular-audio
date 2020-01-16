@@ -40,6 +40,53 @@
     }
     .right-sub-header {
       width: 50%;
+      display: flex;
+      justify-content: flex-end;
+      position: relative;
+      .sort-popup {
+        position: absolute;
+        background: white;
+        width: 200px;
+        right: 10px;
+        top: 100%;
+        z-index: 999;
+        padding: 10px;
+        box-shadow: -1px 1px 6px 3px #828282;
+        .option {
+          height: 30px;
+          display: flex;
+          justify-content: left;
+          align-items: center;
+          cursor: pointer;
+          font-size: 14px;
+        }
+        .option:hover {
+          background: #f3f3f3;
+        }
+      }
+      .filter-comment {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 200px;
+        height: 100%;
+        font-size: 14px;
+        color: #a0a0a0;
+        cursor: pointer;
+        position: relative;
+        .sort-icon {
+          color: #a0a0a0;
+        }
+      }
+      .filter-comment:hover {
+        color: #3f51b5;
+        .sort-icon {
+          color: #3f51b5;
+        }
+        .sort-popup {
+          color: #a0a0a0;
+        }
+      }
     }
   }
   .body {
@@ -59,59 +106,74 @@
           border-radius: 50%;
         }
       }
-      .right-comment {
-        width: 90%;
-        padding-left: 25px;
+      .wrap-right-comment {
         position: relative;
-        .wrap-username-dated {
-          display: flex;
-          .username {
-            font-weight: 700;
-          }
-          .date {
-            font-size: 14px;
-            color: #a0a0a0;
-          }
-        }
-        .wrap-text {
+        width: 90%;
+        .right-comment {
           width: 100%;
-          font-size: 14px;
-          word-break: break-all;
-          padding-top: 5px;
-          padding-right: 30px;
-          margin-bottom: 10px;
-          .btnCancel,
-          .btnEdit {
-            font-size: 12px;
-            color: #a9a6a6;
+          padding-left: 25px;
+          .wrap-username-dated {
+            display: flex;
+            .username {
+              font-weight: 700;
+            }
+            .date {
+              font-size: 14px;
+              color: #a0a0a0;
+            }
+          }
+          .wrap-text {
+            width: 100%;
+            font-size: 14px;
+            word-break: break-all;
+            padding-top: 5px;
+            padding-right: 30px;
+            margin-bottom: 10px;
+            .btnCancel,
+            .btnEdit {
+              font-size: 12px;
+              color: #a9a6a6;
+              cursor: pointer;
+            }
+            .btnCancel:hover,
+            .btnEdit:hover {
+              color: blue;
+            }
+          }
+          .wrap-button {
+            width: 100%;
+            display: flex;
+            .btnLike,
+            .btnUnlike {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              cursor: pointer;
+            }
+            .rep {
+              font-size: 13px;
+              color: #a0a0a0;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              cursor: pointer;
+            }
+            .rep:hover {
+              color: #3f51b5;
+            }
+          }
+          .btnDeleteComment {
+            position: absolute;
+            right: 0;
+            top: 0;
             cursor: pointer;
           }
-          .btnCancel:hover,
-          .btnEdit:hover {
-            color: blue;
+          .btnEditComment {
+            position: absolute;
+            right: 7%;
+            top: 0;
+            cursor: pointer;
           }
-        }
-        .wrap-button {
-          width: 100%;
-          display: flex;
-          .btnLike,
-          .btnUnlike {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-          }
-        }
-        .btnDeleteComment {
-          position: absolute;
-          right: 0;
-          top: 0;
-          cursor: pointer;
-        }
-        .btnEditComment {
-          position: absolute;
-          right: 7%;
-          top: 0;
-          cursor: pointer;
         }
       }
     }

@@ -401,8 +401,53 @@ export class CloudService {
     );
   }
 
+  addSubComment(data) {
+    return this.http.post(`${this.SERVER_URL}addSubComment`, data, {
+      headers: {
+        Authorization: localStorage.getItem('jwtToken')
+      }
+    }).pipe(
+      map((song: any) => ({
+        id: song._id,
+        url: this.SERVER_URL_SOUND + song.url,
+        name: song.name,
+        artist: song.artist,
+        nameToDownload: song.url,
+        userId: song.userId,
+        userName: song.userName,
+        categoryId: song.categoryId ? song.categoryId : null,
+        artistId: song.artistId ? song.artistId : null,
+        likedUsers: song.likedUsers,
+        comments: song.comments ? song.comments : []
+      }))
+    );
+  }
+
+
   editComment(data) {
     return this.http.post(`${this.SERVER_URL}editComment`, data, {
+      headers: {
+        Authorization: localStorage.getItem('jwtToken')
+      }
+    }).pipe(
+      map((song: any) => ({
+        id: song._id,
+        url: this.SERVER_URL_SOUND + song.url,
+        name: song.name,
+        artist: song.artist,
+        nameToDownload: song.url,
+        userId: song.userId,
+        userName: song.userName,
+        categoryId: song.categoryId ? song.categoryId : null,
+        artistId: song.artistId ? song.artistId : null,
+        likedUsers: song.likedUsers,
+        comments: song.comments ? song.comments : []
+      }))
+    );
+  }
+
+  editSubComment(data) {
+    return this.http.post(`${this.SERVER_URL}editSubComment`, data, {
       headers: {
         Authorization: localStorage.getItem('jwtToken')
       }
@@ -445,6 +490,28 @@ export class CloudService {
     );
   }
 
+  deleteSubComment(data) {
+    return this.http.post(`${this.SERVER_URL}deleteSubComment`, data, {
+      headers: {
+        Authorization: localStorage.getItem('jwtToken')
+      }
+    }).pipe(
+      map((song: any) => ({
+        id: song._id,
+        url: this.SERVER_URL_SOUND + song.url,
+        name: song.name,
+        artist: song.artist,
+        nameToDownload: song.url,
+        userId: song.userId,
+        userName: song.userName,
+        categoryId: song.categoryId ? song.categoryId : null,
+        artistId: song.artistId ? song.artistId : null,
+        likedUsers: song.likedUsers,
+        comments: song.comments ? song.comments : []
+      }))
+    );
+  }
+
   likeComment(data) {
     return this.http.post(`${this.SERVER_URL}likeComment`, data, {
       headers: {
@@ -467,8 +534,52 @@ export class CloudService {
     );
   }
 
+  likeSubComment(data) {
+    return this.http.post(`${this.SERVER_URL}likeSubComment`, data, {
+      headers: {
+        Authorization: localStorage.getItem('jwtToken')
+      }
+    }).pipe(
+      map((song: any) => ({
+        id: song._id,
+        url: this.SERVER_URL_SOUND + song.url,
+        name: song.name,
+        artist: song.artist,
+        nameToDownload: song.url,
+        userId: song.userId,
+        userName: song.userName,
+        categoryId: song.categoryId ? song.categoryId : null,
+        artistId: song.artistId ? song.artistId : null,
+        likedUsers: song.likedUsers,
+        comments: song.comments ? song.comments : []
+      }))
+    );
+  }
+
   unlikeComment(data) {
     return this.http.post(`${this.SERVER_URL}unlikeComment`, data, {
+      headers: {
+        Authorization: localStorage.getItem('jwtToken')
+      }
+    }).pipe(
+      map((song: any) => ({
+        id: song._id,
+        url: this.SERVER_URL_SOUND + song.url,
+        name: song.name,
+        artist: song.artist,
+        nameToDownload: song.url,
+        userId: song.userId,
+        userName: song.userName,
+        categoryId: song.categoryId ? song.categoryId : null,
+        artistId: song.artistId ? song.artistId : null,
+        likedUsers: song.likedUsers,
+        comments: song.comments ? song.comments : []
+      }))
+    );
+  }
+
+  unlikeSubComment(data) {
+    return this.http.post(`${this.SERVER_URL}unlikeSubComment`, data, {
       headers: {
         Authorization: localStorage.getItem('jwtToken')
       }

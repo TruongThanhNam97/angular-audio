@@ -57,10 +57,8 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
       if (this.state.readableCurrentTime === this.state.readableDuration
         && this.state.readableCurrentTime !== '' && this.state.readableDuration !== '') {
         if (this.randomMode) {
-          console.log('random');
           this.random();
         } else if (!this.loop && this.currentFile.index !== this.files.length - 1) {
-          console.log('next');
           this.next();
         } else if (!this.loop && this.currentFile.index === this.files.length - 1) {
           this.audioService.resetState();
@@ -116,6 +114,17 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
       }
     });
     this.cloudService.getUpdateSongAfterManipulatingSubject().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(updatedSong => {
+      if (this.files.filter(song => song.id === updatedSong.id).length > 0) {
+        const index = this.files.findIndex(song => song.id === updatedSong.id);
+        this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
+      }
+      if (this.currentFile.file && this.currentFile.file.id === updatedSong.id) {
+        this.currentFile = { ...this.currentFile, file: updatedSong };
+      }
+    });
+    this.cloudService.getUpdateSongAfterAddCommentSubject().pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(updatedSong => {
       if (this.files.filter(song => song.id === updatedSong.id).length > 0) {

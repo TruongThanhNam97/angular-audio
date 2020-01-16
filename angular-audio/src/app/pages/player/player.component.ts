@@ -105,7 +105,6 @@ export class PlayerComponent implements OnInit, OnDestroy {
       this.isMatchCurrentPlayListAndCurrentPlayerAudio = true;
     }
     this.audioService.getCurrentFileSubject2().pipe(takeUntil(this.audioService.getDestroyGeneralSubject$())).subscribe((v: any) => {
-      console.log(v);
       this.openFile(v.file, v.index);
     });
     this.cloudService.getCurrentFileSubject().pipe(

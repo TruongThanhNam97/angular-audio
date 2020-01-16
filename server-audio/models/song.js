@@ -60,6 +60,34 @@ const schema = new mongoose.Schema({
                     type: mongoose.Schema.Types.ObjectId,
                     ref: 'users'
                 }
+            ],
+            subComments: [
+                {
+                    user: {
+                        type: mongoose.Schema.Types.ObjectId,
+                        ref: 'users'
+                    },
+                    text: {
+                        type: String,
+                        required: true
+                    },
+                    date: {
+                        type: Date,
+                        default: Date.now
+                    },
+                    liked: [
+                        {
+                            type: mongoose.Schema.Types.ObjectId,
+                            ref: 'users'
+                        }
+                    ],
+                    unliked: [
+                        {
+                            type: mongoose.Schema.Types.ObjectId,
+                            ref: 'users'
+                        }
+                    ]
+                }
             ]
         }
     ]

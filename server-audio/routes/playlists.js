@@ -19,6 +19,10 @@ router.get('/', passport.authenticate('jwt', { session: false }), (req, res, nex
             populate: {
                 path: 'comments.user',
                 select: ['_id', 'username', 'avatar']
+            },
+            populate: {
+                path: 'comments.subComments.user',
+                select: ['_id', 'username', 'avatar']
             }
         })
         .then(playlist => {
@@ -63,6 +67,10 @@ router.post('/editPlayList', passport.authenticate('jwt', { session: false }), (
             populate: {
                 path: 'comments.user',
                 select: ['_id', 'username', 'avatar']
+            },
+            populate: {
+                path: 'comments.subComments.user',
+                select: ['_id', 'username', 'avatar']
             }
         })
         .then(newPlayList => res.status(200).json(newPlayList))
@@ -101,6 +109,10 @@ router.post('/addSong', passport.authenticate('jwt', { session: false }), (req, 
                     populate: {
                         path: 'comments.user',
                         select: ['_id', 'username', 'avatar']
+                    },
+                    populate: {
+                        path: 'comments.subComments.user',
+                        select: ['_id', 'username', 'avatar']
                     }
                 }).then(item => res.status(200).json(item));
             songModel.findById({ _id: songId }).then(song => {
@@ -133,6 +145,10 @@ router.post('/deleteSong', passport.authenticate('jwt', { session: false }), (re
                     path: 'listSongs',
                     populate: {
                         path: 'comments.user',
+                        select: ['_id', 'username', 'avatar']
+                    },
+                    populate: {
+                        path: 'comments.subComments.user',
                         select: ['_id', 'username', 'avatar']
                     }
                 }).then(item => res.status(200).json(item));
