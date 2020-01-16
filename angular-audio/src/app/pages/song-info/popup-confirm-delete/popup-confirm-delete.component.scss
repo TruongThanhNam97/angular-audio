@@ -1,0 +1,30 @@
+.header {
+  width: 300px;
+  height: 40px;
+  display: flex;
+  border-bottom: 1px solid gainsboro;
+  .left-header {
+    width: 50%;
+    display: flex;
+    align-items: center;
+  }
+  .right-header {
+    width: 50%;
+    display: flex;
+    justify-content: flex-end;
+    .close {
+      height: 35px;
+      background: transparent;
+      border: 0;
+      color: black;
+      border-color: transparent;
+      cursor: pointer;
+    }
+  }
+}
+.body {
+  width: 300px;
+}
+.footer {
+  width: 300px;
+}

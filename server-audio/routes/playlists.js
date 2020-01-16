@@ -13,13 +13,24 @@ const songModel = require('../models/song');
 //@desc     GET playlist by UserId
 //@access   Private
 router.get('/', passport.authenticate('jwt', { session: false }), (req, res, next) => {
-    playlistModel.find({ userId: req.user._id, status: 0 }).populate('listSongs').then(playlist => {
-        console.log(playlist);
-        if (!playlist) {
-            return res.status(404).json('Playlist not found');
-        }
-        res.status(200).json(playlist);
-    }).catch(err => console.log(err));
+    playlistModel.find({ userId: req.user._id, status: 0 })
+        .populate({
+            path: 'listSongs',
+            populate: {
+                path: 'comments.user',
+                select: ['_id', 'username', 'avatar']
+            },
+            populate: {
+                path: 'comments.subComments.user',
+                select: ['_id', 'username', 'avatar']
+            }
+        })
+        .then(playlist => {
+            if (!playlist) {
+                return res.status(404).json('Playlist not found');
+            }
+            res.status(200).json(playlist);
+        }).catch(err => console.log(err));
 });
 
 //@route    POST /playlists/createPlayList
@@ -36,7 +47,7 @@ router.post('/createPlayList', passport.authenticate('jwt', { session: false }),
         name,
         userId: req.user._id
     });
-    newPlayList.save().then(playList => res.status(200).json(playList)).catch(err => console.log(err));
+    newPlayList.save().then(playList => res.status(200).json(playList));
 });
 
 //@route    POST /playlists/editPlayList
@@ -51,7 +62,17 @@ router.post('/editPlayList', passport.authenticate('jwt', { session: false }), (
     const { name, playlistId } = req.body;
     playlistModel
         .findOneAndUpdate({ _id: playlistId }, { $set: { name } }, { new: true })
-        .populate('listSongs')
+        .populate({
+            path: 'listSongs',
+            populate: {
+                path: 'comments.user',
+                select: ['_id', 'username', 'avatar']
+            },
+            populate: {
+                path: 'comments.subComments.user',
+                select: ['_id', 'username', 'avatar']
+            }
+        })
         .then(newPlayList => res.status(200).json(newPlayList))
         .catch(err => console.log(err));
 });
@@ -82,7 +103,18 @@ router.post('/addSong', passport.authenticate('jwt', { session: false }), (req, 
         }
         playlist.listSongs = [...listSongs, songId];
         playlist.save().then(playlist => {
-            playlistModel.findById({ _id: playlist._id }).populate('listSongs').then(item => res.status(200).json(item));
+            playlistModel.findById({ _id: playlist._id })
+                .populate({
+                    path: 'listSongs',
+                    populate: {
+                        path: 'comments.user',
+                        select: ['_id', 'username', 'avatar']
+                    },
+                    populate: {
+                        path: 'comments.subComments.user',
+                        select: ['_id', 'username', 'avatar']
+                    }
+                }).then(item => res.status(200).json(item));
             songModel.findById({ _id: songId }).then(song => {
                 if (song) {
                     song.listPlayLists = [...song.listPlayLists, playlist._id.toString()];
@@ -108,7 +140,18 @@ router.post('/deleteSong', passport.authenticate('jwt', { session: false }), (re
         }
         playlist.listSongs = playlist.listSongs.filter(item => item.toString() !== songId.toString());
         playlist.save().then(playlist => {
-            playlistModel.findById({ _id: playlist._id }).populate('listSongs').then(item => res.status(200).json(item));
+            playlistModel.findById({ _id: playlist._id })
+                .populate({
+                    path: 'listSongs',
+                    populate: {
+                        path: 'comments.user',
+                        select: ['_id', 'username', 'avatar']
+                    },
+                    populate: {
+                        path: 'comments.subComments.user',
+                        select: ['_id', 'username', 'avatar']
+                    }
+                }).then(item => res.status(200).json(item));
             songModel.findById({ _id: songId }).then(song => {
                 if (song) {
                     song.listPlayLists = song.listPlayLists.filter(item => item.toString() !== playlist._id.toString());

@@ -28,13 +28,16 @@
 </div>
 <div class="container listFeatures">
   <div class="btn btn-primary btnPlayAudio">
-    <div *ngIf="!isPlay" style="display: flex;" (click)="openFile()">
+    <div *ngIf="!isPlay && !isBlocked" style="display: flex;" (click)="openFile()">
       <mat-icon mat-list-icon class="mr-2">play_circle_filled</mat-icon>
       Play
     </div>
-    <div *ngIf="isPlay" style="display: flex;" (click)="stopFile()">
+    <div *ngIf="isPlay && !isBlocked" style="display: flex;" (click)="stopFile()">
       <mat-icon mat-list-icon>pause</mat-icon>
       Pause
+    </div>
+    <div *ngIf="isBlocked" style="display: flex;justify-content: center;align-items: center;">
+      <mat-icon mat-list-icon>block</mat-icon>
     </div>
   </div>
   <div *ngIf="currentUser && currentUser.username !== 'superadmin'" class="btnLikeSong" (click)="onLikeSong()"
@@ -65,6 +68,7 @@
   <div (click)="onSeeComments()" class="btnComment" *ngIf="currentUser && currentUser.username !== 'superadmin'">
     <mat-icon matTooltip="See comments" color="primary" mat-list-icon class="mr-2">comment</mat-icon>
     Comments
+    <span class="comments">{{ formatComments(selectedSong.comments) }}</span>
   </div>
 </div>
 

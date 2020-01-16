@@ -1,0 +1,188 @@
+.popup-comments {
+  width: 610px;
+  max-height: 829px;
+  position: relative;
+  overflow-x: hidden;
+  .header {
+    width: 100%;
+    height: 40px;
+    display: flex;
+    border-bottom: 1px solid gainsboro;
+    .left-header {
+      width: 50%;
+    }
+    .right-header {
+      width: 50%;
+      display: flex;
+      justify-content: flex-end;
+      .close {
+        height: 35px;
+        background: transparent;
+        border: 0;
+        color: black;
+        border-color: transparent;
+        cursor: pointer;
+      }
+    }
+  }
+  .sub-header {
+    width: 100%;
+    height: 40px;
+    display: flex;
+    .left-sub-header {
+      width: 50%;
+      display: flex;
+      align-items: center;
+      .numberComments {
+        font-size: 14px;
+        font-weight: bold;
+      }
+    }
+    .right-sub-header {
+      width: 50%;
+      display: flex;
+      justify-content: flex-end;
+      position: relative;
+      .sort-popup {
+        position: absolute;
+        background: white;
+        width: 200px;
+        right: 10px;
+        top: 100%;
+        z-index: 999;
+        padding: 10px;
+        box-shadow: -1px 1px 6px 3px #828282;
+        .option {
+          height: 30px;
+          display: flex;
+          justify-content: left;
+          align-items: center;
+          cursor: pointer;
+          font-size: 14px;
+        }
+        .option:hover {
+          background: #f3f3f3;
+        }
+      }
+      .filter-comment {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 200px;
+        height: 100%;
+        font-size: 14px;
+        color: #a0a0a0;
+        cursor: pointer;
+        position: relative;
+        .sort-icon {
+          color: #a0a0a0;
+        }
+      }
+      .filter-comment:hover {
+        color: #3f51b5;
+        .sort-icon {
+          color: #3f51b5;
+        }
+        .sort-popup {
+          color: #a0a0a0;
+        }
+      }
+    }
+  }
+  .body {
+    width: 100%;
+    max-height: 600px;
+    overflow-y: scroll;
+    padding-top: 20px;
+    .comment {
+      display: flex;
+      width: 100%;
+      height: auto;
+      .left-comment {
+        width: 10%;
+        .avatar {
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+        }
+      }
+      .wrap-right-comment {
+        position: relative;
+        width: 90%;
+        .right-comment {
+          width: 100%;
+          padding-left: 25px;
+          .wrap-username-dated {
+            display: flex;
+            .username {
+              font-weight: 700;
+            }
+            .date {
+              font-size: 14px;
+              color: #a0a0a0;
+            }
+          }
+          .wrap-text {
+            width: 100%;
+            font-size: 14px;
+            word-break: break-all;
+            padding-top: 5px;
+            padding-right: 30px;
+            margin-bottom: 10px;
+            .btnCancel,
+            .btnEdit {
+              font-size: 12px;
+              color: #a9a6a6;
+              cursor: pointer;
+            }
+            .btnCancel:hover,
+            .btnEdit:hover {
+              color: blue;
+            }
+          }
+          .wrap-button {
+            width: 100%;
+            display: flex;
+            .btnLike,
+            .btnUnlike {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              cursor: pointer;
+            }
+            .rep {
+              font-size: 13px;
+              color: #a0a0a0;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              cursor: pointer;
+            }
+            .rep:hover {
+              color: #3f51b5;
+            }
+          }
+          .btnDeleteComment {
+            position: absolute;
+            right: 0;
+            top: 0;
+            cursor: pointer;
+          }
+          .btnEditComment {
+            position: absolute;
+            right: 7%;
+            top: 0;
+            cursor: pointer;
+          }
+        }
+      }
+    }
+  }
+  .wrap-form {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 40px;
+    width: 100%;
+  }
+}

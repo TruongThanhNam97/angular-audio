@@ -71,6 +71,7 @@ export class PopupComponent implements OnInit, OnDestroy {
       this.dialogRef.close();
       this.alertify.success('Block successfully');
       this.cloudService.getBlockedSongsAfterBlockSubject().next(this.data);
+      this.cloudService.getUpdateSongAfterManipulatingSubject().next({...this.data, block: true});
     });
   }
 

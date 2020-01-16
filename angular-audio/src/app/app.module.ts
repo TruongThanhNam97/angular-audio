@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { TimeAgoPipe } from 'time-ago-pipe';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -39,6 +40,8 @@ import { PopupMoveSongToPlaylistComponent } from './pages/manage-playlist/popup-
 import { FilterPlayListNamePipe } from './pages/manage-playlist/popup-move-song-to-playlist/pipe/filter-playlist-name.pipe';
 import { SongInfoComponent } from './pages/song-info/song-info.component';
 import { PopupCommentsComponent } from './pages/song-info/popup-comments/popup-comments.component';
+import { AuthFocusDirective } from './directives/autofocus.directive';
+import { PopupConfirmDeleteComponent } from './pages/song-info/popup-confirm-delete/popup-confirm-delete.component';
 
 @NgModule({
   declarations: [
@@ -74,7 +77,10 @@ import { PopupCommentsComponent } from './pages/song-info/popup-comments/popup-c
     PopupMoveSongToPlaylistComponent,
     FilterPlayListNamePipe,
     SongInfoComponent,
-    PopupCommentsComponent
+    PopupCommentsComponent,
+    TimeAgoPipe,
+    AuthFocusDirective,
+    PopupConfirmDeleteComponent
   ],
   imports: [
     BrowserModule,
@@ -93,7 +99,8 @@ import { PopupCommentsComponent } from './pages/song-info/popup-comments/popup-c
     PopupThreeTypesComponent,
     PopupPlaylistComponent,
     PopupMoveSongToPlaylistComponent,
-    PopupCommentsComponent
+    PopupCommentsComponent,
+    PopupConfirmDeleteComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

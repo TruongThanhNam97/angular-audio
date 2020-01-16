@@ -32,10 +32,22 @@ export class CloudService {
   private selectedSong: any;
   private selectedSongId: string;
 
+  private updatedSongAfterAddCommentSubject$: Subject<any> = new Subject();
+
+  private updateSongAfterManipulatingSubject$: Subject<any> = new Subject();
+
 
   constructor(private http: HttpClient) {
     this.SERVER_URL = environment.SERVER_URL;
     this.SERVER_URL_SOUND = environment.SERVER_URL_SOUND;
+  }
+
+  getUpdateSongAfterManipulatingSubject() {
+    return this.updateSongAfterManipulatingSubject$;
+  }
+
+  getUpdateSongAfterAddCommentSubject() {
+    return this.updatedSongAfterAddCommentSubject$;
   }
 
   getSelectedSongId() {
@@ -76,13 +88,40 @@ export class CloudService {
             userName: cur.userName,
             categoryId: cur.categoryId ? cur.categoryId : null,
             artistId: cur.artistId ? cur.artistId : null,
-            likedUsers: cur.likedUsers
+            likedUsers: cur.likedUsers,
+            comments: cur.comments ? cur.comments : []
           };
           acc.push(obj);
           return acc;
         }, []);
         result = result.filter(song => !this.blockedSongsOfUser.includes(song.id));
         return result;
+      })
+    );
+  }
+
+  getSongBySongId(id: string) {
+    return this.http.get(this.SERVER_URL + 'getSongBySongId', { params: { id } }).pipe(
+      map((song: any) => {
+        const result = {
+          id: song._id,
+          url: this.SERVER_URL_SOUND + song.url,
+          name: song.name,
+          artist: song.artist,
+          nameToDownload: song.url,
+          userId: song.userId,
+          userName: song.userName,
+          categoryId: song.categoryId ? song.categoryId : null,
+          artistId: song.artistId ? song.artistId : null,
+          likedUsers: song.likedUsers,
+          comments: song.comments ? song.comments : []
+        };
+        return result;
+      }),
+      tap(song => {
+        this.allowGetSongs = false;
+        this.currentPlayList = [song];
+        // this.currentPlayListSubject$.next(this.currentPlayList);
       })
     );
   }
@@ -101,7 +140,8 @@ export class CloudService {
             userName: cur.userName,
             categoryId: cur.categoryId ? cur.categoryId : null,
             artistId: cur.artistId ? cur.artistId : null,
-            likedUsers: cur.likedUsers
+            likedUsers: cur.likedUsers,
+            comments: cur.comments ? cur.comments : []
           };
           acc.push(obj);
           return acc;
@@ -131,7 +171,8 @@ export class CloudService {
             userName: cur.song.userName,
             categoryId: cur.song.categoryId ? cur.song.categoryId : null,
             artistId: cur.song.artistId ? cur.song.artistId : null,
-            likedUsers: cur.song.likedUsers
+            likedUsers: cur.song.likedUsers,
+            comments: cur.song.comments ? cur.song.comments : []
           };
           acc.push(obj);
           return acc;
@@ -161,7 +202,8 @@ export class CloudService {
             userName: cur.userName,
             categoryId: cur.categoryId ? cur.categoryId : null,
             artistId: cur.artistId ? cur.artistId : null,
-            likedUsers: cur.likedUsers
+            likedUsers: cur.likedUsers,
+            comments: cur.comments ? cur.comments : []
           };
           acc.push(obj);
           return acc;
@@ -172,7 +214,6 @@ export class CloudService {
       tap(files => {
         this.allowGetSongs = false;
         this.currentPlayList = [...files];
-        console.log(this.currentPlayList);
         // this.currentPlayListSubject$.next(this.currentPlayList);
       })
     );
@@ -192,7 +233,8 @@ export class CloudService {
             userName: cur.userName,
             categoryId: cur.categoryId ? cur.categoryId : null,
             artistId: cur.artistId ? cur.artistId : null,
-            likedUsers: cur.likedUsers
+            likedUsers: cur.likedUsers,
+            comments: cur.comments ? cur.comments : []
           };
           acc.push(obj);
           return acc;
@@ -225,7 +267,8 @@ export class CloudService {
           userName: song.userName,
           categoryId: song.categoryId ? song.categoryId : null,
           artistId: song.artistId ? song.artistId : null,
-          likedUsers: song.likedUsers
+          likedUsers: song.likedUsers,
+          comments: song.comments ? song.comments : []
         };
       })
     );
@@ -256,7 +299,8 @@ export class CloudService {
           userName: song.userName,
           categoryId: song.categoryId ? song.categoryId : null,
           artistId: song.artistId ? song.artistId : null,
-          likedUsers: song.likedUsers
+          likedUsers: song.likedUsers,
+          comments: song.comments ? song.comments : []
         };
       })
     );
@@ -333,6 +377,227 @@ export class CloudService {
 
   getBlockedSongsAfterBlockSubject() {
     return this.blockedSongsAfterBlockSubject$;
+  }
+
+  addComment(data) {
+    return this.http.post(`${this.SERVER_URL}addComment`, data, {
+      headers: {
+        Authorization: localStorage.getItem('jwtToken')
+      }
+    }).pipe(
+      map((song: any) => ({
+        id: song._id,
+        url: this.SERVER_URL_SOUND + song.url,
+        name: song.name,
+        artist: song.artist,
+        nameToDownload: song.url,
+        userId: song.userId,
+        userName: song.userName,
+        categoryId: song.categoryId ? song.categoryId : null,
+        artistId: song.artistId ? song.artistId : null,
+        likedUsers: song.likedUsers,
+        comments: song.comments ? song.comments : []
+      }))
+    );
+  }
+
+  addSubComment(data) {
+    return this.http.post(`${this.SERVER_URL}addSubComment`, data, {
+      headers: {
+        Authorization: localStorage.getItem('jwtToken')
+      }
+    }).pipe(
+      map((song: any) => ({
+        id: song._id,
+        url: this.SERVER_URL_SOUND + song.url,
+        name: song.name,
+        artist: song.artist,
+        nameToDownload: song.url,
+        userId: song.userId,
+        userName: song.userName,
+        categoryId: song.categoryId ? song.categoryId : null,
+        artistId: song.artistId ? song.artistId : null,
+        likedUsers: song.likedUsers,
+        comments: song.comments ? song.comments : []
+      }))
+    );
+  }
+
+
+  editComment(data) {
+    return this.http.post(`${this.SERVER_URL}editComment`, data, {
+      headers: {
+        Authorization: localStorage.getItem('jwtToken')
+      }
+    }).pipe(
+      map((song: any) => ({
+        id: song._id,
+        url: this.SERVER_URL_SOUND + song.url,
+        name: song.name,
+        artist: song.artist,
+        nameToDownload: song.url,
+        userId: song.userId,
+        userName: song.userName,
+        categoryId: song.categoryId ? song.categoryId : null,
+        artistId: song.artistId ? song.artistId : null,
+        likedUsers: song.likedUsers,
+        comments: song.comments ? song.comments : []
+      }))
+    );
+  }
+
+  editSubComment(data) {
+    return this.http.post(`${this.SERVER_URL}editSubComment`, data, {
+      headers: {
+        Authorization: localStorage.getItem('jwtToken')
+      }
+    }).pipe(
+      map((song: any) => ({
+        id: song._id,
+        url: this.SERVER_URL_SOUND + song.url,
+        name: song.name,
+        artist: song.artist,
+        nameToDownload: song.url,
+        userId: song.userId,
+        userName: song.userName,
+        categoryId: song.categoryId ? song.categoryId : null,
+        artistId: song.artistId ? song.artistId : null,
+        likedUsers: song.likedUsers,
+        comments: song.comments ? song.comments : []
+      }))
+    );
+  }
+
+  deleteComment(data) {
+    return this.http.post(`${this.SERVER_URL}deleteComment`, data, {
+      headers: {
+        Authorization: localStorage.getItem('jwtToken')
+      }
+    }).pipe(
+      map((song: any) => ({
+        id: song._id,
+        url: this.SERVER_URL_SOUND + song.url,
+        name: song.name,
+        artist: song.artist,
+        nameToDownload: song.url,
+        userId: song.userId,
+        userName: song.userName,
+        categoryId: song.categoryId ? song.categoryId : null,
+        artistId: song.artistId ? song.artistId : null,
+        likedUsers: song.likedUsers,
+        comments: song.comments ? song.comments : []
+      }))
+    );
+  }
+
+  deleteSubComment(data) {
+    return this.http.post(`${this.SERVER_URL}deleteSubComment`, data, {
+      headers: {
+        Authorization: localStorage.getItem('jwtToken')
+      }
+    }).pipe(
+      map((song: any) => ({
+        id: song._id,
+        url: this.SERVER_URL_SOUND + song.url,
+        name: song.name,
+        artist: song.artist,
+        nameToDownload: song.url,
+        userId: song.userId,
+        userName: song.userName,
+        categoryId: song.categoryId ? song.categoryId : null,
+        artistId: song.artistId ? song.artistId : null,
+        likedUsers: song.likedUsers,
+        comments: song.comments ? song.comments : []
+      }))
+    );
+  }
+
+  likeComment(data) {
+    return this.http.post(`${this.SERVER_URL}likeComment`, data, {
+      headers: {
+        Authorization: localStorage.getItem('jwtToken')
+      }
+    }).pipe(
+      map((song: any) => ({
+        id: song._id,
+        url: this.SERVER_URL_SOUND + song.url,
+        name: song.name,
+        artist: song.artist,
+        nameToDownload: song.url,
+        userId: song.userId,
+        userName: song.userName,
+        categoryId: song.categoryId ? song.categoryId : null,
+        artistId: song.artistId ? song.artistId : null,
+        likedUsers: song.likedUsers,
+        comments: song.comments ? song.comments : []
+      }))
+    );
+  }
+
+  likeSubComment(data) {
+    return this.http.post(`${this.SERVER_URL}likeSubComment`, data, {
+      headers: {
+        Authorization: localStorage.getItem('jwtToken')
+      }
+    }).pipe(
+      map((song: any) => ({
+        id: song._id,
+        url: this.SERVER_URL_SOUND + song.url,
+        name: song.name,
+        artist: song.artist,
+        nameToDownload: song.url,
+        userId: song.userId,
+        userName: song.userName,
+        categoryId: song.categoryId ? song.categoryId : null,
+        artistId: song.artistId ? song.artistId : null,
+        likedUsers: song.likedUsers,
+        comments: song.comments ? song.comments : []
+      }))
+    );
+  }
+
+  unlikeComment(data) {
+    return this.http.post(`${this.SERVER_URL}unlikeComment`, data, {
+      headers: {
+        Authorization: localStorage.getItem('jwtToken')
+      }
+    }).pipe(
+      map((song: any) => ({
+        id: song._id,
+        url: this.SERVER_URL_SOUND + song.url,
+        name: song.name,
+        artist: song.artist,
+        nameToDownload: song.url,
+        userId: song.userId,
+        userName: song.userName,
+        categoryId: song.categoryId ? song.categoryId : null,
+        artistId: song.artistId ? song.artistId : null,
+        likedUsers: song.likedUsers,
+        comments: song.comments ? song.comments : []
+      }))
+    );
+  }
+
+  unlikeSubComment(data) {
+    return this.http.post(`${this.SERVER_URL}unlikeSubComment`, data, {
+      headers: {
+        Authorization: localStorage.getItem('jwtToken')
+      }
+    }).pipe(
+      map((song: any) => ({
+        id: song._id,
+        url: this.SERVER_URL_SOUND + song.url,
+        name: song.name,
+        artist: song.artist,
+        nameToDownload: song.url,
+        userId: song.userId,
+        userName: song.userName,
+        categoryId: song.categoryId ? song.categoryId : null,
+        artistId: song.artistId ? song.artistId : null,
+        likedUsers: song.likedUsers,
+        comments: song.comments ? song.comments : []
+      }))
+    );
   }
 
 }

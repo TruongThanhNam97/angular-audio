@@ -58,8 +58,11 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
         && this.state.readableCurrentTime !== '' && this.state.readableDuration !== '') {
         if (this.randomMode) {
           this.random();
-        } else if (!this.loop) {
+        } else if (!this.loop && this.currentFile.index !== this.files.length - 1) {
           this.next();
+        } else if (!this.loop && this.currentFile.index === this.files.length - 1) {
+          this.audioService.resetState();
+          this.songInfoService.getModeSubject().next('displayBtnPlay');
         }
       }
     });
@@ -110,6 +113,28 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
         this.audioService.setCurrentFile({ index: newIndex, file: this.currentFile.file });
       }
     });
+    this.cloudService.getUpdateSongAfterManipulatingSubject().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(updatedSong => {
+      if (this.files.filter(song => song.id === updatedSong.id).length > 0) {
+        const index = this.files.findIndex(song => song.id === updatedSong.id);
+        this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
+      }
+      if (this.currentFile.file && this.currentFile.file.id === updatedSong.id) {
+        this.currentFile = { ...this.currentFile, file: updatedSong };
+      }
+    });
+    this.cloudService.getUpdateSongAfterAddCommentSubject().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(updatedSong => {
+      if (this.files.filter(song => song.id === updatedSong.id).length > 0) {
+        const index = this.files.findIndex(song => song.id === updatedSong.id);
+        this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
+      }
+      if (this.currentFile.file && this.currentFile.file.id === updatedSong.id) {
+        this.currentFile = { ...this.currentFile, file: updatedSong };
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -118,53 +143,66 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
 
   pause() {
     this.audioService.pause();
-    this.songInfoService.getModeSubject().next('displayBtnPlay');
+    this.cloudService.getUpdateSongAfterManipulatingSubject().next({ ...this.currentFile.file, displayBtn: 'displayBtnPlay' });
+    this.songInfoService.setStatusAudio('pause');
   }
 
   play() {
     this.audioService.play();
-    this.songInfoService.getModeSubject().next('displayBtnPause');
+    this.cloudService.getUpdateSongAfterManipulatingSubject().next({ ...this.currentFile.file, displayBtn: 'displayBtnPause' });
+    this.songInfoService.setStatusAudio('play');
   }
+
   stop() {
     this.audioService.stop();
   }
 
   next() {
+    this.songInfoService.getModeSubject().next('displayBtnPlay');
     const index = this.currentFile.index + 1;
     if (index <= this.files.length - 1) {
       const file = this.files[index];
       this.audioService.updateCurrentFile2({ index, file });
+      this.cloudService.getUpdateSongAfterManipulatingSubject().next({ ...file, displayBtn: 'displayBtnPause' });
     }
   }
 
   next1() {
+    this.songInfoService.getModeSubject().next('displayBtnPlay');
     const index = this.currentFile.index;
     if (index <= this.files.length - 1) {
       const file = this.files[index];
       this.audioService.updateCurrentFile2({ index, file });
+      this.cloudService.getUpdateSongAfterManipulatingSubject().next({ ...file, displayBtn: 'displayBtnPause' });
     }
   }
 
   previous() {
+    this.songInfoService.getModeSubject().next('displayBtnPlay');
     const index = this.currentFile.index - 1;
     const file = this.files[index];
     if (file) {
       this.audioService.updateCurrentFile2({ index, file });
+      this.cloudService.getUpdateSongAfterManipulatingSubject().next({ ...file, displayBtn: 'displayBtnPause' });
     }
   }
 
   previous1() {
+    this.songInfoService.getModeSubject().next('displayBtnPlay');
     const index = this.currentFile.index - 1;
     const file = this.files[index];
     if (file) {
       this.audioService.updateCurrentFile2({ index, file });
+      this.cloudService.getUpdateSongAfterManipulatingSubject().next({ ...file, displayBtn: 'displayBtnPause' });
     }
   }
 
   random() {
+    this.songInfoService.getModeSubject().next('displayBtnPlay');
     const index = this.getRandomIndex(this.files.length);
     const file = this.files[index];
     this.audioService.updateCurrentFile2({ index, file });
+    this.cloudService.getUpdateSongAfterManipulatingSubject().next({ ...file, displayBtn: 'displayBtnPause' });
   }
 
   getRandomIndex(max) {

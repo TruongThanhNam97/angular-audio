@@ -73,7 +73,7 @@ router.post('/update', passport.authenticate('jwt', { session: false }), upload.
     if (req.files[0]) {
         categoriesModel.findOneAndUpdate({ _id: id }, { $set: { name, avatar: req.files[0].filename } }, { new: true })
             .select('_id name avatar')
-            .then(ategory => res.status(200).json(category));
+            .then(category => res.status(200).json(category));
     } else {
         categoriesModel.findOneAndUpdate({ _id: id }, { $set: { name } }, { new: true })
             .select('_id name avatar')
