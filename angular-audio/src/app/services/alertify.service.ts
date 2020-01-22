@@ -28,12 +28,15 @@ export class AlertifyService {
     message(message: string) {
         alertify.message(message);
     }
+    notify(html) {
+        alertify.message(html);
+    }
     setConfigAlertify() {
         alertify.defaults = {
             // notifier defaults
             notifier: {
                 // auto-dismiss wait time (in seconds)
-                delay: 1,
+                delay: 1.5,
                 // default position
                 position: 'bottom-right',
                 // adds a close button to notifier messages

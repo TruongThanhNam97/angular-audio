@@ -13,7 +13,7 @@
     <p style="color: #a0a0a0;">Category: <span (click)="onSeeCategoryOfSong()" class="info"
         style="cursor: pointer;">{{ category ? category.name : '' }}</span></p>
     <div class="likedUsers">
-      <span class="liked-icon">{{ formatLikedUserOfSong(likedUsers)  }}</span>
+      <span class="liked-icon">{{ formatNumber(likedUsers)  }}</span>
       <mat-icon class="more-icon like-icon ml-3">
         favorite
       </mat-icon>
@@ -83,14 +83,19 @@
           </div>
           <div class="uploader-info">
             <p (click)="navigateToUploader(uploader)" class="uploaderName">{{ uploader.username }}</p>
-            <p style="margin: 0;color: #a0a0a0;font-size: 16px;">4K followers</p>
+            <p style="margin: 0;color: #a0a0a0;font-size: 16px;">{{ formatNumber(uploader.followers.length) }} followers
+            </p>
           </div>
         </div>
       </div>
-      <div class="right-uploader-block">
-        <div class="buttonFollow">
+      <div class="right-uploader-block" *ngIf="currentUser && currentUser.username !== 'superadmin'">
+        <div class="buttonFollow" (click)="follows(uploader)" *ngIf="!isFollowed(uploader)">
           <mat-icon matTooltip="Follow" color="primary" mat-list-icon class="mr-2">person_add</mat-icon>
           Follow
+        </div>
+        <div class="buttonFollow" (click)="follows(uploader)" *ngIf="isFollowed(uploader)">
+          <mat-icon matTooltip="Unfollow" color="primary" mat-list-icon class="mr-2">person_add_disabled</mat-icon>
+          Unfollow
         </div>
       </div>
     </div>

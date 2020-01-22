@@ -134,7 +134,30 @@ export class AuthService {
 
     getUserById(id: string) {
         return this.http.get(`${this.SERVER_URL}users/getUserById`, { params: { id } }).pipe(
-            map((user: any) => ({ id: user._id, avatar: user.avatar ? user.avatar : null, username: user.username }))
+            map((user: any) => ({
+                id: user._id,
+                avatar: user.avatar ? user.avatar : null,
+                username: user.username,
+                followers: user.followers
+            }))
+        );
+    }
+
+    followsUser(data) {
+        return this.http.post(`${this.SERVER_URL}users/follows`, data, {
+            headers: {
+                Authorization: localStorage.getItem('jwtToken')
+            }
+        }).pipe(
+            map((res: any) => ({
+                followedUser: {
+                    id: res.followedUser._id,
+                    avatar: res.followedUser.avatar ? res.followedUser.avatar : null,
+                    username: res.followedUser.username,
+                    followers: res.followedUser.followers
+                },
+                message: res.message
+            }))
         );
     }
 }

@@ -64,4 +64,44 @@ export class SocketIoService {
         });
     }
 
+    getFollwersRealTime() {
+        return new Observable((observer) => {
+            this.socket.on('follow', (res) => {
+                observer.next({
+                    followedUser: {
+                        id: res.followedUser._id,
+                        avatar: res.followedUser.avatar ? res.followedUser.avatar : null,
+                        username: res.followedUser.username,
+                        followers: res.followedUser.followers
+                    },
+                    message: res.message,
+                    follower: res.follower
+                });
+            });
+        });
+    }
+
+    getLikeMySongRealTime() {
+        return new Observable((observer) => {
+            this.socket.on('likeMySong', (res) => {
+                observer.next(res);
+            });
+        });
+    }
+
+    getCommentMySongRealTime() {
+        return new Observable((observer) => {
+            this.socket.on('commentMySong', (res) => {
+                observer.next(res);
+            });
+        });
+    }
+
+    getFollowingUploadRealTime() {
+        return new Observable((observer) => {
+            this.socket.on('followingUpload', (res) => {
+                observer.next(res);
+            });
+        });
+    }
 }

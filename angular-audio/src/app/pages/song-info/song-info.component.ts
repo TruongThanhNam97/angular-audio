@@ -158,6 +158,14 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
           [...this.top20FavoriteSongs.filter((v, i) => i < index), { ...song }, ...this.top20FavoriteSongs.filter((v, i) => i > index)];
       }
     });
+    this.socketIo.getFollwersRealTime().pipe(
+      takeUntil(this.destroySubsction$)
+    ).subscribe((res: any) => {
+      console.log(res);
+      if (this.uploader.id === res.followedUser.id) {
+        this.uploader = { ...res.followedUser };
+      }
+    });
   }
 
   fetchData() {
@@ -187,14 +195,14 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
     this.destroySubsction$.next(true);
   }
 
-  formatLikedUserOfSong(likedUsers): string {
-    if (likedUsers >= 1000) {
-      return (likedUsers / 1000).toFixed(1) + 'K';
+  formatNumber(numb): string {
+    if (numb >= 1000) {
+      return (numb / 1000).toFixed(1) + 'K';
     }
-    if (likedUsers >= 1000000) {
-      return (likedUsers / 1000000).toFixed(1) + 'M';
+    if (numb >= 1000000) {
+      return (numb / 1000000).toFixed(1) + 'M';
     }
-    return likedUsers;
+    return numb;
   }
 
   formatComments(comments): string {
@@ -328,6 +336,18 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
 
   navigateToUploader(uploader) {
     this.router.navigate(['/albums', uploader.id], { queryParams: { username: uploader.username } });
+  }
+
+  follows(uploader) {
+    this.authService.followsUser({ id: uploader.id }).pipe(
+      takeUntil(this.destroySubsction$)
+    ).subscribe((res: any) => {
+      this.alertify.success(`${res.message} ${uploader.username} successfully`);
+    });
+  }
+
+  isFollowed(uploader) {
+    return uploader.followers.filter(id => id === this.currentUser.id).length > 0;
   }
 
 }

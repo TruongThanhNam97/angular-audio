@@ -38,7 +38,7 @@ var upload = multer({
 //@access   Public
 router.get('/', (req, res, next) => {
   userModel.find({ numberOfReup: { $lt: 3 }, username: { $ne: 'superadmin' } })
-    .select('username avatar')
+    .select('username avatar followers')
     .then(users => res.status(200).json(users))
     .catch(() => res.status(404).json({ notFound: 'Users not found' }));
 });
@@ -234,13 +234,49 @@ router.post('/ban', passport.authenticate('jwt', { session: false }), upload.any
 });
 
 //@route    GET /users/
-//@desc     GET all users
+//@desc     GET user by id
 //@access   Public
 router.get('/getUserById', (req, res, next) => {
   userModel.findById({ _id: req.query.id })
-    .select('avatar username')
+    .select('avatar username followers')
     .then(user => res.status(200).json(user))
     .catch(() => res.status(404).json({ notFound: 'Users not found' }));
+});
+
+//@route    POST /users/follows
+//@desc     POST follows user
+//@access   Private
+router.post('/follows', passport.authenticate('jwt', { session: false }), (req, res, next) => {
+  const { id } = req.body;
+  userModel.findById({ _id: id }).select('avatar username followers').then(user => {
+    if (!user) {
+      return res.status(404).json('User not found');
+    }
+    const followers = [...user.followers];
+    if (followers.filter(id => id.toString() === req.user._id.toString()).length === 0) {
+      // follows
+      user.followers = [...user.followers, req.user._id];
+      user.save().then(user => {
+        res.io.emit('follow', { followedUser: user, message: 'followed', follower: req.user });
+        res.status(200).json({ followedUser: user, message: 'followed' });
+        userModel.findById({ _id: req.user._id }).then(follower => {
+          follower.followings = [...follower.followings, id];
+          follower.save();
+        }).catch(err => console.log(err));
+      }).catch(err => console.log(err));
+    } else {
+      // unfollows
+      user.followers = user.followers.filter(id => id.toString() !== req.user._id.toString());
+      user.save().then(user => {
+        res.io.emit('follow', { followedUser: user, message: 'unfollowed', follower: req.user });
+        res.status(200).json({ followedUser: user, message: 'unfollowed' });
+        userModel.findById({ _id: req.user._id }).then(follower => {
+          follower.followings = follower.followings.filter(userId => userId.toString() !== id.toString());
+          follower.save();
+        }).catch(err => console.log(err));
+      }).catch(err => console.log(err));
+    }
+  }).catch(err => console.log(err));
 });
 
 

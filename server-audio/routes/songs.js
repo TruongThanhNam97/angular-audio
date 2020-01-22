@@ -62,6 +62,7 @@ var saveSongMetadata = (req, res, data) => {
     new songModel(newSong).save().then(song => {
         if (count === arrFilesLength) {
             userModel.findById({ _id: req.user.id }).then(user => {
+                res.io.emit('followingUpload', { user });
                 res.status(200).json(user);
             }).catch(err => console.log(err));
         }
@@ -84,6 +85,9 @@ var watermark = (req, res, next) => {
                             numberOfReup++;
                             if (numberOfReup <= 3) {
                                 userModel.findOneAndUpdate({ _id: req.user.id }, { $set: { numberOfReup } }, { new: true }).then(user => {
+                                    if (count === arrFilesLength && numberOfReup < 3) {
+                                        res.io.emit('followingUpload', { user });
+                                    }
                                     if (count === arrFilesLength || numberOfReup === 3) {
                                         res.status(200).json(user);
                                     }
@@ -250,6 +254,7 @@ router.post("/like-song", passport.authenticate('jwt', { session: false }), (req
                     .populate('comments.user', ['_id', 'username', 'avatar'])
                     .populate('comments.subComments.user', ['_id', 'username', 'avatar'])
                     .then(newSong => {
+                        res.io.emit('likeMySong', { song: newSong, liker: req.user })
                         res.io.emit('like', newSong);
                         res.status(200).json(newSong);
                     })
@@ -356,6 +361,7 @@ router.post("/addComment", passport.authenticate('jwt', { session: false }), (re
                 .populate('comments.user', ['_id', 'username', 'avatar'])
                 .populate('comments.subComments.user', ['_id', 'username', 'avatar'])
                 .then(song => {
+                    res.io.emit('commentMySong', { song, commenter: req.user })
                     res.io.emit('song', song);
                     res.status(200).json(song)
                 })
@@ -386,6 +392,7 @@ router.post("/addSubComment", passport.authenticate('jwt', { session: false }), 
                 .populate('comments.user', ['_id', 'username', 'avatar'])
                 .populate('comments.subComments.user', ['_id', 'username', 'avatar'])
                 .then(song => {
+                    res.io.emit('commentMySong', { song, commenter: req.user })
                     res.io.emit('song', song);
                     res.status(200).json(song);
                 })

@@ -33,6 +33,18 @@ const schema = new mongoose.Schema({
                 ref: 'songs'
             }
         }
+    ],
+    followers: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'users'
+        }
+    ],
+    followings: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'users'
+        }
     ]
 }, { versionKey: false });
 

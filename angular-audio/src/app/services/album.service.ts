@@ -20,7 +20,20 @@ export class AlbumService {
     }
 
     getAlbums() {
-        return this.http.get(`${this.SERVER_URL}users`);
+        return this.http.get(`${this.SERVER_URL}users`).pipe(
+            map((listUsers: any[]) => {
+                const result = listUsers.reduce((pre, cur) => {
+                    pre.push({
+                        id: cur._id,
+                        username: cur.username,
+                        avatar: cur.avatar ? cur.avatar : null,
+                        followers: cur.followers
+                    });
+                    return pre;
+                }, []);
+                return result;
+            })
+        );
     }
 
     unbanUser(data) {
