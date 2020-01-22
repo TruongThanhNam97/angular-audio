@@ -16,6 +16,15 @@ var mongoose = require("mongoose");
 
 var app = express();
 
+// Setup socket.io
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
+
+app.use(function (req, res, next) {
+  res.io = io;
+  next();
+});
+
 var config = require('./config.js');
 
 mongoose
@@ -28,7 +37,7 @@ mongoose
 // Set API rate limit for all request
 const limiter = rateLimit({
   windowMs: 1000, // 1s
-  max: 10 // limit each IP to 10 requests per windowMs
+  max: 50 // limit each IP to 10 requests per windowMs
 });
 
 // view engine setup
@@ -85,4 +94,4 @@ app.use(function (err, req, res, next) {
   res.render("error");
 });
 
-module.exports = app;
+module.exports = { app, server };

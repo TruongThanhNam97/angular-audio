@@ -32,8 +32,6 @@ export class CloudService {
   private selectedSong: any;
   private selectedSongId: string;
 
-  private updatedSongAfterAddCommentSubject$: Subject<any> = new Subject();
-
   private updateSongAfterManipulatingSubject$: Subject<any> = new Subject();
 
 
@@ -44,10 +42,6 @@ export class CloudService {
 
   getUpdateSongAfterManipulatingSubject() {
     return this.updateSongAfterManipulatingSubject$;
-  }
-
-  getUpdateSongAfterAddCommentSubject() {
-    return this.updatedSongAfterAddCommentSubject$;
   }
 
   getSelectedSongId() {
@@ -72,6 +66,32 @@ export class CloudService {
 
   getUpdatedSongsAfterLikingSubject() {
     return this.updatedSongsAfterLikingSubject$;
+  }
+
+  getTop20FavarotieSongs() {
+    return this.http.get(`${this.SERVER_URL}`).pipe(
+      map((files: any) => {
+        let result = files.reduce((acc, cur) => {
+          const obj = {
+            id: cur._id,
+            url: this.SERVER_URL_SOUND + cur.url,
+            name: cur.name,
+            artist: cur.artist,
+            nameToDownload: cur.url,
+            userId: cur.userId,
+            userName: cur.userName,
+            categoryId: cur.categoryId ? cur.categoryId : null,
+            artistId: cur.artistId ? cur.artistId : null,
+            likedUsers: cur.likedUsers,
+            comments: cur.comments ? cur.comments : []
+          };
+          acc.push(obj);
+          return acc;
+        }, []);
+        result = result.filter(song => !this.blockedSongsOfUser.includes(song.id));
+        return result;
+      })
+    );
   }
 
   getAllSongs() {

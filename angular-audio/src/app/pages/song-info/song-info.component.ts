@@ -15,6 +15,8 @@ import { MatDialog } from '@angular/material';
 import { PopupMoveSongToPlaylistComponent } from '../manage-playlist/popup-move-song-to-playlist/popup-move-song-to-playlist.component';
 import { PopupThreeTypesComponent } from '../player/popup-three-types/popup-three-types.component';
 import { PopupCommentsComponent } from './popup-comments/popup-comments.component';
+import { SocketIoService } from 'src/app/services/socket-io.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-song-info',
@@ -33,6 +35,11 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
   isMatch = false;
   currentUser: any;
   isBlocked = false;
+  top20FavoriteSongs: any[];
+  indexInterested = -1;
+  uploader: any;
+
+  SERVER_URL_IMAGE: string;
 
   constructor(
     private cloudService: CloudService,
@@ -47,11 +54,18 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
     private playListService: PlayListService,
     private authService: AuthService,
     private alertify: AlertifyService,
-    public dialog: MatDialog) { }
+    public dialog: MatDialog,
+    private socketIo: SocketIoService) {
+    this.SERVER_URL_IMAGE = environment.SERVER_URL_IMAGE;
+  }
 
   ngOnInit() {
+    if (this.songInfoService.getStatusAudio() === 'pause') {
+      this.songInfoService.setStatusAudio('play');
+    }
     this.currentUser = this.authService.getCurrentUser();
     this.route.queryParams.subscribe(param => {
+      console.log(this.songInfoService.getStatusAudio());
       this.isPlay = false;
       this.isBlocked = false;
       this.seletedSongId = param.songId;
@@ -66,6 +80,15 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
       this.fetchData();
     });
     this.listenerEvent();
+    this.loadTop20FavoriteSongs();
+  }
+
+  loadTop20FavoriteSongs() {
+    this.cloudService.getTop20FavarotieSongs().pipe(
+      takeUntil(this.destroySubsction$)
+    ).subscribe(songs => {
+      this.top20FavoriteSongs = [...songs];
+    });
   }
 
   listenerEvent() {
@@ -81,32 +104,25 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.selectedSong.playlistId) {
       this.selectedSong.playlistId = null;
     }
-    // this.cloudService.getUpdatedSongsAfterLikingSubject().pipe(
-    //   takeUntil(this.destroySubsction$)
-    // ).subscribe(files => {
-    //   if (this.isMatch) {
-    //     this.selectedSong = { ...files[0] };
-    //     if (this.isLiked()) {
-    //       this.likedUsers++;
-    //     } else {
-    //       this.likedUsers--;
-    //     }
-    //   }
-    // });
-    this.cloudService.getUpdateSongAfterAddCommentSubject().pipe(
+    this.socketIo.getCommentsRealTime().pipe(
       takeUntil(this.destroySubsction$)
-    ).subscribe(song => this.selectedSong = { ...song });
+    ).subscribe((song: any) => {
+      console.log('listener socket');
+      if (song.id === this.selectedSong.id) {
+        this.selectedSong = { ...song };
+      }
+      if (this.top20FavoriteSongs.filter(item => item.id === song.id).length > 0) {
+        const index = this.top20FavoriteSongs.findIndex(item => item.id === song.id);
+        this.top20FavoriteSongs =
+          [...this.top20FavoriteSongs.filter((v, i) => i < index), { ...song }, ...this.top20FavoriteSongs.filter((v, i) => i > index)];
+      }
+    });
     this.cloudService.getUpdateSongAfterManipulatingSubject().pipe(
       takeUntil(this.destroySubsction$)
     ).subscribe(updatedSong => {
       if (this.selectedSong.id === updatedSong.id) {
         this.isMatch = true;
         this.selectedSong = { ...updatedSong };
-        if (this.isLiked() && !updatedSong.block && !updatedSong.displayBtn) {
-          this.likedUsers++;
-        } else if (!this.isLiked() && !updatedSong.block && !updatedSong.displayBtn) {
-          this.likedUsers--;
-        }
         if (updatedSong.block) {
           this.isBlocked = !this.isBlocked;
           this.isPlay = false;
@@ -120,6 +136,26 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       } else {
         this.isMatch = false;
+      }
+      if (this.top20FavoriteSongs.filter(item => item.id === updatedSong.id).length > 0) {
+        const index = this.top20FavoriteSongs.findIndex(item => item.id === updatedSong.id);
+        this.top20FavoriteSongs =
+          [...this.top20FavoriteSongs.filter((v, i) => i < index),
+          { ...updatedSong },
+          ...this.top20FavoriteSongs.filter((v, i) => i > index)];
+      }
+    });
+    this.socketIo.getLikeSongRealTime().pipe(
+      takeUntil(this.destroySubsction$)
+    ).subscribe((song: any) => {
+      if (this.selectedSong.id === song.id) {
+        this.selectedSong = { ...song };
+        this.likedUsers = this.selectedSong.likedUsers.length;
+      }
+      if (this.top20FavoriteSongs.filter(item => item.id === song.id).length > 0) {
+        const index = this.top20FavoriteSongs.findIndex(item => item.id === song.id);
+        this.top20FavoriteSongs =
+          [...this.top20FavoriteSongs.filter((v, i) => i < index), { ...song }, ...this.top20FavoriteSongs.filter((v, i) => i > index)];
       }
     });
   }
@@ -138,6 +174,10 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
         takeUntil(this.destroySubsction$)
       ).subscribe(category => this.category = category[0]);
     }
+    this.authService.getUserById(this.selectedSong.userId).pipe(
+      takeUntil(this.destroySubsction$)
+    ).subscribe(user => this.uploader = { ...user });
+    console.log(this.selectedSong);
   }
 
   ngAfterViewInit(): void {
@@ -190,16 +230,10 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
       this.isPlay = true;
       this.cloudService.updateCurrentPlayList();
       this.audioService.updatePlayMode();
-      // if (this.username && this.selectedAlbum === this.username || this.categoryName && this.selectedCategory === this.categoryName
-      //   || this.artistName && this.selectedArtist === this.artistName || this.playlist && this.selectedPlayList === this.playlist) {
-      //   this.currentFile = { index, file };
-      // }
       this.audioService.updateCurrentFile1({ index: 0, file: this.selectedSong });
       this.audioService.stop();
       this.audioService.playStream(this.selectedSong.url).subscribe();
       this.reset();
-      // this.isMatchCurrentPlayListAndCurrentPlayerAudio = true;
-      // this.cloudService.getUpdatedSongsAfterLikingSubject().next(this.files);
     } else if (!this.isPlay) {
       this.isPlay = true;
       this.audioService.play();
@@ -229,21 +263,11 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
       } else {
         this.alertify.success('Unlike successfully');
       }
-      // this.selectedSong.likedUsers = [...song.likedUsers];
-      // if (this.isMatch) {
-      //   this.cloudService.getUpdatedSongsAfterLikingSubject().next([this.selectedSong]);
-      //   if (this.isLiked()) {
-      //     this.alertify.success('Like successfully');
-      //   } else {
-      //     this.alertify.success('Unlike successfully');
-      //   }
-      // } else {
-      //   this.checkActionLikeOrUnLike();
-      // }
       if (!this.audioService.getPlayMode()) {
         this.cloudService.setCurrentPlayList([this.selectedSong]);
       }
       this.cloudService.getUpdateSongAfterManipulatingSubject().next(song);
+      // this.socketIo.likeSongRealTime();
     }, err => console.log(err));
   }
 
@@ -274,13 +298,16 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
   onBlock() {
     this.cloudService.blockSong({ id: this.selectedSong.id }).pipe(
       takeUntil(this.destroySubsction$)
-    ).subscribe(blockedSongs => {
+    ).subscribe((blockedSongs: any[]) => {
       this.cloudService.setBlockedSongsOfUser(blockedSongs);
       this.cloudService.getBlockedSongsAfterBlockSubject().next(this.selectedSong);
       if (!this.isBlocked) {
         this.alertify.success('Block successfully');
         this.isBlocked = true;
         this.isPlay = false;
+        if (this.top20FavoriteSongs.filter(song => song.id === this.selectedSong.id).length > 0) {
+          this.top20FavoriteSongs = this.top20FavoriteSongs.filter(song => song.id !== this.selectedSong.id);
+        }
       } else {
         this.alertify.success('UnBlock successfully');
         this.isBlocked = false;
@@ -291,6 +318,16 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onSeeComments() {
     this.dialog.open(PopupCommentsComponent, { data: this.selectedSong });
+  }
+
+  navigateToSongInfo(song, index) {
+    this.indexInterested = index;
+    this.cloudService.setSelectedSong(song);
+    this.router.navigate(['/song-info'], { queryParams: { songId: song.id } });
+  }
+
+  navigateToUploader(uploader) {
+    this.router.navigate(['/albums', uploader.id], { queryParams: { username: uploader.username } });
   }
 
 }

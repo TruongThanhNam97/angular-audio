@@ -12,6 +12,7 @@ import { CloudService } from 'src/app/services/cloud.service';
 import { PlayListService } from 'src/app/services/playlist.service';
 import { AlertifyService } from 'src/app/services/alertify.service';
 import { SongInfoService } from 'src/app/services/song-info.service';
+import { SocketIoService } from 'src/app/services/socket-io.service';
 
 @Component({
   selector: 'app-playlist-playing',
@@ -41,7 +42,8 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
     @Inject(MAT_BOTTOM_SHEET_DATA) public data: any,
     private playlistService: PlayListService,
     private alertify: AlertifyService,
-    private songInfoService: SongInfoService
+    private songInfoService: SongInfoService,
+    private socketIo: SocketIoService
   ) { }
 
   ngOnInit() {
@@ -73,6 +75,17 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
       this.files = this.files.filter(song => song.id !== data.songId);
       this.cdt.detectChanges();
     });
+    this.socketIo.getCommentsRealTime().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe((updatedSong: any) => {
+      if (this.files.filter(song => song.id === updatedSong.id).length > 0) {
+        const index = this.files.findIndex(song => song.id === updatedSong.id);
+        this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
+      }
+      if (this.currentFile.file && this.currentFile.file.id === updatedSong.id) {
+        this.currentFile = { ...this.currentFile, file: updatedSong };
+      }
+    });
   }
 
   isLiked(song: any): boolean {
@@ -101,6 +114,7 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
         this.alertify.success('UnLike successfully');
       }
       this.cloudService.getUpdateSongAfterManipulatingSubject().next(updatedSong);
+      // this.socketIo.likeSongRealTime();
     }, err => console.log(err));
   }
 

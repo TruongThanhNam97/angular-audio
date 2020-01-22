@@ -71,41 +71,45 @@
     <span class="comments">{{ formatComments(selectedSong.comments) }}</span>
   </div>
 </div>
-
-<!-- 
-<button matTooltip="Play" mat-button (click)="play()" [disabled]="state?.error" *ngIf="!state?.playing">
-  <mat-icon mat-list-icon>play_circle_filled</mat-icon>
-</button>
-<button matTooltip="Pause" mat-button (click)="pause()" *ngIf="state?.playing">
-  <mat-icon mat-list-icon>pause</mat-icon>
-</button> -->
-
-<!-- <mat-icon (click)="onLikeSong(file)" matTooltip="Like"
-  *ngIf=" currentUser && currentUser.username !== 'superadmin' && !isLiked(file)" style="cursor: pointer;"
-  class="more-icon" color="primary">
-  favorite_border
-</mat-icon>
-<mat-icon (click)="onLikeSong(file)" matTooltip="Unlike"
-  *ngIf="currentUser && currentUser.username !== 'superadmin' && isLiked(file)" style="cursor: pointer;"
-  class="more-icon" color="primary">
-  favorite
-</mat-icon> -->
-<!-- 
-<mat-list-item *ngIf="currentUser && currentUser.username !== 'superadmin'" (click)="onAddSongToPlayList()"
-  class="feature" style="display: flex;justify-content: left; cursor: pointer;">
-  <mat-icon color="primary" mat-list-icon>queue_music</mat-icon>
-  <h5 style="margin: 0;">Add to playlist</h5>
-</mat-list-item> -->
-
-
-<!-- <mat-list-item (click)="downloadFile()" class="feature" style="display: flex;justify-content: left; cursor: pointer;">
-  <mat-icon color="primary" mat-list-icon>cloud_download</mat-icon>
-  <h5 style="margin: 0;">Download</h5>
-</mat-list-item> -->
-
-
-<!-- <mat-list-item *ngIf="currentUser && currentUser.username !== 'superadmin'" (click)="onBlock()" class="feature"
-  style="display: flex;justify-content: left; cursor: pointer;">
-  <mat-icon color="primary" mat-list-icon>lock</mat-icon>
-  <h5 style="margin: 0;">Block</h5>
-</mat-list-item> -->
+<div class="container body">
+  <div class="left-body">
+    <div class="uploader-block" *ngIf="uploader">
+      <div class="left-uploader-block">
+        <div class="wrap-uploader">
+          <div class="uploader-avatar" (click)="navigateToUploader(uploader)">
+            <img style="width: 50px; height: 50px; border-radius: 50%;"
+              src="{{ uploader.avatar ? SERVER_URL_IMAGE+uploader.avatar : '../../../../../assets/profile-default.jpg' }}"
+              alt="{{ uploader.id }}">
+          </div>
+          <div class="uploader-info">
+            <p (click)="navigateToUploader(uploader)" class="uploaderName">{{ uploader.username }}</p>
+            <p style="margin: 0;color: #a0a0a0;font-size: 16px;">4K followers</p>
+          </div>
+        </div>
+      </div>
+      <div class="right-uploader-block">
+        <div class="buttonFollow">
+          <mat-icon matTooltip="Follow" color="primary" mat-list-icon class="mr-2">person_add</mat-icon>
+          Follow
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="right-body">
+    <div class="header-right-body mb-4">
+      <h5>Maybe you are interested</h5>
+    </div>
+    <div (click)="navigateToSongInfo(song, i)" class="favorite-song mb-4"
+      *ngFor="let song of top20FavoriteSongs;let i = index;"
+      [ngStyle]="{'background': indexInterested !== -1 && indexInterested === i ? '#b3bfff': ''}">
+      <div class="left-favorite-song">
+        <img style="width: 100%;height: 100%;" src="../../../assets/apple-music-note-800x420.jpg"
+          alt="{{ song?.userName }}">
+      </div>
+      <div class="right-favorite-song">
+        <p style="margin: 0; font-weight: bold;">{{ song?.name }}</p>
+        <p style="margin: 0;color: gray;">{{ song?.artist }}</p>
+      </div>
+    </div>
+  </div>
+</div>

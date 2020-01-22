@@ -233,4 +233,15 @@ router.post('/ban', passport.authenticate('jwt', { session: false }), upload.any
   }).catch(err => console.log(err));
 });
 
+//@route    GET /users/
+//@desc     GET all users
+//@access   Public
+router.get('/getUserById', (req, res, next) => {
+  userModel.findById({ _id: req.query.id })
+    .select('avatar username')
+    .then(user => res.status(200).json(user))
+    .catch(() => res.status(404).json({ notFound: 'Users not found' }));
+});
+
+
 module.exports = router;

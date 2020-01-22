@@ -4,6 +4,7 @@ import { CloudService } from 'src/app/services/cloud.service';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { AlertifyService } from 'src/app/services/alertify.service';
+import { SocketIoService } from 'src/app/services/socket-io.service';
 
 @Component({
   selector: 'app-popup-confirm-delete',
@@ -18,7 +19,8 @@ export class PopupConfirmDeleteComponent implements OnInit, OnDestroy {
     public dialogRef: MatDialogRef<PopupConfirmDeleteComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private cloudService: CloudService,
-    private alertify: AlertifyService
+    private alertify: AlertifyService,
+    private socketIo: SocketIoService
   ) { }
 
   ngOnInit() {
@@ -38,7 +40,7 @@ export class PopupConfirmDeleteComponent implements OnInit, OnDestroy {
         takeUntil(this.destroySubscription$)
       ).subscribe(song => {
         this.cloudService.setSelectedSong(song);
-        this.cloudService.getUpdateSongAfterAddCommentSubject().next(song);
+        this.socketIo.sendCommentRealTime();
         this.alertify.success('Delete comment successfully');
         this.dialogRef.close();
       });
@@ -47,7 +49,7 @@ export class PopupConfirmDeleteComponent implements OnInit, OnDestroy {
         takeUntil(this.destroySubscription$)
       ).subscribe(song => {
         this.cloudService.setSelectedSong(song);
-        this.cloudService.getUpdateSongAfterAddCommentSubject().next(song);
+        this.socketIo.sendCommentRealTime();
         this.alertify.success('Delete subComment successfully');
         this.dialogRef.close();
       });

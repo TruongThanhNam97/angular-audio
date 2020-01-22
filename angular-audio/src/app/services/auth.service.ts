@@ -131,4 +131,10 @@ export class AuthService {
     getCurrentUser() {
         return this.currentUser;
     }
+
+    getUserById(id: string) {
+        return this.http.get(`${this.SERVER_URL}users/getUserById`, { params: { id } }).pipe(
+            map((user: any) => ({ id: user._id, avatar: user.avatar ? user.avatar : null, username: user.username }))
+        );
+    }
 }

@@ -6,6 +6,7 @@ import decode from 'jwt-decode';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { UploadService } from './services/upload.service';
+import { SocketIoService } from './services/socket-io.service';
 
 @Component({
   selector: 'app-root',

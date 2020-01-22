@@ -33,7 +33,7 @@
       <div class="wrap-right-comment">
         <div class="right-comment mb-3">
           <div class="wrap-username-dated">
-            <div class="username mr-2">{{comment.user.username}}</div>
+            <div (click)="onNavigateToUserAlbum(comment)" class="username mr-2">{{comment.user.username}}</div>
             <div class="date">{{ comment.date | timeAgo }}</div>
           </div>
           <div class="wrap-text" *ngIf="indexToEdit !== i || !editMode">{{ comment.text }}</div>
@@ -84,7 +84,7 @@
           <div class="wrap-right-comment">
             <div class="right-comment">
               <div class="wrap-username-dated">
-                <div class="username mr-2">{{subComment.user.username}}</div>
+                <div (click)="onNavigateToUserAlbum(subComment)" class="username mr-2">{{subComment.user.username}}</div>
                 <div class="date">{{ subComment.date | timeAgo }}</div>
               </div>
               <div class="wrap-text" *ngIf="indexToEditReply !== subIndex || !editReplyMode">{{ subComment.text }}</div>

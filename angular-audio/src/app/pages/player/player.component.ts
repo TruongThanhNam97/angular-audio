@@ -14,6 +14,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { AlertifyService } from 'src/app/services/alertify.service';
 import { PlayListService } from 'src/app/services/playlist.service';
 import { SongInfoService } from 'src/app/services/song-info.service';
+import { SocketIoService } from 'src/app/services/socket-io.service';
 
 @Component({
   selector: 'app-player',
@@ -54,10 +55,12 @@ export class PlayerComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private alertify: AlertifyService,
     private playListService: PlayListService,
-    private songInfoService: SongInfoService
+    private songInfoService: SongInfoService,
+    private socketIo: SocketIoService
   ) { }
 
   ngOnInit() {
+    this.currentFile = this.audioService.getCurrentFile();
     this.isMatchCurrentPlayListAndCurrentPlayerAudio = false;
     this.currentUser = this.authService.getCurrentUser();
     this.audioService.triggerDestroyGeneral();
@@ -93,7 +96,6 @@ export class PlayerComponent implements OnInit, OnDestroy {
         this.loadSongsByPlayList();
       }
     });
-    this.currentFile = this.audioService.getCurrentFile();
     this.audioService.getResetCurrentFileSubject().pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(currentFile => this.currentFile = currentFile);
@@ -161,6 +163,9 @@ export class PlayerComponent implements OnInit, OnDestroy {
           song.playlistName = this.playlist;
           return song;
         });
+        this.cloudService.getUpdateSongAfterManipulatingSubject().next({ ...song, playlistId: this.id, playlistName: this.playlist });
+      } else {
+        this.cloudService.getUpdateSongAfterManipulatingSubject().next(song);
       }
       if (this.isMatchCurrentPlayListAndCurrentPlayerAudio) {
         this.cloudService.getUpdatedSongsAfterLikingSubject().next(this.files);
@@ -173,7 +178,8 @@ export class PlayerComponent implements OnInit, OnDestroy {
       } else {
         this.alertify.success('UnLike successfully');
       }
-      this.cloudService.getUpdateSongAfterManipulatingSubject().next(song);
+      // this.cloudService.getUpdateSongAfterManipulatingSubject().next(song);
+      // this.socketIo.likeSongRealTime();
     }, err => console.log(err));
   }
 
@@ -184,12 +190,24 @@ export class PlayerComponent implements OnInit, OnDestroy {
         takeUntil(this.destroySubscription$)
       ).subscribe(files => {
         this.files = files;
+        if (this.currentFile.index >= 0) {
+          const newIndex = this.files.findIndex(song => song.id === this.currentFile.file.id);
+          if (newIndex !== this.currentFile.index) {
+            this.currentFile = { index: newIndex, file: this.currentFile.file };
+          }
+        }
       }, err => { }, () => this.loading = false);
     } else {
       this.cloudService.getFavoriteSongsByUserId(id).pipe(
         takeUntil(this.destroySubscription$)
       ).subscribe(files => {
         this.files = files;
+        if (this.currentFile.index >= 0) {
+          const newIndex = this.files.findIndex(song => song.id === this.currentFile.file.id);
+          if (newIndex !== this.currentFile.index) {
+            this.currentFile = { index: newIndex, file: this.currentFile.file };
+          }
+        }
       }, err => { }, () => this.loading = false);
     }
   }
@@ -200,6 +218,12 @@ export class PlayerComponent implements OnInit, OnDestroy {
       takeUntil(this.destroySubscription$)
     ).subscribe(files => {
       this.files = files;
+      if (this.currentFile.index >= 0) {
+        const newIndex = this.files.findIndex(song => song.id === this.currentFile.file.id);
+        if (newIndex !== this.currentFile.index) {
+          this.currentFile = { index: newIndex, file: this.currentFile.file };
+        }
+      }
     }, err => { }, () => this.loading = false);
   }
 
@@ -209,11 +233,23 @@ export class PlayerComponent implements OnInit, OnDestroy {
       takeUntil(this.destroySubscription$)
     ).subscribe(files => {
       this.files = files;
+      if (this.currentFile.index >= 0) {
+        const newIndex = this.files.findIndex(song => song.id === this.currentFile.file.id);
+        if (newIndex !== this.currentFile.index) {
+          this.currentFile = { index: newIndex, file: this.currentFile.file };
+        }
+      }
     }, err => { }, () => this.loading = false);
   }
 
   loadSongsByPlayList() {
     this.files = [...this.playListService.getListSongsOfPlayList()];
+    if (this.currentFile.index >= 0) {
+      const newIndex = this.files.findIndex(song => song.id === this.currentFile.file.id);
+      if (newIndex !== this.currentFile.index) {
+        this.currentFile = { index: newIndex, file: this.currentFile.file };
+      }
+    }
     this.cloudService.setCurrentPlayList(this.files);
   }
 

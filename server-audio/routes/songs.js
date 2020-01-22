@@ -32,9 +32,18 @@ var upload = multer({
     }
 });
 
-/* GET home page. */
-router.get("/", passport.authenticate('jwt', { session: false }), (req, res, next) => {
-    res.render("index", { title: "Express" });
+/* GET top 20 favorite songs. */
+router.get("/", (req, res, next) => {
+    songModel
+        .find({ status: { $eq: 0 } })
+        .populate('comments.user', ['_id', 'username', 'avatar'])
+        .populate('comments.subComments.user', ['_id', 'username', 'avatar'])
+        .select('_id url name artist userId userName categoryId artistId likedUsers comments')
+        .then(songs => {
+            let results = songs.sort((a, b) => b.likedUsers.length - a.likedUsers.length);
+            res.status(200).json(results.slice(0, 20));
+        })
+        .catch(err => res.status(404).json({ notfound: "Not found songs" }));
 });
 
 /* POST song */
@@ -122,14 +131,16 @@ router.get("/getSongs", (req, res, next) => {
             .populate({
                 path: 'likedSongs.song',
                 select: ['_id', 'url', 'name', 'artist', 'userId', 'userName', 'categoryId', 'artistId', 'likedUsers', 'comments'],
-                populate: {
-                    path: 'comments.user',
-                    select: ['_id', 'username', 'avatar']
-                },
-                populate: {
-                    path: 'comments.subComments.user',
-                    select: ['_id', 'username', 'avatar']
-                }
+                populate: [
+                    {
+                        path: 'comments.user',
+                        select: ['_id', 'username', 'avatar']
+                    },
+                    {
+                        path: 'comments.subComments.user',
+                        select: ['_id', 'username', 'avatar']
+                    }
+                ]
             })
             .then(user => {
                 if (!user) {
@@ -224,7 +235,10 @@ router.post("/like-song", passport.authenticate('jwt', { session: false }), (req
                 songModel.findById({ _id: updatedSong._id })
                     .populate('comments.user', ['_id', 'username', 'avatar'])
                     .populate('comments.subComments.user', ['_id', 'username', 'avatar'])
-                    .then(newSong => res.status(200).json(newSong))
+                    .then(newSong => {
+                        res.io.emit('like', newSong);
+                        res.status(200).json(newSong);
+                    })
                     .catch(err => console.log(err));
             }).catch(err => console.log(err));
             likeMode = false;
@@ -235,7 +249,10 @@ router.post("/like-song", passport.authenticate('jwt', { session: false }), (req
                 songModel.findById({ _id: updatedSong._id })
                     .populate('comments.user', ['_id', 'username', 'avatar'])
                     .populate('comments.subComments.user', ['_id', 'username', 'avatar'])
-                    .then(newSong => res.status(200).json(newSong))
+                    .then(newSong => {
+                        res.io.emit('like', newSong);
+                        res.status(200).json(newSong);
+                    })
                     .catch(err => console.log(err));
             }).catch(err => console.log(err));
         }
@@ -338,7 +355,10 @@ router.post("/addComment", passport.authenticate('jwt', { session: false }), (re
             songModel.findById({ _id: updatedSong._id })
                 .populate('comments.user', ['_id', 'username', 'avatar'])
                 .populate('comments.subComments.user', ['_id', 'username', 'avatar'])
-                .then(song => res.status(200).json(song))
+                .then(song => {
+                    res.io.emit('song', song);
+                    res.status(200).json(song)
+                })
                 .catch(err => console.log(err));
         });
     }).catch(err => console.log(err));
@@ -365,7 +385,10 @@ router.post("/addSubComment", passport.authenticate('jwt', { session: false }), 
             songModel.findById({ _id: updatedSong._id })
                 .populate('comments.user', ['_id', 'username', 'avatar'])
                 .populate('comments.subComments.user', ['_id', 'username', 'avatar'])
-                .then(song => res.status(200).json(song))
+                .then(song => {
+                    res.io.emit('song', song);
+                    res.status(200).json(song);
+                })
                 .catch(err => console.log(err));
         });
     }).catch(err => console.log(err));
@@ -408,7 +431,10 @@ router.post("/editComment", passport.authenticate('jwt', { session: false }), (r
             songModel.findById({ _id: songId })
                 .populate('comments.user', ['_id', 'username', 'avatar'])
                 .populate('comments.subComments.user', ['_id', 'username', 'avatar'])
-                .then(song => res.status(200).json(song))
+                .then(song => {
+                    res.io.emit('song', song);
+                    res.status(200).json(song);
+                })
                 .catch(err => console.log(err));
         });
     }).catch(err => console.log(err));
@@ -455,7 +481,10 @@ router.post("/editSubComment", passport.authenticate('jwt', { session: false }),
                 songModel.findById({ _id: songId })
                     .populate('comments.user', ['_id', 'username', 'avatar'])
                     .populate('comments.subComments.user', ['_id', 'username', 'avatar'])
-                    .then(song => res.status(200).json(song))
+                    .then(song => {
+                        res.io.emit('song', song);
+                        res.status(200).json(song);
+                    })
                     .catch(err => console.log(err));
             });
         }).catch(err => console.log(err));
@@ -481,7 +510,10 @@ router.post("/deleteComment", passport.authenticate('jwt', { session: false }), 
             songModel.findById({ _id: songId })
                 .populate('comments.user', ['_id', 'username', 'avatar'])
                 .populate('comments.subComments.user', ['_id', 'username', 'avatar'])
-                .then(song => res.status(200).json(song))
+                .then(song => {
+                    res.io.emit('song', song);
+                    res.status(200).json(song);
+                })
                 .catch(err => console.log(err));
         });
     }).catch(err => console.log(err));
@@ -514,7 +546,10 @@ router.post("/deleteSubComment", passport.authenticate('jwt', { session: false }
                 songModel.findById({ _id: songId })
                     .populate('comments.user', ['_id', 'username', 'avatar'])
                     .populate('comments.subComments.user', ['_id', 'username', 'avatar'])
-                    .then(song => res.status(200).json(song))
+                    .then(song => {
+                        res.io.emit('song', song);
+                        res.status(200).json(song);
+                    })
                     .catch(err => console.log(err));
             });
         }).catch(err => console.log(err));
@@ -544,7 +579,10 @@ router.post("/likeComment", passport.authenticate('jwt', { session: false }), (r
             songModel.findById({ _id: songId })
                 .populate('comments.user', ['_id', 'username', 'avatar'])
                 .populate('comments.subComments.user', ['_id', 'username', 'avatar'])
-                .then(song => res.status(200).json(song))
+                .then(song => {
+                    res.io.emit('song', song);
+                    res.status(200).json(song);
+                })
                 .catch(err => console.log(err));
         });
     }).catch(err => console.log(err));
@@ -581,7 +619,10 @@ router.post("/likeSubComment", passport.authenticate('jwt', { session: false }),
             songModel.findById({ _id: songId })
                 .populate('comments.user', ['_id', 'username', 'avatar'])
                 .populate('comments.subComments.user', ['_id', 'username', 'avatar'])
-                .then(song => res.status(200).json(song))
+                .then(song => {
+                    res.io.emit('song', song);
+                    res.status(200).json(song);
+                })
                 .catch(err => console.log(err));
         });
     }).catch(err => console.log(err));
@@ -613,7 +654,10 @@ router.post("/unlikeComment", passport.authenticate('jwt', { session: false }), 
             songModel.findById({ _id: songId })
                 .populate('comments.user', ['_id', 'username', 'avatar'])
                 .populate('comments.subComments.user', ['_id', 'username', 'avatar'])
-                .then(song => res.status(200).json(song))
+                .then(song => {
+                    res.io.emit('song', song);
+                    res.status(200).json(song);
+                })
                 .catch(err => console.log(err));
         });
     }).catch(err => console.log(err));
@@ -651,7 +695,10 @@ router.post("/unlikeSubComment", passport.authenticate('jwt', { session: false }
             songModel.findById({ _id: songId })
                 .populate('comments.user', ['_id', 'username', 'avatar'])
                 .populate('comments.subComments.user', ['_id', 'username', 'avatar'])
-                .then(song => res.status(200).json(song))
+                .then(song => {
+                    res.io.emit('song', song);
+                    res.status(200).json(song);
+                })
                 .catch(err => console.log(err));
         });
     }).catch(err => console.log(err));

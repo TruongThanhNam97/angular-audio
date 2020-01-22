@@ -16,14 +16,16 @@ router.get('/', passport.authenticate('jwt', { session: false }), (req, res, nex
     playlistModel.find({ userId: req.user._id, status: 0 })
         .populate({
             path: 'listSongs',
-            populate: {
-                path: 'comments.user',
-                select: ['_id', 'username', 'avatar']
-            },
-            populate: {
-                path: 'comments.subComments.user',
-                select: ['_id', 'username', 'avatar']
-            }
+            populate: [
+                {
+                    path: 'comments.user',
+                    select: ['_id', 'username', 'avatar']
+                },
+                {
+                    path: 'comments.subComments.user',
+                    select: ['_id', 'username', 'avatar']
+                }
+            ]
         })
         .then(playlist => {
             if (!playlist) {

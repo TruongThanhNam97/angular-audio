@@ -11,6 +11,7 @@ import { PopupMoveSongToPlaylistComponent } from '../../manage-playlist/popup-mo
 import { PlayListService } from 'src/app/services/playlist.service';
 import { ThrowStmt } from '@angular/compiler';
 import { Router } from '@angular/router';
+import { SocketIoService } from 'src/app/services/socket-io.service';
 
 @Component({
   selector: 'app-popup',
@@ -31,11 +32,19 @@ export class PopupComponent implements OnInit, OnDestroy {
     private alertify: AlertifyService,
     private authService: AuthService,
     private playlistService: PlayListService,
-    private router: Router
+    private router: Router,
+    private socketIo: SocketIoService
   ) { }
 
   ngOnInit() {
     this.currentUser = this.authService.getCurrentUser();
+    this.socketIo.getLikeSongRealTime().pipe(
+      takeUntil(this.destroySubscriptions)
+    ).subscribe((song: any) => {
+      if (this.data.id === song.id) {
+        this.data = { ...song };
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -71,7 +80,7 @@ export class PopupComponent implements OnInit, OnDestroy {
       this.dialogRef.close();
       this.alertify.success('Block successfully');
       this.cloudService.getBlockedSongsAfterBlockSubject().next(this.data);
-      this.cloudService.getUpdateSongAfterManipulatingSubject().next({...this.data, block: true});
+      this.cloudService.getUpdateSongAfterManipulatingSubject().next({ ...this.data, block: true });
     });
   }
 

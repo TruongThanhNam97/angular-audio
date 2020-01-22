@@ -9,6 +9,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { PlayListService } from 'src/app/services/playlist.service';
 import { SongInfoService } from 'src/app/services/song-info.service';
+import { SocketIoService } from 'src/app/services/socket-io.service';
 
 @Component({
   selector: 'app-media-footer',
@@ -33,7 +34,8 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private bottomSheet: MatBottomSheet,
     private playlistService: PlayListService,
-    private songInfoService: SongInfoService
+    private songInfoService: SongInfoService,
+    private socketIo: SocketIoService
   ) { }
 
   ngOnInit() {
@@ -124,9 +126,9 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
         this.currentFile = { ...this.currentFile, file: updatedSong };
       }
     });
-    this.cloudService.getUpdateSongAfterAddCommentSubject().pipe(
+    this.socketIo.getCommentsRealTime().pipe(
       takeUntil(this.destroySubscription$)
-    ).subscribe(updatedSong => {
+    ).subscribe((updatedSong: any) => {
       if (this.files.filter(song => song.id === updatedSong.id).length > 0) {
         const index = this.files.findIndex(song => song.id === updatedSong.id);
         this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];

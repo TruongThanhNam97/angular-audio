@@ -116,6 +116,10 @@
             display: flex;
             .username {
               font-weight: 700;
+              cursor: pointer;
+            }
+            .username:hover {
+              color: blue;
             }
             .date {
               font-size: 14px;

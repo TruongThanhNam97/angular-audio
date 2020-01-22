@@ -8,6 +8,8 @@ import { Subject } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { AlertifyService } from 'src/app/services/alertify.service';
 import { PopupConfirmDeleteComponent } from '../popup-confirm-delete/popup-confirm-delete.component';
+import { SocketIoService } from 'src/app/services/socket-io.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-popup-comments',
@@ -38,20 +40,25 @@ export class PopupCommentsComponent implements OnInit, OnDestroy {
     private cloudService: CloudService,
     private authService: AuthService,
     private alertify: AlertifyService,
-    public dialog: MatDialog) {
+    public dialog: MatDialog,
+    private socketIo: SocketIoService,
+    private router: Router) {
     this.SERVER_URL_IMAGE = environment.SERVER_URL_IMAGE;
   }
 
   ngOnInit() {
     this.currentUser = this.authService.getCurrentUser();
-    this.cloudService.getUpdateSongAfterAddCommentSubject().pipe(
+    this.socketIo.getCommentsRealTime().pipe(
       takeUntil(this.destroySubscription$)
-    ).subscribe(song => {
-      this.data = { ...song };
-      if (this.filterBy === 'Featured comment') {
-        this.sortFeaturedComment();
-      } else {
-        this.sortLatestComment();
+    ).subscribe((song: any) => {
+      console.log('listener socket');
+      if (song.id === this.data.id && !this.editMode && !this.replyMode && !this.editReplyMode) {
+        this.data = { ...song };
+        if (this.filterBy === 'Featured comment') {
+          this.sortFeaturedComment();
+        } else {
+          this.sortLatestComment();
+        }
       }
     });
     this.initializeForm();
@@ -65,15 +72,6 @@ export class PopupCommentsComponent implements OnInit, OnDestroy {
   }
 
   onDeleteComment(comment) {
-    // this.alertify.confirm('Do you want to delete this comment?', () => {
-    //   this.cloudService.deleteComment({ songId: this.data.id, commentId: comment._id }).pipe(
-    //     takeUntil(this.destroySubscription$)
-    //   ).subscribe(song => {
-    //     this.cloudService.setSelectedSong(song);
-    //     this.cloudService.getUpdateSongAfterAddCommentSubject().next(song);
-    //     this.alertify.success('Delete comment successfully');
-    //   });
-    // });
     comment.songId = this.data.id;
     this.dialog.open(PopupConfirmDeleteComponent, { data: comment });
   }
@@ -158,8 +156,6 @@ export class PopupCommentsComponent implements OnInit, OnDestroy {
       takeUntil(this.destroySubscription$)
     ).subscribe(song => {
       this.cloudService.setSelectedSong(song);
-      // this.data = { ...song };
-      this.cloudService.getUpdateSongAfterAddCommentSubject().next(song);
       this.signForm.get('text').reset();
       this.alertify.success('Add comment successfully');
       this.resetAll();
@@ -172,12 +168,9 @@ export class PopupCommentsComponent implements OnInit, OnDestroy {
         takeUntil(this.destroySubscription$)
       ).subscribe(song => {
         this.cloudService.setSelectedSong(song);
-        // this.data = { ...song };
-        this.cloudService.getUpdateSongAfterAddCommentSubject().next(song);
-        // this.editForm.get('text').reset();
-        // this.onCancel();
         this.resetAll();
         this.alertify.success('Edit comment successfully');
+        this.data = { ...song };
       });
     }
   }
@@ -194,8 +187,7 @@ export class PopupCommentsComponent implements OnInit, OnDestroy {
       takeUntil(this.destroySubscription$)
     ).subscribe(song => {
       this.cloudService.setSelectedSong(song);
-      // this.data = { ...song };
-      this.cloudService.getUpdateSongAfterAddCommentSubject().next(song);
+      // this.socketIo.sendCommentRealTime();
     }, err => {
       if (err.error.message) {
         this.alertify.error(err.error.message);
@@ -208,8 +200,7 @@ export class PopupCommentsComponent implements OnInit, OnDestroy {
       takeUntil(this.destroySubscription$)
     ).subscribe(song => {
       this.cloudService.setSelectedSong(song);
-      // this.data = { ...song };
-      this.cloudService.getUpdateSongAfterAddCommentSubject().next(song);
+      // this.socketIo.sendCommentRealTime();
     }, err => {
       if (err.error.message) {
         this.alertify.error(err.error.message);
@@ -240,9 +231,9 @@ export class PopupCommentsComponent implements OnInit, OnDestroy {
         takeUntil(this.destroySubscription$)
       ).subscribe(song => {
         this.cloudService.setSelectedSong(song);
-        // this.data = { ...song };
-        this.cloudService.getUpdateSongAfterAddCommentSubject().next(song);
+        this.resetAll();
         this.alertify.success('Reply comment successfully');
+        this.data = { ...song };
       });
       this.replyForm.get('text').reset();
     }
@@ -254,12 +245,9 @@ export class PopupCommentsComponent implements OnInit, OnDestroy {
         takeUntil(this.destroySubscription$)
       ).subscribe(song => {
         this.cloudService.setSelectedSong(song);
-        // this.data = { ...song };
-        this.cloudService.getUpdateSongAfterAddCommentSubject().next(song);
-        // this.editForm.get('text').reset();
-        // this.onCancel();
         this.resetAll();
         this.alertify.success('Edit reply successfully');
+        this.data = { ...song };
       });
     }
   }
@@ -269,8 +257,7 @@ export class PopupCommentsComponent implements OnInit, OnDestroy {
       takeUntil(this.destroySubscription$)
     ).subscribe(song => {
       this.cloudService.setSelectedSong(song);
-      // this.data = { ...song };
-      this.cloudService.getUpdateSongAfterAddCommentSubject().next(song);
+      // this.socketIo.sendCommentRealTime();
     }, err => {
       if (err.error.message) {
         this.alertify.error(err.error.message);
@@ -283,8 +270,7 @@ export class PopupCommentsComponent implements OnInit, OnDestroy {
       takeUntil(this.destroySubscription$)
     ).subscribe(song => {
       this.cloudService.setSelectedSong(song);
-      // this.data = { ...song };
-      this.cloudService.getUpdateSongAfterAddCommentSubject().next(song);
+      // this.socketIo.sendCommentRealTime();
     }, err => {
       if (err.error.message) {
         this.alertify.error(err.error.message);
@@ -342,6 +328,11 @@ export class PopupCommentsComponent implements OnInit, OnDestroy {
     this.replyMode = false;
     this.indexToEditReply = -1;
     this.editReplyMode = false;
+  }
+
+  onNavigateToUserAlbum(comment) {
+    this.router.navigate(['/albums', comment.user._id], { queryParams: { username: comment.user.username } });
+    this.dialogRef.close();
   }
 
 }
