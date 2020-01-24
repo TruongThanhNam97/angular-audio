@@ -45,6 +45,26 @@ const schema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'users'
         }
+    ],
+    notifications: [
+        {
+            user: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'users'
+            },
+            text: String,
+            date: {
+                type: Date,
+                default: Date.now
+            },
+            isRead: {
+                type: Boolean,
+                default: false
+            },
+            mode: String,
+            maintext: String,
+            song: String
+        }
     ]
 }, { versionKey: false });
 

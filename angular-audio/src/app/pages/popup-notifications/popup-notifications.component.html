@@ -1,0 +1,35 @@
+<div class="popup-notifications">
+  <div class="header">
+    <div class="left-header">
+      <h5>My notifications</h5>
+    </div>
+    <div class="right-header">
+      <div (click)="onClearAll()" class="btn btn-secondary close">Clear all</div>
+      <div (click)="onClose()" class="btn btn-secondary close">X</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="wrap-notification-item">
+      <div class="notification-item" *ngFor="let notification of data">
+        <div class="wrap-noti-left-right" (click)="onNavigate(notification)">
+          <div class="notification-left">
+            <img style="width: 50px;height: 50px;border-radius: 50%;"
+              [src]="notification.user.avatar ? SERVER_URL_IMAGE+notification.user.avatar : '../../../assets/profile-default.jpg'"
+              [alt]="notification.user.username">
+            <br>
+            <span style="color: gray; font-size: 13px;">{{ notification.date | timeAgo }}</span>
+          </div>
+          <div class="notification-right">
+            <p><strong>{{ notification.user.username }}</strong> {{ notification.text }}
+              <strong>{{ notification?.maintext }}</strong></p>
+          </div>
+        </div>
+        <div (click)="onDeleteNotification(notification)" class="btnDeleteComment">
+          <mat-icon matTooltip="Delete notification" mat-list-icon class="mr-2">delete
+          </mat-icon>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="width: 100%;height: 120px;"></div>
+</div>

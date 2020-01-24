@@ -25,6 +25,8 @@ export class AuthService {
 
     private reupDectectedSubject$: Subject<number> = new Subject();
 
+    private updatedNotificationsAfterDelete$: Subject<any> = new Subject();
+
 
     constructor(private http: HttpClient, private router: Router, private cloudService: CloudService) {
         this.SERVER_URL = environment.SERVER_URL;
@@ -83,6 +85,11 @@ export class AuthService {
             ).subscribe(blockedSongs => {
                 this.cloudService.setBlockedSongsOfUser(blockedSongs);
                 this.router.navigate(['/categories']);
+            });
+            this.getNotifications().pipe(
+                take(1)
+            ).subscribe((res: any) => {
+                this.updatedNotificationsAfterDelete$.next(res);
             });
         }
     }
@@ -159,5 +166,41 @@ export class AuthService {
                 message: res.message
             }))
         );
+    }
+
+    getNotifications() {
+        return this.http.get(`${this.SERVER_URL}users/getNotifications`, {
+            headers: {
+                Authorization: localStorage.getItem('jwtToken')
+            }
+        });
+    }
+
+    deleteNotification(data) {
+        return this.http.post(`${this.SERVER_URL}users/deleteNotification`, data, {
+            headers: {
+                Authorization: localStorage.getItem('jwtToken')
+            }
+        });
+    }
+
+    clearAllNotifications() {
+        return this.http.post(`${this.SERVER_URL}users/clearAll`, {}, {
+            headers: {
+                Authorization: localStorage.getItem('jwtToken')
+            }
+        });
+    }
+
+    readAllNotifications() {
+        return this.http.post(`${this.SERVER_URL}users/readAll`, {}, {
+            headers: {
+                Authorization: localStorage.getItem('jwtToken')
+            }
+        });
+    }
+
+    getUpdatedNotifications() {
+        return this.updatedNotificationsAfterDelete$;
     }
 }

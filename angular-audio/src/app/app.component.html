@@ -19,6 +19,15 @@
           <a class="nav-link" [routerLink]="['/manage-user']" [routerLinkActive]="'active'"
             [routerLinkActiveOptions]="{ exact: true }">MANGE USER</a>
         </li>
+        <li *ngIf="currentUser && currentUser?.username !== 'superadmin'" class="nav-item">
+          <div class="wrap-notification" (click)="onSeeNotifications()">
+            <div class="numberNotifications" *ngIf="notifications && getNumberOfNotificationsUnread() > 0">
+              <span>{{ getNumberOfNotificationsUnread() }}</span>
+            </div>
+            <mat-icon matTooltip="My notifications" mat-list-icon class="notification-icon mr-3">notifications_active
+            </mat-icon>
+          </div>
+        </li>
         <li *ngIf="currentUser?.username !== 'superadmin'" class="nav-item">
           <a class="nav-link" [routerLink]="['/categories']" [routerLinkActive]="'active'"
             [routerLinkActiveOptions]="{ exact: true }">CATEGORIES</a>
@@ -83,5 +92,5 @@
   </div>
 </nav>
 <router-outlet></router-outlet>
-<div style="height: 220px;"></div>
+<div style="height: 200px;"></div>
 <app-media-footer *ngIf="playMode"></app-media-footer>

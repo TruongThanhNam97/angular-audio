@@ -104,4 +104,12 @@ export class SocketIoService {
             });
         });
     }
+
+    getNotificationsRealTime() {
+        return new Observable((observer) => {
+            this.socket.on('notify', (res) => {
+                observer.next(res);
+            });
+        });
+    }
 }

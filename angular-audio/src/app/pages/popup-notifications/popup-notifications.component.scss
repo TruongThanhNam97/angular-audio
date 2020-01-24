@@ -1,0 +1,74 @@
+.popup-notifications {
+  width: 610px;
+  max-height: 829px;
+  position: relative;
+  overflow-x: hidden;
+  .header {
+    width: 100%;
+    height: 40px;
+    display: flex;
+    border-bottom: 1px solid gainsboro;
+    .left-header {
+      width: 50%;
+    }
+    .right-header {
+      width: 50%;
+      display: flex;
+      justify-content: flex-end;
+      .close {
+        height: 35px;
+        background: transparent;
+        border: 0;
+        color: black;
+        border-color: transparent;
+        cursor: pointer;
+        font-size: 20px;
+      }
+    }
+  }
+  .body {
+    width: 100%;
+    max-height: 600px;
+    overflow-y: scroll;
+    padding-top: 10px;
+    .notification-item {
+      width: 100%;
+      height: 80px;
+      padding: 5px;
+      border-bottom: 1px solid #d6d1d1;
+      position: relative;
+      cursor: pointer;
+      .wrap-noti-left-right {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        .notification-right {
+          width: 80%;
+          height: 100%;
+          word-break: break-all;
+        }
+        .notification-left {
+          width: 20%;
+          height: 100%;
+          text-align: center;
+        }
+      }
+      .wrap-noti-left-right:hover {
+        background-color: #eaeaea;
+      }
+      .btnDeleteComment {
+        position: absolute;
+        right: 0;
+        top: 10px;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #a0a0a0;
+      }
+      .btnDeleteComment:hover {
+        color: black;
+      }
+    }
+  }
+}

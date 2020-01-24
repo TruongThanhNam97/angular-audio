@@ -8,6 +8,8 @@ import { environment } from 'src/environments/environment';
 import { UploadService } from './services/upload.service';
 import { SocketIoService } from './services/socket-io.service';
 import { AlertifyService } from './services/alertify.service';
+import { MatDialog } from '@angular/material';
+import { PopupNotificationsComponent } from './pages/popup-notifications/popup-notifications.component';
 
 @Component({
   selector: 'app-root',
@@ -21,13 +23,15 @@ export class AppComponent implements OnInit {
   SERVER_URL_IMAGE: string;
   queueProcessing = 0;
   reupDectected: number;
+  notifications: any[];
   constructor(
     private audioSerive: AudioService,
     private authService: AuthService,
     private router: Router,
     private uploadService: UploadService,
     private socketIo: SocketIoService,
-    private alertify: AlertifyService) {
+    private alertify: AlertifyService,
+    private dialog: MatDialog) {
     this.SERVER_URL_IMAGE = environment.SERVER_URL_IMAGE;
   }
   ngOnInit() {
@@ -42,6 +46,11 @@ export class AppComponent implements OnInit {
     });
     this.uploadService.getQueueProcessingSubject().subscribe((queueProcessing: number) => this.queueProcessing = queueProcessing);
     this.authService.getReupDectectedSubject().subscribe((numberOfReupDectected: number) => this.reupDectected = numberOfReupDectected);
+    this.authService.getUpdatedNotifications().subscribe((notifications: any[]) => this.notifications = [...notifications]);
+    this.listenerRealTimeBySocketIo();
+  }
+
+  listenerRealTimeBySocketIo() {
     this.socketIo.getFollwersRealTime().subscribe((res: any) => {
       console.log(res);
       if (this.currentUser && this.currentUser.id === res.followedUser.id && this.currentUser.id !== res.follower._id) {
@@ -105,6 +114,18 @@ export class AppComponent implements OnInit {
         this.alertify.notify(html);
       }
     });
+    this.socketIo.getNotificationsRealTime().subscribe((res: any) => {
+      console.log(res);
+      if (this.currentUser
+        && res.owner.filter(id => id === this.currentUser.id).length > 0
+        && res.notifications.length === 1
+        && res.notifications[0].mode === 'upload'
+      ) {
+        this.notifications = [...res.notifications, ...this.notifications];
+      } else if (this.currentUser && res.owner.filter(id => id === this.currentUser.id).length > 0) {
+        this.notifications = [...res.notifications];
+      }
+    });
   }
 
   checkToken() {
@@ -142,4 +163,19 @@ export class AppComponent implements OnInit {
   onUploadCateGory() {
     this.router.navigate(['/manage-categories/upload-category']);
   }
+
+  onSeeNotifications() {
+    this.dialog.open(PopupNotificationsComponent, { data: this.notifications ? this.notifications : [] });
+  }
+
+  getNumberOfNotificationsUnread() {
+    let result = 0;
+    this.notifications.forEach(item => {
+      if (!item.isRead) {
+        result++;
+      }
+    });
+    return result;
+  }
+
 }

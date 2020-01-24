@@ -29,6 +29,33 @@
   }
 }
 
+.wrap-notification {
+  display: flex;
+  justify-content: center;
+  align-self: center;
+  position: relative;
+  cursor: pointer;
+  .notification-icon {
+    font-size: 35px;
+    height: auto;
+    width: auto;
+    color: white;
+  }
+  .numberNotifications {
+    position: absolute;
+    right: 0px;
+    bottom: 40%;
+    background: #ff0000b8;
+    color: white;
+    border-radius: 30%;
+    font-size: 18px;
+    min-width: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
 @keyframes pulse-animation {
   0% {
     box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.8);

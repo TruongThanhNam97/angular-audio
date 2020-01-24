@@ -64,6 +64,42 @@ var saveSongMetadata = (req, res, data) => {
             userModel.findById({ _id: req.user.id }).then(user => {
                 res.io.emit('followingUpload', { user });
                 res.status(200).json(user);
+                if (user.followers.length > 0) {
+                    let arrOwner = [];
+                    user.followers.forEach((followerId, index, arr) => {
+                        if (followerId.toString() !== user._id.toString()) {
+                            arrOwner.push(followerId);
+                            userModel.findById({ _id: followerId }).then(user => {
+                                user.notifications = [
+                                    {
+                                        user: req.user._id,
+                                        text: 'has just uploaded',
+                                        maintext: 'new songs',
+                                        mode: 'upload'
+                                    },
+                                    ...user.notifications
+                                ];
+                                user.save().then(user => {
+                                    if (index === arr.length - 1) {
+                                        userModel.findById({ _id: user._id })
+                                            .select('notifications')
+                                            .populate('notifications.user', ['_id', 'username', 'avatar'])
+                                            .then(user => {
+                                                if (!user) {
+                                                    return res.status(404).json('User not found');
+                                                }
+                                                res.io.emit('notify',
+                                                    {
+                                                        notifications: [user.notifications[0]],
+                                                        owner: arrOwner
+                                                    });
+                                            }).catch(err => console.log(err));
+                                    }
+                                });
+                            }).catch(err => console.log(err));
+                        }
+                    });
+                }
             }).catch(err => console.log(err));
         }
     });
@@ -87,6 +123,42 @@ var watermark = (req, res, next) => {
                                 userModel.findOneAndUpdate({ _id: req.user.id }, { $set: { numberOfReup } }, { new: true }).then(user => {
                                     if (count === arrFilesLength && numberOfReup < 3) {
                                         res.io.emit('followingUpload', { user });
+                                        if (user.followers.length > 0) {
+                                            let arrOwner = [];
+                                            user.followers.forEach((followerId, index, arr) => {
+                                                if (followerId.toString() !== user._id.toString()) {
+                                                    arrOwner.push(followerId);
+                                                    userModel.findById({ _id: followerId }).then(user => {
+                                                        user.notifications = [
+                                                            {
+                                                                user: req.user._id,
+                                                                text: 'has just uploaded',
+                                                                maintext: 'new songs',
+                                                                mode: 'upload'
+                                                            },
+                                                            ...user.notifications
+                                                        ];
+                                                        user.save().then(user => {
+                                                            if (index === arr.length - 1) {
+                                                                userModel.findById({ _id: user._id })
+                                                                    .select('notifications')
+                                                                    .populate('notifications.user', ['_id', 'username', 'avatar'])
+                                                                    .then(user => {
+                                                                        if (!user) {
+                                                                            return res.status(404).json('User not found');
+                                                                        }
+                                                                        res.io.emit('notify',
+                                                                            {
+                                                                                notifications: [user.notifications[0]],
+                                                                                owner: arrOwner
+                                                                            });
+                                                                    }).catch(err => console.log(err));
+                                                            }
+                                                        });
+                                                    }).catch(err => console.log(err));
+                                                }
+                                            });
+                                        }
                                     }
                                     if (count === arrFilesLength || numberOfReup === 3) {
                                         res.status(200).json(user);
@@ -257,6 +329,27 @@ router.post("/like-song", passport.authenticate('jwt', { session: false }), (req
                         res.io.emit('likeMySong', { song: newSong, liker: req.user })
                         res.io.emit('like', newSong);
                         res.status(200).json(newSong);
+                        userModel.findById({ _id: newSong.userId }).then(user => {
+                            user.notifications = [{
+                                user: req.user._id,
+                                text: 'has just liked',
+                                maintext: newSong.name,
+                                mode: 'like',
+                                song: JSON.stringify(newSong)
+                            }, ...user.notifications];
+                            user.save().then(user => {
+                                userModel.findById({ _id: user._id })
+                                    .select('notifications')
+                                    .populate('notifications.user', ['_id', 'username', 'avatar'])
+                                    .then(user => {
+                                        if (!user) {
+                                            return res.status(404).json('User not found');
+                                        }
+                                        res.io.emit('notify',
+                                            { notifications: user.notifications.filter(noti => noti.user._id.toString() !== user._id.toString()), owner: [user._id] });
+                                    }).catch(err => console.log(err));
+                            });
+                        }).catch(err => console.log(err));
                     })
                     .catch(err => console.log(err));
             }).catch(err => console.log(err));
@@ -363,7 +456,28 @@ router.post("/addComment", passport.authenticate('jwt', { session: false }), (re
                 .then(song => {
                     res.io.emit('commentMySong', { song, commenter: req.user })
                     res.io.emit('song', song);
-                    res.status(200).json(song)
+                    res.status(200).json(song);
+                    userModel.findById({ _id: song.userId }).then(user => {
+                        user.notifications = [{
+                            user: req.user._id,
+                            text: 'has just commented on',
+                            maintext: song.name,
+                            mode: 'comment',
+                            song: JSON.stringify(song)
+                        }, ...user.notifications];
+                        user.save().then(user => {
+                            userModel.findById({ _id: user._id })
+                                .select('notifications')
+                                .populate('notifications.user', ['_id', 'username', 'avatar'])
+                                .then(user => {
+                                    if (!user) {
+                                        return res.status(404).json('User not found');
+                                    }
+                                    res.io.emit('notify',
+                                        { notifications: user.notifications.filter(noti => noti.user._id.toString() !== user._id.toString()), owner: [user._id] });
+                                }).catch(err => console.log(err));
+                        });
+                    }).catch(err => console.log(err));
                 })
                 .catch(err => console.log(err));
         });
@@ -395,6 +509,27 @@ router.post("/addSubComment", passport.authenticate('jwt', { session: false }), 
                     res.io.emit('commentMySong', { song, commenter: req.user })
                     res.io.emit('song', song);
                     res.status(200).json(song);
+                    userModel.findById({ _id: song.userId }).then(user => {
+                        user.notifications = [{
+                            user: req.user._id,
+                            text: 'has just commented on',
+                            maintext: song.name,
+                            mode: 'comment',
+                            song: JSON.stringify(song)
+                        }, ...user.notifications];
+                        user.save().then(user => {
+                            userModel.findById({ _id: user._id })
+                                .select('notifications')
+                                .populate('notifications.user', ['_id', 'username', 'avatar'])
+                                .then(user => {
+                                    if (!user) {
+                                        return res.status(404).json('User not found');
+                                    }
+                                    res.io.emit('notify',
+                                        { notifications: user.notifications.filter(noti => noti.user._id.toString() !== user._id.toString()), owner: [user._id] });
+                                }).catch(err => console.log(err));
+                        });
+                    }).catch(err => console.log(err));
                 })
                 .catch(err => console.log(err));
         });

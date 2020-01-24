@@ -42,6 +42,7 @@ import { SongInfoComponent } from './pages/song-info/song-info.component';
 import { PopupCommentsComponent } from './pages/song-info/popup-comments/popup-comments.component';
 import { AuthFocusDirective } from './directives/autofocus.directive';
 import { PopupConfirmDeleteComponent } from './pages/song-info/popup-confirm-delete/popup-confirm-delete.component';
+import { PopupNotificationsComponent } from './pages/popup-notifications/popup-notifications.component';
 
 @NgModule({
   declarations: [
@@ -80,7 +81,8 @@ import { PopupConfirmDeleteComponent } from './pages/song-info/popup-confirm-del
     PopupCommentsComponent,
     TimeAgoPipe,
     AuthFocusDirective,
-    PopupConfirmDeleteComponent
+    PopupConfirmDeleteComponent,
+    PopupNotificationsComponent
   ],
   imports: [
     BrowserModule,
@@ -100,7 +102,8 @@ import { PopupConfirmDeleteComponent } from './pages/song-info/popup-confirm-del
     PopupPlaylistComponent,
     PopupMoveSongToPlaylistComponent,
     PopupCommentsComponent,
-    PopupConfirmDeleteComponent
+    PopupConfirmDeleteComponent,
+    PopupNotificationsComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

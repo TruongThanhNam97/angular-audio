@@ -248,35 +248,133 @@ router.get('/getUserById', (req, res, next) => {
 //@access   Private
 router.post('/follows', passport.authenticate('jwt', { session: false }), (req, res, next) => {
   const { id } = req.body;
-  userModel.findById({ _id: id }).select('avatar username followers').then(user => {
-    if (!user) {
-      return res.status(404).json('User not found');
-    }
-    const followers = [...user.followers];
-    if (followers.filter(id => id.toString() === req.user._id.toString()).length === 0) {
-      // follows
-      user.followers = [...user.followers, req.user._id];
-      user.save().then(user => {
-        res.io.emit('follow', { followedUser: user, message: 'followed', follower: req.user });
-        res.status(200).json({ followedUser: user, message: 'followed' });
-        userModel.findById({ _id: req.user._id }).then(follower => {
-          follower.followings = [...follower.followings, id];
-          follower.save();
+  userModel.findById({ _id: id })
+    .select('avatar username followers notifications')
+    .populate('notifications.user', ['_id', 'username', 'avatar'])
+    .then(user => {
+      if (!user) {
+        return res.status(404).json('User not found');
+      }
+      const followers = [...user.followers];
+      if (followers.filter(id => id.toString() === req.user._id.toString()).length === 0) {
+        // follows
+        user.followers = [...user.followers, req.user._id];
+        user.notifications = [{ user: req.user._id, text: `has just followed you`, mode: 'follow' }, ...user.notifications];
+        user.save().then(user => {
+          res.io.emit('follow', { followedUser: user, message: 'followed', follower: req.user });
+          res.status(200).json({ followedUser: user, message: 'followed' });
+          userModel.findById({ _id: req.user._id }).then(follower => {
+            follower.followings = [...follower.followings, id];
+            follower.save();
+          }).catch(err => console.log(err));
+          userModel.findById({ _id: user._id })
+            .select('notifications')
+            .populate('notifications.user', ['_id', 'username', 'avatar'])
+            .then(user => {
+              if (!user) {
+                return res.status(404).json('User not found');
+              }
+              res.io.emit('notify',
+                { notifications: user.notifications.filter(noti => noti.user._id.toString() !== user._id.toString()), owner: [user._id] });
+            }).catch(err => console.log(err));
         }).catch(err => console.log(err));
-      }).catch(err => console.log(err));
-    } else {
-      // unfollows
-      user.followers = user.followers.filter(id => id.toString() !== req.user._id.toString());
-      user.save().then(user => {
-        res.io.emit('follow', { followedUser: user, message: 'unfollowed', follower: req.user });
-        res.status(200).json({ followedUser: user, message: 'unfollowed' });
-        userModel.findById({ _id: req.user._id }).then(follower => {
-          follower.followings = follower.followings.filter(userId => userId.toString() !== id.toString());
-          follower.save();
+      } else {
+        // unfollows
+        user.followers = user.followers.filter(id => id.toString() !== req.user._id.toString());
+        user.notifications = [{ user: req.user._id, text: `has just unfollowed you`, mode: 'unfollow' }, ...user.notifications];
+        user.save().then(user => {
+          res.io.emit('follow', { followedUser: user, message: 'unfollowed', follower: req.user });
+          res.status(200).json({ followedUser: user, message: 'unfollowed' });
+          userModel.findById({ _id: req.user._id }).then(follower => {
+            follower.followings = follower.followings.filter(userId => userId.toString() !== id.toString());
+            follower.save();
+          }).catch(err => console.log(err));
+          userModel.findById({ _id: user._id })
+            .select('notifications')
+            .populate('notifications.user', ['_id', 'username', 'avatar'])
+            .then(user => {
+              if (!user) {
+                return res.status(404).json('User not found');
+              }
+              res.io.emit('notify',
+                { notifications: user.notifications.filter(noti => noti.user._id.toString() !== user._id.toString()), owner: [user._id] });
+            }).catch(err => console.log(err));
         }).catch(err => console.log(err));
-      }).catch(err => console.log(err));
-    }
-  }).catch(err => console.log(err));
+      }
+    }).catch(err => console.log(err));
+});
+
+//@route    GET /users/getNotifications
+//@desc     GET notifications by user id
+//@access   Private
+router.get('/getNotifications', passport.authenticate('jwt', { session: false }), (req, res, next) => {
+  userModel.findById({ _id: req.user._id })
+    .select('notifications')
+    .populate('notifications.user', ['_id', 'username', 'avatar'])
+    .then(user => {
+      if (!user) {
+        return res.status(404).json('User not found');
+      }
+      res.status(200).json(user.notifications.filter(noti => noti.user._id.toString() !== req.user._id.toString()));
+    }).catch(err => console.log(err));
+});
+
+//@route    POST /users/deleteNotifcation
+//@desc     POST delete notification by id
+//@access   Private
+router.post('/deleteNotification', passport.authenticate('jwt', { session: false }), (req, res, next) => {
+  const { id } = req.body;
+  userModel.findById({ _id: req.user._id })
+    .select('notifications')
+    .populate('notifications.user', ['_id', 'username', 'avatar'])
+    .then(user => {
+      if (!user) {
+        return res.status(404).json('User not found');
+      }
+      if (user.notifications.filter(noti => noti._id.toString() === id.toString()).length === 0) {
+        return res.status(404).json('Notification not found');
+      }
+      user.notifications = user.notifications.filter(noti => noti._id.toString() !== id.toString());
+      user.save().then(user =>
+        res.status(200).json(user.notifications.filter(noti => noti.user._id.toString() !== req.user._id.toString())));
+    }).catch(err => console.log(err));
+});
+
+//@route    POST /users/clearAll
+//@desc     POST clear all notifications
+//@access   Private
+router.post('/clearAll', passport.authenticate('jwt', { session: false }), (req, res, next) => {
+  userModel.findById({ _id: req.user._id })
+    .select('notifications')
+    .then(user => {
+      if (!user) {
+        return res.status(404).json('User not found');
+      }
+      user.notifications = [];
+      user.save().then(user =>
+        res.status(200).json(user.notifications));
+    }).catch(err => console.log(err));
+});
+
+//@route    POST /users/readAll
+//@desc     POST read all notifications
+//@access   Private
+router.post('/readAll', passport.authenticate('jwt', { session: false }), (req, res, next) => {
+  userModel.findById({ _id: req.user._id })
+    .select('notifications')
+    .populate('notifications.user', ['_id', 'username', 'avatar'])
+    .then(user => {
+      if (!user) {
+        return res.status(404).json('User not found');
+      }
+      user.notifications.forEach(noti => {
+        if (!noti.isRead) {
+          noti.isRead = true;
+        }
+      });
+      user.save().then(user =>
+        res.status(200).json(user.notifications.filter(noti => noti.user._id.toString() !== req.user._id.toString())));
+    }).catch(err => console.log(err));
 });
 
 
