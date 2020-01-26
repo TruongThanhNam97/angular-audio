@@ -21,15 +21,30 @@
         width: 160px !important;
         font-size: 160px !important;
       }
+      .album {
+        cursor: pointer;
+      }
+      .album:hover,
+      .songInfo:hover {
+        color: black;
+      }
+      .songInfo {
+        word-break: break-all;
+        cursor: pointer;
+        font-size: 17px;
+      }
     }
   }
-
-  .music-icon:hover {
-    color: yellow;
+  .item {
+    cursor: pointer;
+    .more-icon:hover {
+      color: #ff4081;
+    }
   }
-
-  .more-icon:hover {
-    color: #FF4081;
+  .item:hover {
+    background: #e9eaff;
+    .music-icon {
+      color: yellow;
+    }
   }
-
 }

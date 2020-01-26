@@ -2,7 +2,7 @@ import { Component, OnInit, Inject, OnDestroy, ChangeDetectorRef } from '@angula
 import { StreamState } from 'src/app/interfaces/stream-state';
 import { Subject } from 'rxjs';
 import { AudioService } from 'src/app/services/audio.service';
-import { MatDialog, MAT_BOTTOM_SHEET_DATA } from '@angular/material';
+import { MatDialog, MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material';
 import { AlbumService } from 'src/app/services/album.service';
 import { CategoryService } from 'src/app/services/categories.service';
 import { PopupComponent } from '../../player/popup/popup.component';
@@ -13,6 +13,8 @@ import { PlayListService } from 'src/app/services/playlist.service';
 import { AlertifyService } from 'src/app/services/alertify.service';
 import { SongInfoService } from 'src/app/services/song-info.service';
 import { SocketIoService } from 'src/app/services/socket-io.service';
+import { Router } from '@angular/router';
+import { ValidateService } from 'src/app/services/validate.service';
 
 @Component({
   selector: 'app-playlist-playing',
@@ -30,6 +32,7 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
   username: string;
   id: string;
   categoryName: string;
+  arrSongContent = [];
 
   constructor(
     private audioService: AudioService,
@@ -40,23 +43,32 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
     private cdt: ChangeDetectorRef,
     private cloudService: CloudService,
     @Inject(MAT_BOTTOM_SHEET_DATA) public data: any,
+    public bottomSheetRef: MatBottomSheetRef<PlaylistPlayingComponent>,
     private playlistService: PlayListService,
     private alertify: AlertifyService,
     private songInfoService: SongInfoService,
-    private socketIo: SocketIoService
+    private socketIo: SocketIoService,
+    private router: Router,
+    private validateService: ValidateService
   ) { }
 
   ngOnInit() {
     this.currentUser = this.authService.getCurrentUser();
     this.files = [...this.data];
     this.currentFile = this.audioService.getCurrentFile();
+    console.log(this.currentFile);
+    this.arrSongContent = this.currentFile.file.songcontent.detail.split('\n');
     this.audioService.getResetCurrentFileSubject().pipe(
       takeUntil(this.destroySubscription$)
-    ).subscribe(currentFile => this.currentFile = currentFile);
+    ).subscribe(currentFile => {
+      this.currentFile = currentFile;
+      this.arrSongContent = this.currentFile.file.songcontent.detail.split('\n');
+    });
     this.audioService.getCurrentFileSubject2().pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe((v: any) => {
       this.currentFile = { index: v.index, file: v.file };
+      this.arrSongContent = this.currentFile.file.songcontent.detail.split('\n');
       // this.cloudService.setCurr
       this.cdt.detectChanges();
     });
@@ -84,6 +96,7 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
       }
       if (this.currentFile.file && this.currentFile.file.id === updatedSong.id) {
         this.currentFile = { ...this.currentFile, file: updatedSong };
+        this.arrSongContent = this.currentFile.file.songcontent.detail.split('\n');
       }
     });
   }
@@ -100,6 +113,7 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
     ).subscribe(updatedSong => {
       const index = this.files.findIndex(item => item.id === updatedSong.id);
       this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
+      this.cdt.detectChanges();
       if (song.playlistId && song.playlistName) {
         this.files = this.files.map(item => {
           item.playlistId = song.playlistId;
@@ -127,6 +141,7 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
     this.songInfoService.getModeSubject().next('displayBtnPlay');
     this.audioService.updatePlayMode();
     this.currentFile = { index, file };
+    this.arrSongContent = this.currentFile.file.songcontent.detail.split('\n');
     this.audioService.updateCurrentFile1({ index, file });
     this.audioService.stop();
     this.audioService.playStream(file.url).subscribe();
@@ -137,6 +152,21 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
 
   openDialog(file: any): void {
     this.dialog.open(PopupComponent, { data: file });
+  }
+
+  onNavigateToAlbum(currentFile) {
+    this.bottomSheetRef.dismiss();
+    this.router.navigate(['/albums', currentFile.file.userId], { queryParams: { username: currentFile.file.userName } });
+  }
+
+  onNavigateToSongInfo(currentFile) {
+    this.bottomSheetRef.dismiss();
+    this.cloudService.setSelectedSong(currentFile.file);
+    this.router.navigate(['/song-info'], { queryParams: { songId: currentFile.file.id } });
+  }
+
+  isEmpty() {
+    return this.validateService.isEmpty(this.currentFile);
   }
 
 }

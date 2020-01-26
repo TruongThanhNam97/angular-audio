@@ -1,36 +1,50 @@
 .container {
-    .main-toolbar {
-      .spacer {
-        flex: 1 1 auto;
+  .main-toolbar {
+    .spacer {
+      flex: 1 1 auto;
+    }
+    .toolbar-btn {
+      font-size: 16px;
+      margin-right: 5px;
+      cursor: pointer;
+    }
+  }
+
+  .content {
+    .logo {
+      margin: 2.5rem;
+      text-align: center;
+      font-size: 24px;
+      color: #3f51b5;
+      .mat-icon {
+        height: 160px !important;
+        width: 160px !important;
+        font-size: 160px !important;
       }
-      .toolbar-btn {
-        font-size: 16px;
-        margin-right: 5px;
+      .album {
         cursor: pointer;
       }
-    }
-  
-    .content {
-      .logo {
-        margin: 2.5rem;
-        text-align: center;
-        font-size: 24px;
-        color: #3f51b5;
-        .mat-icon {
-          height: 160px !important;
-          width: 160px !important;
-          font-size: 160px !important;
-        }
+      .album:hover,
+      .songInfo:hover {
+        color: black;
+      }
+      .songInfo {
+        word-break: break-all;
+        cursor: pointer;
+        font-size: 17px;
       }
     }
-  
-    .music-icon:hover {
+  }
+  .item {
+    cursor: pointer;
+    .more-icon:hover {
+      color: #ff4081;
+    }
+  }
+  .item:hover {
+    background: #e9eaff;
+    .music-icon {
       color: yellow;
     }
-  
-    .more-icon:hover {
-      color: #FF4081;
-    }
-  
   }
-  
+}

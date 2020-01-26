@@ -90,7 +90,16 @@ const schema = new mongoose.Schema({
                 }
             ]
         }
-    ]
+    ],
+    songcontent: {
+        detail: {
+            type: String
+        },
+        status: {
+            type: Boolean,
+            default: false
+        }
+    }
 }, { versionKey: false });
 
 module.exports = mongoose.model('songs', schema);

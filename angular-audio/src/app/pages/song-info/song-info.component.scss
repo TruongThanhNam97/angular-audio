@@ -184,6 +184,27 @@ p {
         }
       }
     }
+    .song-content {
+      width: 100%;
+      padding-top: 20px;
+      .seeMore {
+        color: gray;
+        cursor: pointer;
+      }
+      .seeMore:hover {
+        color: blue;
+      }
+      .copy {
+        color: gray;
+        cursor: pointer;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .copy:hover {
+        color: blue;
+      }
+    }
   }
   .right-body {
     width: 30%;

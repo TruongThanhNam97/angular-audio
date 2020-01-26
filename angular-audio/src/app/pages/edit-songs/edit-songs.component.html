@@ -117,6 +117,9 @@
               <span *ngIf="signForm.get('artist').hasError('maxlength')">Max length of artist field: 50</span>
             </span>
           </div>
+          <div class="form-group">
+            <textarea class="form-control" formControlName="detail" rows="3"></textarea>
+          </div>
           <button [disabled]="signForm.invalid" class="btn btn-info">Save file</button>
         </form>
       </div>

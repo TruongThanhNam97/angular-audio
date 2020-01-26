@@ -51,6 +51,7 @@ export class EditSongsComponent implements OnInit, OnDestroy {
       takeUntil(this.destroySubscription$)
     ).subscribe(songs => {
       this.mySongs = songs;
+      console.log(this.mySongs);
     });
   }
 
@@ -58,15 +59,18 @@ export class EditSongsComponent implements OnInit, OnDestroy {
     this.signForm = new FormGroup({
       id: new FormControl(null, [Validators.required]),
       name: new FormControl(null, [Validators.required, Validators.maxLength(50)]),
-      artist: new FormControl(null, [Validators.required, Validators.maxLength(50)])
+      artist: new FormControl(null, [Validators.required, Validators.maxLength(50)]),
+      detail: new FormControl('')
     });
   }
 
   onEdit(song: any) {
+    console.log(song);
     this.signForm.patchValue({
       id: song.id,
       name: song.name,
-      artist: song.artist
+      artist: song.artist,
+      detail: song.songcontent.detail.trim()
     });
   }
 
@@ -80,6 +84,7 @@ export class EditSongsComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
+    this.signForm.value.detail = this.signForm.value.detail.trim();
     this.cloudService.updateSong(this.signForm.value).pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(song => {

@@ -1,7 +1,7 @@
 <ng-container *ngIf="listAlbums && listAlbums.length > 0; else elseTemplate">
   <div class="container mt-5" style="display: flex;flex-wrap: wrap;">
     <div *ngFor="let album of listAlbums" class="card wrap-card"
-      style="width: 32%; margin-right: 1%; margin-bottom: 2%; background: white;">
+      style="width: 32%; margin-right: 1%; margin-bottom: 1%; background: white;">
       <div class="album-image" (click)="onNavigateToSeeAlbum(album)">
         <img style="height: 200px;"
           src="{{ album['avatar'] ? SERVER_URL_IMAGE+album['avatar'] : '../../../../../assets/apple-music-note-800x420.jpg'  }}"

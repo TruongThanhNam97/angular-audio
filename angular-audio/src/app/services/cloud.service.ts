@@ -83,7 +83,8 @@ export class CloudService {
             categoryId: cur.categoryId ? cur.categoryId : null,
             artistId: cur.artistId ? cur.artistId : null,
             likedUsers: cur.likedUsers,
-            comments: cur.comments ? cur.comments : []
+            comments: cur.comments ? cur.comments : [],
+            songcontent: cur.songcontent
           };
           acc.push(obj);
           return acc;
@@ -109,7 +110,8 @@ export class CloudService {
             categoryId: cur.categoryId ? cur.categoryId : null,
             artistId: cur.artistId ? cur.artistId : null,
             likedUsers: cur.likedUsers,
-            comments: cur.comments ? cur.comments : []
+            comments: cur.comments ? cur.comments : [],
+            songcontent: cur.songcontent
           };
           acc.push(obj);
           return acc;
@@ -134,7 +136,8 @@ export class CloudService {
           categoryId: song.categoryId ? song.categoryId : null,
           artistId: song.artistId ? song.artistId : null,
           likedUsers: song.likedUsers,
-          comments: song.comments ? song.comments : []
+          comments: song.comments ? song.comments : [],
+          songcontent: song.songcontent
         };
         return result;
       }),
@@ -161,7 +164,8 @@ export class CloudService {
             categoryId: cur.categoryId ? cur.categoryId : null,
             artistId: cur.artistId ? cur.artistId : null,
             likedUsers: cur.likedUsers,
-            comments: cur.comments ? cur.comments : []
+            comments: cur.comments ? cur.comments : [],
+            songcontent: cur.songcontent
           };
           acc.push(obj);
           return acc;
@@ -192,7 +196,8 @@ export class CloudService {
             categoryId: cur.song.categoryId ? cur.song.categoryId : null,
             artistId: cur.song.artistId ? cur.song.artistId : null,
             likedUsers: cur.song.likedUsers,
-            comments: cur.song.comments ? cur.song.comments : []
+            comments: cur.song.comments ? cur.song.comments : [],
+            songcontent: cur.song.songcontent
           };
           acc.push(obj);
           return acc;
@@ -223,7 +228,8 @@ export class CloudService {
             categoryId: cur.categoryId ? cur.categoryId : null,
             artistId: cur.artistId ? cur.artistId : null,
             likedUsers: cur.likedUsers,
-            comments: cur.comments ? cur.comments : []
+            comments: cur.comments ? cur.comments : [],
+            songcontent: cur.songcontent
           };
           acc.push(obj);
           return acc;
@@ -254,7 +260,8 @@ export class CloudService {
             categoryId: cur.categoryId ? cur.categoryId : null,
             artistId: cur.artistId ? cur.artistId : null,
             likedUsers: cur.likedUsers,
-            comments: cur.comments ? cur.comments : []
+            comments: cur.comments ? cur.comments : [],
+            songcontent: cur.songcontent
           };
           acc.push(obj);
           return acc;
@@ -288,7 +295,8 @@ export class CloudService {
           categoryId: song.categoryId ? song.categoryId : null,
           artistId: song.artistId ? song.artistId : null,
           likedUsers: song.likedUsers,
-          comments: song.comments ? song.comments : []
+          comments: song.comments ? song.comments : [],
+          songcontent: song.songcontent
         };
       })
     );
@@ -320,7 +328,8 @@ export class CloudService {
           categoryId: song.categoryId ? song.categoryId : null,
           artistId: song.artistId ? song.artistId : null,
           likedUsers: song.likedUsers,
-          comments: song.comments ? song.comments : []
+          comments: song.comments ? song.comments : [],
+          songcontent: song.songcontent
         };
       })
     );
@@ -416,7 +425,8 @@ export class CloudService {
         categoryId: song.categoryId ? song.categoryId : null,
         artistId: song.artistId ? song.artistId : null,
         likedUsers: song.likedUsers,
-        comments: song.comments ? song.comments : []
+        comments: song.comments ? song.comments : [],
+        songcontent: song.songcontent
       }))
     );
   }
@@ -438,7 +448,8 @@ export class CloudService {
         categoryId: song.categoryId ? song.categoryId : null,
         artistId: song.artistId ? song.artistId : null,
         likedUsers: song.likedUsers,
-        comments: song.comments ? song.comments : []
+        comments: song.comments ? song.comments : [],
+        songcontent: song.songcontent
       }))
     );
   }
@@ -461,7 +472,8 @@ export class CloudService {
         categoryId: song.categoryId ? song.categoryId : null,
         artistId: song.artistId ? song.artistId : null,
         likedUsers: song.likedUsers,
-        comments: song.comments ? song.comments : []
+        comments: song.comments ? song.comments : [],
+        songcontent: song.songcontent
       }))
     );
   }
@@ -483,7 +495,8 @@ export class CloudService {
         categoryId: song.categoryId ? song.categoryId : null,
         artistId: song.artistId ? song.artistId : null,
         likedUsers: song.likedUsers,
-        comments: song.comments ? song.comments : []
+        comments: song.comments ? song.comments : [],
+        songcontent: song.songcontent
       }))
     );
   }
@@ -505,7 +518,8 @@ export class CloudService {
         categoryId: song.categoryId ? song.categoryId : null,
         artistId: song.artistId ? song.artistId : null,
         likedUsers: song.likedUsers,
-        comments: song.comments ? song.comments : []
+        comments: song.comments ? song.comments : [],
+        songcontent: song.songcontent
       }))
     );
   }
@@ -527,7 +541,8 @@ export class CloudService {
         categoryId: song.categoryId ? song.categoryId : null,
         artistId: song.artistId ? song.artistId : null,
         likedUsers: song.likedUsers,
-        comments: song.comments ? song.comments : []
+        comments: song.comments ? song.comments : [],
+        songcontent: song.songcontent
       }))
     );
   }
@@ -549,7 +564,8 @@ export class CloudService {
         categoryId: song.categoryId ? song.categoryId : null,
         artistId: song.artistId ? song.artistId : null,
         likedUsers: song.likedUsers,
-        comments: song.comments ? song.comments : []
+        comments: song.comments ? song.comments : [],
+        songcontent: song.songcontent
       }))
     );
   }
@@ -571,7 +587,8 @@ export class CloudService {
         categoryId: song.categoryId ? song.categoryId : null,
         artistId: song.artistId ? song.artistId : null,
         likedUsers: song.likedUsers,
-        comments: song.comments ? song.comments : []
+        comments: song.comments ? song.comments : [],
+        songcontent: song.songcontent
       }))
     );
   }
@@ -593,7 +610,8 @@ export class CloudService {
         categoryId: song.categoryId ? song.categoryId : null,
         artistId: song.artistId ? song.artistId : null,
         likedUsers: song.likedUsers,
-        comments: song.comments ? song.comments : []
+        comments: song.comments ? song.comments : [],
+        songcontent: song.songcontent
       }))
     );
   }
@@ -615,7 +633,8 @@ export class CloudService {
         categoryId: song.categoryId ? song.categoryId : null,
         artistId: song.artistId ? song.artistId : null,
         likedUsers: song.likedUsers,
-        comments: song.comments ? song.comments : []
+        comments: song.comments ? song.comments : [],
+        songcontent: song.songcontent
       }))
     );
   }

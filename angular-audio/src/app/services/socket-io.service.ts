@@ -34,7 +34,8 @@ export class SocketIoService {
                     categoryId: song.categoryId ? song.categoryId : null,
                     artistId: song.artistId ? song.artistId : null,
                     likedUsers: song.likedUsers,
-                    comments: song.comments ? song.comments : []
+                    comments: song.comments ? song.comments : [],
+                    songcontent: song.songcontent
                 });
             });
         });
@@ -58,7 +59,8 @@ export class SocketIoService {
                     categoryId: song.categoryId ? song.categoryId : null,
                     artistId: song.artistId ? song.artistId : null,
                     likedUsers: song.likedUsers,
-                    comments: song.comments ? song.comments : []
+                    comments: song.comments ? song.comments : [],
+                    songcontent: song.songcontent
                 });
             });
         });

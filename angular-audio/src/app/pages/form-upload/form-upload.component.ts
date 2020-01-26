@@ -61,7 +61,8 @@ export class FormUploadComponent implements OnInit {
         const formGroup = new FormGroup({
           name: new FormControl(song.split('-')[0], [Validators.required, Validators.maxLength(50)]),
           artist: new FormControl(song.split('-')[1], [Validators.required, Validators.maxLength(50)]),
-          file: new FormControl(file, [this.validateFile.bind(this), this.validateFileSize.bind(this)])
+          file: new FormControl(file, [this.validateFile.bind(this), this.validateFileSize.bind(this)]),
+          detail: new FormControl('')
         });
         (this.signForm.get('arrSongs') as FormArray).push(formGroup);
       }
@@ -112,15 +113,18 @@ export class FormUploadComponent implements OnInit {
   saveAll() {
     const arrOb$ = [];
     let arrNameArtist = [];
+    let arrSongContent = [];
     const arrSongs = (this.signForm.get('arrSongs') as FormArray).value;
     this.uploadService.setAllQueueProcessing(arrSongs.length);
     if (arrSongs.length <= 5) {
       const formData = new FormData();
       arrSongs.forEach(song => {
         arrNameArtist.push({ name: song.name, artist: song.artist });
+        arrSongContent.push(song.detail.trim());
         formData.append('file', song.file);
       });
       formData.append('arrNameArtist', JSON.stringify(arrNameArtist));
+      formData.append('arrSongContent', JSON.stringify(arrSongContent));
       this.chooseFileMode = false;
       this.uploadService.setChooseFileMode(false);
       this.uploadService.uploadSong(formData).subscribe(
@@ -148,14 +152,18 @@ export class FormUploadComponent implements OnInit {
         count++;
         if (count === 5 || index === arr.length - 1) {
           arrNameArtist.push({ name: song.name, artist: song.artist });
+          arrSongContent.push(song.detail.trim());
           formData.append('arrNameArtist', JSON.stringify(arrNameArtist));
+          formData.append('arrSongContent', JSON.stringify(arrSongContent));
           formData.append('file', song.file);
           arrOb$.push(this.uploadService.uploadSong(formData));
           count = 0;
           formData = new FormData();
           arrNameArtist = [];
+          arrSongContent = [];
         } else {
           arrNameArtist.push({ name: song.name, artist: song.artist });
+          arrSongContent.push(song.detail.trim());
           formData.append('file', song.file);
         }
       });

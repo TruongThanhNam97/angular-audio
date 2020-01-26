@@ -104,7 +104,8 @@ export class PopupNotificationsComponent implements OnInit, OnDestroy {
         categoryId: song.categoryId ? song.categoryId : null,
         artistId: song.artistId ? song.artistId : null,
         likedUsers: song.likedUsers,
-        comments: song.comments ? song.comments : []
+        comments: song.comments ? song.comments : [],
+        songcontent: song.songcontent
       };
       this.cloudService.setSelectedSong(song);
       this.dialogRef.close();

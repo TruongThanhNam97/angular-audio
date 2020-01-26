@@ -8,7 +8,7 @@
               <th>Song Name</th>
               <th>Artist</th>
               <th>Category</th>
-              <th>Upload by</th>
+              <th>Lyrics</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -18,7 +18,11 @@
               <td>{{ song.artist }}</td>
               <td [ngStyle]="{'background-color': !song.categoryId ? '#ffc107' : ''}">
                 {{ song.categoryId ? getCategoryNameById(song.categoryId) : 'No category' }}</td>
-              <td>{{ song.userName }}</td>
+              <td *ngIf="!song.songcontent.status && song.songcontent.detail" style="background-color: #ffc107;">Need to
+                be approved</td>
+              <td *ngIf="!song.songcontent.status && !song.songcontent.detail" style="background-color: #ffc107;">No
+                lyrics</td>
+              <td *ngIf="song.songcontent.status">Approved</td>
               <td>
                 <button class="btn btn-warning mr-2" (click)="onEdit(song)">
                   <mat-icon mat-list-icon>edit</mat-icon>

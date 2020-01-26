@@ -10,6 +10,7 @@ class Watermarker {
     Watermark(req, next = null, on_error = null) {
         const listFiles = req.files;
         const arrNameArtist = JSON.parse(req.body.arrNameArtist);
+        const arrSongContent = JSON.parse(req.body.arrSongContent);
         let count = 0;
         let arrFilesLength = req.files.length;
         for (let i = 0; i < arrFilesLength; i++) {
@@ -22,7 +23,8 @@ class Watermarker {
                         artist: arrNameArtist[i].artist,
                         fileName: listFiles[i].filename,
                         count,
-                        arrFilesLength
+                        arrFilesLength,
+                        detail: arrSongContent[i]
                     };
                     next(obj);
                 }

@@ -38,6 +38,8 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
   top20FavoriteSongs: any[];
   indexInterested = -1;
   uploader: any;
+  arrSongContent = [];
+  hideMode = true;
 
   SERVER_URL_IMAGE: string;
 
@@ -169,7 +171,9 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   fetchData() {
+    this.hideMode = true;
     this.selectedSong = this.cloudService.getSelectedSong();
+    this.arrSongContent = this.selectedSong.songcontent.detail.split('\n');
     this.likedUsers = this.selectedSong.likedUsers.length;
     this.cloudService.setCurrentPlayList([this.selectedSong]);
     if (this.selectedSong.artistId) {
@@ -348,6 +352,16 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
 
   isFollowed(uploader) {
     return uploader.followers.filter(id => id === this.currentUser.id).length > 0;
+  }
+
+  copyLyrics() {
+    const el = document.createElement('textarea');
+    el.value = this.selectedSong.songcontent.detail;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    this.alertify.success('Copied');
   }
 
 }

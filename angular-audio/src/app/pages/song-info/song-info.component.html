@@ -99,6 +99,28 @@
         </div>
       </div>
     </div>
+    <div class="song-content">
+      <h5>Lyrics</h5>
+      <p style="color: #a2a2a2; font-size: 14px;" *ngIf="selectedSong.songcontent.status">Approved by admin</p>
+      <p style="color: #a2a2a2; font-size: 14px;"
+        *ngIf="!selectedSong.songcontent.status && selectedSong.songcontent.detail">Waiting admin approve</p>
+      <p style="color: #a2a2a2; font-size: 14px;"
+        *ngIf="!selectedSong.songcontent.status && !selectedSong.songcontent.detail">No lyrics</p>
+      <br>
+      <div style="width: 100%;" *ngIf="selectedSong.songcontent.status">
+        <p *ngFor="let text of arrSongContent;let i =index;"
+          [ngStyle]="{'margin-bottom': text.trim() === '' ? '50px': '15px'}">
+          {{  (i <= 19 || !hideMode) ? text.trim() : '' }} {{ (i === 19 && hideMode) ? '...' : '' }} <span
+            class="seeMore" *ngIf="i === 19 && hideMode" (click)="hideMode = false">See more</span>
+        </p>
+        <span class="seeMore" *ngIf="!hideMode" (click)="hideMode = true">Compact</span>
+      </div>
+      <br>
+      <div (click)="copyLyrics()" class="copy" *ngIf="selectedSong.songcontent.status">
+        <mat-icon matTooltip="Copy lyrics" mat-list-icon class="mr-2">filter_none</mat-icon>
+        Copy lyrics
+      </div>
+    </div>
   </div>
   <div class="right-body">
     <div class="header-right-body mb-4">

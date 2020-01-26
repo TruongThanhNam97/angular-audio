@@ -28,7 +28,8 @@ export class PopupEditSongComponent implements OnInit, OnDestroy {
       name: this.data.song.name,
       artist: this.data.song.artist,
       categoryId: this.data.song.categoryId,
-      artistId: this.data.song.artistId
+      artistId: this.data.song.artistId,
+      detail: this.data.song.songcontent.detail.trim()
     });
   }
 
@@ -42,11 +43,13 @@ export class PopupEditSongComponent implements OnInit, OnDestroy {
       name: new FormControl(null, [Validators.required, Validators.maxLength(50)]),
       artist: new FormControl(null, [Validators.required, Validators.maxLength(50)]),
       categoryId: new FormControl(null, [Validators.required]),
-      artistId: new FormControl(null, [Validators.required])
+      artistId: new FormControl(null, [Validators.required]),
+      detail: new FormControl('')
     });
   }
 
   onSubmit() {
+    this.signForm.value.detail = this.signForm.value.detail.trim();
     this.cloudService.updateSong(this.signForm.value).pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(song => {
