@@ -41,7 +41,8 @@ export class PlayListService {
             artistId: song.artistId ? song.artistId : null,
             categoryId: song.categoryId ? song.categoryId : null,
             comments: song.comments ? song.comments : [],
-            songcontent: song.songcontent
+            songcontent: song.songcontent,
+            video: song.video ? song.video : null
         }));
         this.listSongsOfPlayList = this.listSongsOfPlayList.filter(song => !blockedSongs.includes(song.id));
     }

@@ -9,6 +9,7 @@
               <th>Artist</th>
               <th>Category</th>
               <th>Lyrics</th>
+              <th>Video</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -16,24 +17,37 @@
             <tr *ngFor="let song of mySongs; let i = index;">
               <td>{{ song.name }}</td>
               <td>{{ song.artist }}</td>
-              <td [ngStyle]="{'background-color': !song.categoryId ? '#ffc107' : ''}">
+              <td [ngStyle]="{'background-color': !song.categoryId ? '#17a2b8' : ''}">
                 {{ song.categoryId ? getCategoryNameById(song.categoryId) : 'No category' }}</td>
-              <td *ngIf="!song.songcontent.status && song.songcontent.detail" style="background-color: #ffc107;">Need to
-                be approved</td>
-              <td *ngIf="!song.songcontent.status && !song.songcontent.detail" style="background-color: #ffc107;">No
+              <td *ngIf="!song.songcontent.status && song.songcontent.detail" style="background-color: #ffc107;">Waiting
+                approve</td>
+              <td *ngIf="!song.songcontent.status && !song.songcontent.detail" style="background-color: #17a2b8;">No
                 lyrics</td>
-              <td *ngIf="song.songcontent.status">Approved</td>
+              <td *ngIf="song.songcontent.status" style="background-color: #28a745;">Approved</td>
+              <td *ngIf="!isEmpty(song.video) && song.video.status" style="background-color: #28a745;">Approved</td>
+              <td style="background-color: #17a2b8;"
+                *ngIf="!isEmpty(song.video) && !song.video.status && isEmpty(song.video.url)">No video</td>
+              <td style="background-color: #ffc107;"
+                *ngIf="!isEmpty(song.video) && !song.video.status && !isEmpty(song.video.url) && song.video.url !== 'reject'">
+                Waiting approve
+              </td>
+              <td *ngIf="!isEmpty(song.video) && !song.video.status && song.video.url === 'reject'"
+                style="background-color: #dc3545;">Rejected</td>
               <td>
-                <button class="btn btn-warning mr-2" (click)="onEdit(song)">
+                <button *ngIf="!isEmpty(song.video) && !isEmpty(song.video.url) && song.video.url !== 'reject'"
+                  class="btn btn-warning mr-2 feature" (click)="onSeeVideo(song)">
+                  <mat-icon mat-list-icon>music_video</mat-icon>
+                </button>
+                <button class="btn btn-warning mr-2 feature" (click)="onEdit(song)">
                   <mat-icon mat-list-icon>edit</mat-icon>
                 </button>
-                <button class="btn btn-warning mr-2" (click)="update();openFile(song,i)">
+                <button class="btn btn-warning mr-2 feature" (click)="update();openFile(song,i)">
                   <mat-icon mat-list-icon>volume_up</mat-icon>
                 </button>
-                <button class="btn btn-warning mr-2" (click)="downloadFile(song)">
+                <button class="btn btn-warning mr-2 feature" (click)="downloadFile(song)">
                   <mat-icon mat-list-icon>cloud_download</mat-icon>
                 </button>
-                <button class="btn btn-danger" (click)="onDelete(song, i)">
+                <button class="btn btn-danger feature" (click)="onDelete(song, i)">
                   <mat-icon mat-list-icon>delete_forever</mat-icon>
                 </button>
               </td>

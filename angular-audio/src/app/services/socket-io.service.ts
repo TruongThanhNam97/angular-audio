@@ -35,7 +35,8 @@ export class SocketIoService {
                     artistId: song.artistId ? song.artistId : null,
                     likedUsers: song.likedUsers,
                     comments: song.comments ? song.comments : [],
-                    songcontent: song.songcontent
+                    songcontent: song.songcontent,
+                    video: song.video ? song.video : null
                 });
             });
         });
@@ -60,7 +61,8 @@ export class SocketIoService {
                     artistId: song.artistId ? song.artistId : null,
                     likedUsers: song.likedUsers,
                     comments: song.comments ? song.comments : [],
-                    songcontent: song.songcontent
+                    songcontent: song.songcontent,
+                    video: song.video ? song.video : null
                 });
             });
         });
@@ -107,6 +109,22 @@ export class SocketIoService {
         });
     }
 
+    getAprroveLyricsRealTime() {
+        return new Observable((observer) => {
+            this.socket.on('approveMySongLyrics', (res) => {
+                observer.next(res);
+            });
+        });
+    }
+
+    getConfirmVideoRealTime() {
+        return new Observable((observer) => {
+            this.socket.on('confirmMyVideoSong', (res) => {
+                observer.next(res);
+            });
+        });
+    }
+
     getNotificationsRealTime() {
         return new Observable((observer) => {
             this.socket.on('notify', (res) => {
@@ -114,4 +132,5 @@ export class SocketIoService {
             });
         });
     }
+
 }

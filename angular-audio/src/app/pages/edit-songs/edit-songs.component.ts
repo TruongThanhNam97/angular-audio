@@ -6,6 +6,10 @@ import { takeUntil } from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
 import { CloudService } from 'src/app/services/cloud.service';
 import { AlertifyService } from 'src/app/services/alertify.service';
+import { ValidateService } from 'src/app/services/validate.service';
+import { MatDialog } from '@angular/material';
+import { PopupVideoComponent } from '../manage-songs/popup-video/popup-video.component';
+import { PopupEditComponent } from './popup-edit/popup-edit.component';
 
 @Component({
   selector: 'app-edit-songs',
@@ -24,22 +28,32 @@ export class EditSongsComponent implements OnInit, OnDestroy {
 
   mySongs: any[];
 
+  typeVideoMusic = ['mp4', 'MP4'];
+
   constructor(
     private categoryService: CategoryService,
     private authService: AuthService,
     private cloudService: CloudService,
-    private alertifyService: AlertifyService) { }
+    private alertifyService: AlertifyService,
+    private validateService: ValidateService,
+    public dialog: MatDialog
+  ) { }
 
   ngOnInit() {
     this.currentUser = this.authService.getCurrentUser();
     this.loadSongsByUserId(this.currentUser.id);
+    this.cloudService.getUpdateSongAfterEdit().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(song => {
+      const index = this.mySongs.findIndex(v => v.id === song.id);
+      this.mySongs = [...this.mySongs.filter((v, i) => i < index), { ...song }, ...this.mySongs.filter((v, i) => i > index)];
+    });
     // this.categoryService.getCategories().pipe(
     //   takeUntil(this.destroySubscription$)
     // ).subscribe(categories => {
     //   this.categories = categories;
     //   this.initializeForm();
     // });
-    this.initializeForm();
   }
 
   ngOnDestroy() {
@@ -55,23 +69,8 @@ export class EditSongsComponent implements OnInit, OnDestroy {
     });
   }
 
-  initializeForm() {
-    this.signForm = new FormGroup({
-      id: new FormControl(null, [Validators.required]),
-      name: new FormControl(null, [Validators.required, Validators.maxLength(50)]),
-      artist: new FormControl(null, [Validators.required, Validators.maxLength(50)]),
-      detail: new FormControl('')
-    });
-  }
-
   onEdit(song: any) {
-    console.log(song);
-    this.signForm.patchValue({
-      id: song.id,
-      name: song.name,
-      artist: song.artist,
-      detail: song.songcontent.detail.trim()
-    });
+    this.dialog.open(PopupEditComponent, { data: song });
   }
 
   onDelete(song: any, index: number) {
@@ -83,16 +82,12 @@ export class EditSongsComponent implements OnInit, OnDestroy {
     });
   }
 
-  onSubmit() {
-    this.signForm.value.detail = this.signForm.value.detail.trim();
-    this.cloudService.updateSong(this.signForm.value).pipe(
-      takeUntil(this.destroySubscription$)
-    ).subscribe(song => {
-      const index = this.mySongs.findIndex(v => v.id === song.id);
-      this.mySongs = [...this.mySongs.filter((v, i) => i < index), { ...song }, ...this.mySongs.filter((v, i) => i > index)];
-      this.alertifyService.success('Update successfully');
-      this.signForm.reset();
-    });
+  isEmpty(data) {
+    return this.validateService.isEmpty(data);
+  }
+
+  onSeeVideo(data) {
+    this.dialog.open(PopupVideoComponent, { data });
   }
 
 }

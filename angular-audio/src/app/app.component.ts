@@ -114,6 +114,37 @@ export class AppComponent implements OnInit {
         this.alertify.notify(html);
       }
     });
+    this.socketIo.getAprroveLyricsRealTime().subscribe((res: any) => {
+      if (this.currentUser && this.currentUser.id === res.song.userId && this.currentUser.id !== res.approver._id) {
+        const html = `<div class="wrap-notify">
+        <div style="width: 20%;">
+          <img src="
+          ${res.approver.avatar ?
+            this.SERVER_URL_IMAGE + res.approver.avatar
+            : '../../../assets/profile-default.jpg'}" alt="${res.approver.username}" style="width: 100%;border-radius: 50%;height:50px;">
+        </div>
+        <div 
+        style="width: 80%;"><strong>${res.approver.username}</strong> has just approved lyrics of <strong>${res.song.name}</strong></div>
+      </div>`;
+        this.alertify.notify(html);
+      }
+    });
+    this.socketIo.getConfirmVideoRealTime().subscribe((res: any) => {
+      if (this.currentUser && this.currentUser.id === res.song.userId && this.currentUser.id !== res.confirmer._id) {
+        const mode = res.song.video.status ? 'approved' : 'rejected';
+        const html = `<div class="wrap-notify">
+        <div style="width: 20%;">
+          <img src="
+          ${res.confirmer.avatar ?
+            this.SERVER_URL_IMAGE + res.confirmer.avatar
+            : '../../../assets/profile-default.jpg'}" alt="${res.confirmer.username}" style="width: 100%;border-radius: 50%;height:50px;">
+        </div>
+        <div 
+        style="width: 80%;"><strong>${res.confirmer.username}</strong> has just ${mode} video of <strong>${res.song.name}</strong></div>
+      </div>`;
+        this.alertify.notify(html);
+      }
+    });
     this.socketIo.getNotificationsRealTime().subscribe((res: any) => {
       console.log(res);
       if (this.currentUser

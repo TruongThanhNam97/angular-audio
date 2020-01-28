@@ -1,84 +1,14 @@
-<!-- <div class="container mt-4">
-  <div class="row">
-    <div class="col-8">
-      <ng-container *ngIf="mySongs && mySongs.length >0; else elseTemplate1">
-        <table class="table table-striped table-inverse table-bordered table-hover">
-          <thead class="thead-inverse">
-            <tr>
-              <th>Song Name</th>
-              <th>Artist</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let song of mySongs; let i = index;">
-              <td>{{ song.name }}</td>
-              <td>{{ song.artist }}</td>
-              <td>
-                <button class="btn btn-warning mr-2" (click)="onEdit(song)">Edit</button>
-                <button class="btn btn-danger" (click)="onDelete(song, i)">Delete</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </ng-container>
-      <ng-template #elseTemplate1>
-        No songs...
-      </ng-template>
-    </div>
-    <div class="col-4" *ngIf="signForm">
-      <ng-container *ngIf="categories && categories.length > 0; else elseTemplate">
-        <div class="container mt-3" *ngIf="signForm">
-          <form [formGroup]="signForm" (submit)="onSubmit()">
-            <div class="form-group">
-              <input [ngClass]="{'is-invalid': signForm.get('name').invalid && signForm.get('name').touched }"
-                type="text" class="form-control" formControlName="name" placeholder="Song name">
-              <span class="invalid-feedback" *ngIf="signForm.get('name').invalid">
-                <span *ngIf="signForm.get('name').hasError('required')">Song name field is required</span>
-                <span *ngIf="signForm.get('name').hasError('maxlength')">Max length of song name field: 50</span>
-              </span>
-            </div>
-            <div class="form-group">
-              <input [ngClass]="{'is-invalid': signForm.get('artist').invalid && signForm.get('artist').touched}"
-                type="text" class="form-control" formControlName="artist" placeholder="Artist of song">
-              <span class="invalid-feedback" *ngIf="signForm.get('artist').invalid">
-                <span *ngIf="signForm.get('artist').hasError('required')">Artist field is required</span>
-                <span *ngIf="signForm.get('artist').hasError('maxlength')">Max length of artist field: 50</span>
-              </span>
-            </div>
-            <div class="form-group row">
-              <div class="col-7">
-                <select class="form-control" formControlName="categoryId">
-                  <option *ngFor="let category of categories" [value]="category.id">{{ category.name }}
-                  </option>
-                </select>
-              </div>
-              <div class="col-5">
-                <button [disabled]="signForm.invalid" class="btn btn-info ml-3">Save file</button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </ng-container>
-      <ng-template #elseTemplate>
-        <div class="container mt-3">
-          No categories. Waiting admin to update cateogories...
-        </div>
-      </ng-template>
-    </div>
-  </div>
-</div> -->
-
-
 <div class="container mt-4">
   <div class="row">
-    <div class="col-8">
+    <div class="col-12">
       <ng-container *ngIf="mySongs && mySongs.length >0; else elseTemplate1">
-        <table class="table table-striped table-inverse table-bordered table-hover">
+        <table class="table table-striped table-inverse table-bordered table-hover" style="text-align: center;">
           <thead class="thead-inverse">
             <tr>
               <th>Song Name</th>
               <th>Artist</th>
+              <th>Lyrics</th>
+              <th>Video</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -86,9 +16,35 @@
             <tr *ngFor="let song of mySongs; let i = index;">
               <td>{{ song.name }}</td>
               <td>{{ song.artist }}</td>
-              <td>
+              <td *ngIf="!song.songcontent.status && song.songcontent.detail" style="background-color: #ffc107;">Waiting
+                approve</td>
+              <td *ngIf="!song.songcontent.status && !song.songcontent.detail" style="background-color: #17a2b8;">No
+                lyrics</td>
+              <td *ngIf="song.songcontent.status" style="background-color: #28a745;">Approved</td>
+              <td *ngIf="!isEmpty(song.video) && song.video.status" style="background-color: #28a745;">Approved</td>
+              <td style="background-color: #17a2b8;"
+                *ngIf="!isEmpty(song.video) && !song.video.status && isEmpty(song.video.url)">No video</td>
+              <td style="background-color: #ffc107;"
+                *ngIf="!isEmpty(song.video) && !song.video.status && !isEmpty(song.video.url) && song.video.url !== 'reject'">
+                Waiting approve
+              </td>
+              <td *ngIf="!isEmpty(song.video) && !song.video.status && song.video.url === 'reject'"
+                style="background-color: #dc3545;">Rejected</td>
+              <!-- <td>
                 <button class="btn btn-warning mr-2" (click)="onEdit(song)">Edit</button>
                 <button class="btn btn-danger" (click)="onDelete(song, i)">Delete</button>
+              </td> -->
+              <td>
+                <button *ngIf="!isEmpty(song.video) && !isEmpty(song.video.url) && song.video.url !== 'reject'"
+                  class="btn btn-warning mr-2 feature" (click)="onSeeVideo(song)">
+                  <mat-icon mat-list-icon>music_video</mat-icon>
+                </button>
+                <button class="btn btn-warning mr-2 feature" (click)="onEdit(song)">
+                  <mat-icon mat-list-icon>edit</mat-icon>
+                </button>
+                <button class="btn btn-danger feature" (click)="onDelete(song, i)">
+                  <mat-icon mat-list-icon>delete_forever</mat-icon>
+                </button>
               </td>
             </tr>
           </tbody>
@@ -97,32 +53,6 @@
       <ng-template #elseTemplate1>
         No songs...
       </ng-template>
-    </div>
-    <div class="col-4" *ngIf="signForm">
-      <div class="container" *ngIf="signForm">
-        <form [formGroup]="signForm" (submit)="onSubmit()">
-          <div class="form-group">
-            <input [ngClass]="{'is-invalid': signForm.get('name').invalid && signForm.get('name').touched }" type="text"
-              class="form-control" formControlName="name" placeholder="Song name">
-            <span class="invalid-feedback" *ngIf="signForm.get('name').invalid">
-              <span *ngIf="signForm.get('name').hasError('required')">Song name field is required</span>
-              <span *ngIf="signForm.get('name').hasError('maxlength')">Max length of song name field: 50</span>
-            </span>
-          </div>
-          <div class="form-group">
-            <input [ngClass]="{'is-invalid': signForm.get('artist').invalid && signForm.get('artist').touched}"
-              type="text" class="form-control" formControlName="artist" placeholder="Artist of song">
-            <span class="invalid-feedback" *ngIf="signForm.get('artist').invalid">
-              <span *ngIf="signForm.get('artist').hasError('required')">Artist field is required</span>
-              <span *ngIf="signForm.get('artist').hasError('maxlength')">Max length of artist field: 50</span>
-            </span>
-          </div>
-          <div class="form-group">
-            <textarea class="form-control" formControlName="detail" rows="3"></textarea>
-          </div>
-          <button [disabled]="signForm.invalid" class="btn btn-info">Save file</button>
-        </form>
-      </div>
     </div>
   </div>
 </div>

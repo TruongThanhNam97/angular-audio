@@ -17,6 +17,7 @@ import { PopupThreeTypesComponent } from '../player/popup-three-types/popup-thre
 import { PopupCommentsComponent } from './popup-comments/popup-comments.component';
 import { SocketIoService } from 'src/app/services/socket-io.service';
 import { environment } from 'src/environments/environment';
+import { ValidateService } from 'src/app/services/validate.service';
 
 @Component({
   selector: 'app-song-info',
@@ -40,6 +41,7 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
   uploader: any;
   arrSongContent = [];
   hideMode = true;
+  SERVER_URL_VIDEO: string;
 
   SERVER_URL_IMAGE: string;
 
@@ -57,8 +59,10 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
     private authService: AuthService,
     private alertify: AlertifyService,
     public dialog: MatDialog,
-    private socketIo: SocketIoService) {
+    private socketIo: SocketIoService,
+    private validateService: ValidateService) {
     this.SERVER_URL_IMAGE = environment.SERVER_URL_IMAGE;
+    this.SERVER_URL_VIDEO = environment.SERVER_URL_VIDEO;
   }
 
   ngOnInit() {
@@ -362,6 +366,10 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
     document.execCommand('copy');
     document.body.removeChild(el);
     this.alertify.success('Copied');
+  }
+
+  isEmpty(data) {
+    return this.validateService.isEmpty(data);
   }
 
 }

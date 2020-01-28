@@ -15,6 +15,7 @@ import { SongInfoService } from 'src/app/services/song-info.service';
 import { SocketIoService } from 'src/app/services/socket-io.service';
 import { Router } from '@angular/router';
 import { ValidateService } from 'src/app/services/validate.service';
+import { PopupVideoComponent } from '../../manage-songs/popup-video/popup-video.component';
 
 @Component({
   selector: 'app-playlist-playing',
@@ -167,6 +168,10 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
 
   isEmpty() {
     return this.validateService.isEmpty(this.currentFile);
+  }
+
+  onSeeVideo(file) {
+    this.dialog.open(PopupVideoComponent, { data: file });
   }
 
 }

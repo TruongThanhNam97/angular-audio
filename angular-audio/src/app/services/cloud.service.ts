@@ -34,10 +34,16 @@ export class CloudService {
 
   private updateSongAfterManipulatingSubject$: Subject<any> = new Subject();
 
+  private updateSongAfterEdit$: Subject<any> = new Subject();
+
 
   constructor(private http: HttpClient) {
     this.SERVER_URL = environment.SERVER_URL;
     this.SERVER_URL_SOUND = environment.SERVER_URL_SOUND;
+  }
+
+  getUpdateSongAfterEdit() {
+    return this.updateSongAfterEdit$;
   }
 
   getUpdateSongAfterManipulatingSubject() {
@@ -84,7 +90,8 @@ export class CloudService {
             artistId: cur.artistId ? cur.artistId : null,
             likedUsers: cur.likedUsers,
             comments: cur.comments ? cur.comments : [],
-            songcontent: cur.songcontent
+            songcontent: cur.songcontent,
+            video: cur.video ? cur.video : null
           };
           acc.push(obj);
           return acc;
@@ -111,7 +118,8 @@ export class CloudService {
             artistId: cur.artistId ? cur.artistId : null,
             likedUsers: cur.likedUsers,
             comments: cur.comments ? cur.comments : [],
-            songcontent: cur.songcontent
+            songcontent: cur.songcontent,
+            video: cur.video ? cur.video : null
           };
           acc.push(obj);
           return acc;
@@ -137,7 +145,8 @@ export class CloudService {
           artistId: song.artistId ? song.artistId : null,
           likedUsers: song.likedUsers,
           comments: song.comments ? song.comments : [],
-          songcontent: song.songcontent
+          songcontent: song.songcontent,
+          video: song.video ? song.video : null
         };
         return result;
       }),
@@ -165,7 +174,8 @@ export class CloudService {
             artistId: cur.artistId ? cur.artistId : null,
             likedUsers: cur.likedUsers,
             comments: cur.comments ? cur.comments : [],
-            songcontent: cur.songcontent
+            songcontent: cur.songcontent,
+            video: cur.video ? cur.video : null
           };
           acc.push(obj);
           return acc;
@@ -197,7 +207,8 @@ export class CloudService {
             artistId: cur.song.artistId ? cur.song.artistId : null,
             likedUsers: cur.song.likedUsers,
             comments: cur.song.comments ? cur.song.comments : [],
-            songcontent: cur.song.songcontent
+            songcontent: cur.song.songcontent,
+            video: cur.song.video ? cur.song.video : null
           };
           acc.push(obj);
           return acc;
@@ -229,7 +240,8 @@ export class CloudService {
             artistId: cur.artistId ? cur.artistId : null,
             likedUsers: cur.likedUsers,
             comments: cur.comments ? cur.comments : [],
-            songcontent: cur.songcontent
+            songcontent: cur.songcontent,
+            video: cur.video ? cur.video : null
           };
           acc.push(obj);
           return acc;
@@ -261,7 +273,8 @@ export class CloudService {
             artistId: cur.artistId ? cur.artistId : null,
             likedUsers: cur.likedUsers,
             comments: cur.comments ? cur.comments : [],
-            songcontent: cur.songcontent
+            songcontent: cur.songcontent,
+            video: cur.video ? cur.video : null
           };
           acc.push(obj);
           return acc;
@@ -296,7 +309,34 @@ export class CloudService {
           artistId: song.artistId ? song.artistId : null,
           likedUsers: song.likedUsers,
           comments: song.comments ? song.comments : [],
-          songcontent: song.songcontent
+          songcontent: song.songcontent,
+          video: song.video ? song.video : null
+        };
+      })
+    );
+  }
+
+  approveSong(data) {
+    return this.http.post(`${this.SERVER_URL}approve-song`, data, {
+      headers: {
+        Authorization: localStorage.getItem('jwtToken')
+      }
+    }).pipe(
+      map((song: any) => {
+        return {
+          id: song._id,
+          url: this.SERVER_URL_SOUND + song.url,
+          name: song.name,
+          artist: song.artist,
+          nameToDownload: song.url,
+          userId: song.userId,
+          userName: song.userName,
+          categoryId: song.categoryId ? song.categoryId : null,
+          artistId: song.artistId ? song.artistId : null,
+          likedUsers: song.likedUsers,
+          comments: song.comments ? song.comments : [],
+          songcontent: song.songcontent,
+          video: song.video ? song.video : null
         };
       })
     );
@@ -329,7 +369,8 @@ export class CloudService {
           artistId: song.artistId ? song.artistId : null,
           likedUsers: song.likedUsers,
           comments: song.comments ? song.comments : [],
-          songcontent: song.songcontent
+          songcontent: song.songcontent,
+          video: song.video ? song.video : null
         };
       })
     );
@@ -426,7 +467,8 @@ export class CloudService {
         artistId: song.artistId ? song.artistId : null,
         likedUsers: song.likedUsers,
         comments: song.comments ? song.comments : [],
-        songcontent: song.songcontent
+        songcontent: song.songcontent,
+        video: song.video ? song.video : null
       }))
     );
   }
@@ -449,7 +491,8 @@ export class CloudService {
         artistId: song.artistId ? song.artistId : null,
         likedUsers: song.likedUsers,
         comments: song.comments ? song.comments : [],
-        songcontent: song.songcontent
+        songcontent: song.songcontent,
+        video: song.video ? song.video : null
       }))
     );
   }
@@ -473,7 +516,8 @@ export class CloudService {
         artistId: song.artistId ? song.artistId : null,
         likedUsers: song.likedUsers,
         comments: song.comments ? song.comments : [],
-        songcontent: song.songcontent
+        songcontent: song.songcontent,
+        video: song.video ? song.video : null
       }))
     );
   }
@@ -496,7 +540,8 @@ export class CloudService {
         artistId: song.artistId ? song.artistId : null,
         likedUsers: song.likedUsers,
         comments: song.comments ? song.comments : [],
-        songcontent: song.songcontent
+        songcontent: song.songcontent,
+        video: song.video ? song.video : null
       }))
     );
   }
@@ -519,7 +564,8 @@ export class CloudService {
         artistId: song.artistId ? song.artistId : null,
         likedUsers: song.likedUsers,
         comments: song.comments ? song.comments : [],
-        songcontent: song.songcontent
+        songcontent: song.songcontent,
+        video: song.video ? song.video : null
       }))
     );
   }
@@ -542,7 +588,8 @@ export class CloudService {
         artistId: song.artistId ? song.artistId : null,
         likedUsers: song.likedUsers,
         comments: song.comments ? song.comments : [],
-        songcontent: song.songcontent
+        songcontent: song.songcontent,
+        video: song.video ? song.video : null
       }))
     );
   }
@@ -565,7 +612,8 @@ export class CloudService {
         artistId: song.artistId ? song.artistId : null,
         likedUsers: song.likedUsers,
         comments: song.comments ? song.comments : [],
-        songcontent: song.songcontent
+        songcontent: song.songcontent,
+        video: song.video ? song.video : null
       }))
     );
   }
@@ -588,7 +636,8 @@ export class CloudService {
         artistId: song.artistId ? song.artistId : null,
         likedUsers: song.likedUsers,
         comments: song.comments ? song.comments : [],
-        songcontent: song.songcontent
+        songcontent: song.songcontent,
+        video: song.video ? song.video : null
       }))
     );
   }
@@ -611,7 +660,8 @@ export class CloudService {
         artistId: song.artistId ? song.artistId : null,
         likedUsers: song.likedUsers,
         comments: song.comments ? song.comments : [],
-        songcontent: song.songcontent
+        songcontent: song.songcontent,
+        video: song.video ? song.video : null
       }))
     );
   }
@@ -634,7 +684,8 @@ export class CloudService {
         artistId: song.artistId ? song.artistId : null,
         likedUsers: song.likedUsers,
         comments: song.comments ? song.comments : [],
-        songcontent: song.songcontent
+        songcontent: song.songcontent,
+        video: song.video ? song.video : null
       }))
     );
   }

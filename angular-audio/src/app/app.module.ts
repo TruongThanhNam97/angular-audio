@@ -43,6 +43,8 @@ import { PopupCommentsComponent } from './pages/song-info/popup-comments/popup-c
 import { AuthFocusDirective } from './directives/autofocus.directive';
 import { PopupConfirmDeleteComponent } from './pages/song-info/popup-confirm-delete/popup-confirm-delete.component';
 import { PopupNotificationsComponent } from './pages/popup-notifications/popup-notifications.component';
+import { PopupVideoComponent } from './pages/manage-songs/popup-video/popup-video.component';
+import { PopupEditComponent } from './pages/edit-songs/popup-edit/popup-edit.component';
 
 @NgModule({
   declarations: [
@@ -82,7 +84,9 @@ import { PopupNotificationsComponent } from './pages/popup-notifications/popup-n
     TimeAgoPipe,
     AuthFocusDirective,
     PopupConfirmDeleteComponent,
-    PopupNotificationsComponent
+    PopupNotificationsComponent,
+    PopupVideoComponent,
+    PopupEditComponent
   ],
   imports: [
     BrowserModule,
@@ -103,7 +107,9 @@ import { PopupNotificationsComponent } from './pages/popup-notifications/popup-n
     PopupMoveSongToPlaylistComponent,
     PopupCommentsComponent,
     PopupConfirmDeleteComponent,
-    PopupNotificationsComponent
+    PopupNotificationsComponent,
+    PopupVideoComponent,
+    PopupEditComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

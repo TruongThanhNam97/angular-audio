@@ -99,6 +99,16 @@ const schema = new mongoose.Schema({
             type: Boolean,
             default: false
         }
+    },
+    video: {
+        url: {
+            type: String,
+            default: ''
+        },
+        status: {
+            type: Boolean,
+            default: false
+        }
     }
 }, { versionKey: false });
 

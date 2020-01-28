@@ -40,17 +40,21 @@
           <mat-icon color="primary" *ngIf="currentFile && currentFile?.index === i && !state?.error">volume_up
           </mat-icon>
           <h6 *ngIf="currentFile && currentFile?.index === i && state?.error">ERROR</h6>
+          <mat-icon (click)="$event.stopPropagation();onSeeVideo(file)" matTooltip="MV" *ngIf="file.video.status"
+            style="cursor: pointer;" class="more-icon ml-2" color="primary">
+            music_video
+          </mat-icon>
           <mat-icon (click)="$event.stopPropagation();onLikeSong(file)" matTooltip="Like"
             *ngIf=" currentUser && currentUser.username !== 'superadmin' && !isLiked(file)" style="cursor: pointer;"
-            class="more-icon" color="primary">
+            class="more-icon ml-2" color="primary">
             favorite_border
           </mat-icon>
           <mat-icon (click)="$event.stopPropagation();onLikeSong(file)" matTooltip="Unlike"
             *ngIf="currentUser && currentUser.username !== 'superadmin' && isLiked(file)" style="cursor: pointer;"
-            class="more-icon" color="primary">
+            class="more-icon ml-2" color="primary">
             favorite
           </mat-icon>
-          <mat-icon (click)="$event.stopPropagation();openDialog(file)" style="cursor: pointer;" class="more-icon"
+          <mat-icon (click)="$event.stopPropagation();openDialog(file)" style="cursor: pointer;" class="more-icon ml-2"
             color="primary">more_horiz
           </mat-icon>
           <mat-divider></mat-divider>
