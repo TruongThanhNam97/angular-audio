@@ -26,6 +26,13 @@ p {
     width: 170px;
     cursor: pointer;
   }
+  .btnAddToCurrentPlayList {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    cursor: pointer;
+  }
   .btnDownLoad {
     display: flex;
     justify-content: center;
@@ -63,6 +70,9 @@ p {
     }
   }
   .btnAddToPlayList:hover {
+    background: #c7c7c7;
+  }
+  .btnAddToCurrentPlayList:hover {
     background: #c7c7c7;
   }
   .btnLikeSong:hover {

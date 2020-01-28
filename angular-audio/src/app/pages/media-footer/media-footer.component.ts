@@ -93,6 +93,33 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
         this.audioService.setCurrentFile({ index: newIndex, file: this.currentFile.file });
       }
     });
+    this.cloudService.getUpdateSongsAfterDelete().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(selectedSong => {
+      this.files = this.files.filter(song => song.id !== selectedSong.id);
+      const newIndex = this.files.findIndex(file => file.id === this.currentFile.file.id);
+      if (selectedSong.id === this.currentFile.file.id) {
+        const nextIndex = this.currentFile.index;
+        const preIndex = this.currentFile.index - 1;
+        if (this.files[nextIndex]) {
+          this.next1();
+        } else if (this.files[preIndex]) {
+          this.previous1();
+        } else {
+          this.audioService.resetCurentFile();
+          this.audioService.closePlayMode();
+          this.audioService.stop();
+        }
+      } else if (newIndex !== this.currentFile.index) {
+        this.audioService.getResetCurrentFileSubject().next({ index: newIndex, file: this.currentFile.file });
+        this.audioService.setCurrentFile({ index: newIndex, file: this.currentFile.file });
+      }
+    });
+    this.cloudService.getUpdateSongsAfterAdd().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(selectedSong => {
+      this.files = [...this.files, selectedSong];
+    });
     this.playlistService.getListSongsAfterDeleteFromPlayListSubject().pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(data => {

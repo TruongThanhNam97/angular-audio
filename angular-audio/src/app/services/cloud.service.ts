@@ -36,10 +36,22 @@ export class CloudService {
 
   private updateSongAfterEdit$: Subject<any> = new Subject();
 
+  private updateSongsAfterDelete$: Subject<any> = new Subject();
+
+  private updateSongsAfterAdd$: Subject<any> = new Subject();
+
 
   constructor(private http: HttpClient) {
     this.SERVER_URL = environment.SERVER_URL;
     this.SERVER_URL_SOUND = environment.SERVER_URL_SOUND;
+  }
+
+  getUpdateSongsAfterAdd() {
+    return this.updateSongsAfterAdd$;
+  }
+
+  getUpdateSongsAfterDelete() {
+    return this.updateSongsAfterDelete$;
   }
 
   getUpdateSongAfterEdit() {

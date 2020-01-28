@@ -62,8 +62,10 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
     this.audioService.getResetCurrentFileSubject().pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(currentFile => {
-      this.currentFile = currentFile;
-      this.arrSongContent = this.currentFile.file.songcontent.detail.split('\n');
+      if (currentFile) {
+        this.currentFile = currentFile;
+        this.arrSongContent = this.currentFile.file.songcontent.detail.split('\n');
+      }
     });
     this.audioService.getCurrentFileSubject2().pipe(
       takeUntil(this.destroySubscription$)
@@ -80,6 +82,12 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
       takeUntil(this.destroySubscription$)
     ).subscribe(blockedSong => {
       this.files = this.files.filter(song => song.id !== blockedSong.id);
+      this.cdt.detectChanges();
+    });
+    this.cloudService.getUpdateSongsAfterDelete().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(selectedSong => {
+      this.files = this.files.filter(song => song.id !== selectedSong.id);
       this.cdt.detectChanges();
     });
     this.playlistService.getListSongsAfterDeleteFromPlayListSubject().pipe(
@@ -152,6 +160,7 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
   }
 
   openDialog(file: any): void {
+    file.temp = 'fromPlaylist';
     this.dialog.open(PopupComponent, { data: file });
   }
 

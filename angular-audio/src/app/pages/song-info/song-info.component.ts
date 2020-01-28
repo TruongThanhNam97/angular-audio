@@ -372,4 +372,9 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.validateService.isEmpty(data);
   }
 
+  onAddSongToCurrentPlayList() {
+    this.cloudService.getUpdateSongsAfterAdd().next(this.selectedSong);
+    this.alertify.success('Added');
+  }
+
 }

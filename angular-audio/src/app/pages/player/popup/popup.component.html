@@ -27,9 +27,19 @@
     <mat-icon color="primary" mat-list-icon>queue_music</mat-icon>
     <h5 style="margin: 0;">Add to playlist</h5>
   </mat-list-item>
+  <mat-list-item *ngIf="data.temp === 'fromPlayer'" (click)="onAddToCurrentPlaylist()" class="feature"
+    style="display: flex;justify-content: left; cursor: pointer;">
+    <mat-icon color="primary" mat-list-icon>queue_music</mat-icon>
+    <h5 style="margin: 0;">Add to current playlist</h5>
+  </mat-list-item>
   <mat-list-item *ngIf="currentUser && currentUser.username !== 'superadmin' && data.playlistId"
     (click)="onDeleteSongFromPlayList()" class="feature" style="display: flex;justify-content: left; cursor: pointer;">
     <mat-icon color="primary" mat-list-icon>queue_music</mat-icon>
     <h5 style="margin: 0;">Delete from {{ data.playlistName }}</h5>
+  </mat-list-item>
+  <mat-list-item *ngIf="data.temp === 'fromPlaylist'" (click)="onDeleteSong()" class="feature"
+    style="display: flex;justify-content: left; cursor: pointer;">
+    <mat-icon color="primary" mat-list-icon>delete_forever</mat-icon>
+    <h5 style="margin: 0;">Delete</h5>
   </mat-list-item>
 </mat-list>

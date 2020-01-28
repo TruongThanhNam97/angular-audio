@@ -288,6 +288,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
   }
 
   openDialog(file: any): void {
+    file.temp = 'fromPlayer';
     this.dialog.open(PopupComponent, { data: file });
   }
 
