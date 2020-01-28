@@ -1,53 +1,35 @@
-<div *ngIf="signForm">
-  <div class="row">
-    <div class="col-6">
-      <table class="table table-striped table-inverse table-bordered table-hover">
-        <thead class="thead-inverse">
-          <tr>
-            <th>Category Name</th>
-            <th>Avatar</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let category of categories;let i = index;">
-            <td>{{ category.name }}</td>
-            <td>
-              <img style="width: 50px;height: 50px;border-radius:50%;"
-                src="{{ category.avatar ? category.avatar : '../../../../../assets/apple-music-note-800x420.jpg' }}"
-                alt="{{ category.name }}">
-            </td>
-            <td>
-              <button (click)="onEdit(category)" class="btn btn-warning mr-2">Edit</button>
-              <button (click)="onDelete(category.id,i)" class="btn btn-danger">Delete</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="col-6">
-      <div class="container">
-        <form [formGroup]="signForm" (submit)="onSubmit()">
-          <div class="form-group">
-            <input [ngClass]="{'is-invalid': signForm.get('name').touched && signForm.get('name').invalid}" type="text"
-              class="form-control" placeholder="Category name" formControlName="name">
-            <span class="invalid-feedback" *ngIf="signForm.get('name').touched && signForm.get('name').invalid">
-              <span *ngIf="signForm.get('name').hasError('required')">Category name field is required</span>
-            </span>
+<div class="container">
+  <table class="table table-striped table-inverse table-bordered table-hover" style="text-align: center;">
+    <thead class="thead-inverse">
+      <tr>
+        <th>Category Name</th>
+        <th>Avatar</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let category of categories;let i = index;">
+        <td class="td">
+          <div class="wrap">{{ category.name }}</div>
+        </td>
+        <td class="td">
+          <div class="wrap">
+            <img style="width: 50px;height: 50px;border-radius:50%;"
+              src="{{ category.avatar ? category.avatar : '../../../../../assets/apple-music-note-800x420.jpg' }}"
+              alt="{{ category.name }}">
           </div>
-          <div class="form-group">
-            <label for="btnFile" class="btn btn-info">Choose image</label>
-            <input (change)="onChange($event)" style="display: none;" type="file" class="form-control-file"
-              id="btnFile">
-            <span
-              *ngIf="signForm.get('avatar').value && !signForm.get('avatar').hasError('invalid')">{{ signForm.get('avatar').value.name }}</span>
-            <span style="color: red;"
-              *ngIf="signForm.get('avatar').value && signForm.get('avatar').hasError('invalid')">File
-              is invalid</span>
+        </td>
+        <td class="td">
+          <div class="wrap">
+            <button (click)="onEdit(category)" class="btn btn-warning mr-2 btn">
+              <mat-icon mat-list-icon>edit</mat-icon>
+            </button>
+            <button (click)="onDelete(category.id,i)" class="btn btn-danger btn">
+              <mat-icon mat-list-icon>delete_forever</mat-icon>
+            </button>
           </div>
-          <button [disabled]="signForm.invalid" class="btn btn-success btn-block">Submit</button>
-        </form>
-      </div>
-    </div>
-  </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>

@@ -45,6 +45,8 @@ import { PopupConfirmDeleteComponent } from './pages/song-info/popup-confirm-del
 import { PopupNotificationsComponent } from './pages/popup-notifications/popup-notifications.component';
 import { PopupVideoComponent } from './pages/manage-songs/popup-video/popup-video.component';
 import { PopupEditComponent } from './pages/edit-songs/popup-edit/popup-edit.component';
+import { PopupEditCategoryComponent } from './pages/edit-category/popup-edit-category/popup-edit-category.component';
+import { PopupEditArtistComponent } from './pages/edit-artist/popup-edit-artist/popup-edit-artist.component';
 
 @NgModule({
   declarations: [
@@ -86,7 +88,9 @@ import { PopupEditComponent } from './pages/edit-songs/popup-edit/popup-edit.com
     PopupConfirmDeleteComponent,
     PopupNotificationsComponent,
     PopupVideoComponent,
-    PopupEditComponent
+    PopupEditComponent,
+    PopupEditCategoryComponent,
+    PopupEditArtistComponent
   ],
   imports: [
     BrowserModule,
@@ -109,7 +113,9 @@ import { PopupEditComponent } from './pages/edit-songs/popup-edit/popup-edit.com
     PopupConfirmDeleteComponent,
     PopupNotificationsComponent,
     PopupVideoComponent,
-    PopupEditComponent
+    PopupEditComponent,
+    PopupEditCategoryComponent,
+    PopupEditArtistComponent
   ],
   providers: [],
   bootstrap: [AppComponent]
