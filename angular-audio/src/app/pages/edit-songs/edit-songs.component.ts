@@ -30,6 +30,8 @@ export class EditSongsComponent implements OnInit, OnDestroy {
 
   typeVideoMusic = ['mp4', 'MP4'];
 
+  filterNameArtist: string;
+
   constructor(
     private categoryService: CategoryService,
     private authService: AuthService,

@@ -18,6 +18,8 @@ export class EditCategoryComponent implements OnInit, OnDestroy {
 
   categories: any[];
 
+  categoryName: string;
+
   constructor(
     private categoryService: CategoryService,
     private alertifyService: AlertifyService,

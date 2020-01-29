@@ -22,9 +22,14 @@
     </div>
     <div style="width: 70%; max-height: 600px; overflow-y: scroll;">
       <mat-spinner *ngIf="loading"></mat-spinner>
+      <div class="form-group mt-3" style="width: 50%;">
+        <input type="text" class="form-control" aria-describedby="helpId" placeholder="Search by name/artist of song"
+          [(ngModel)]="filterNameArtist">
+      </div>
       <mat-list *ngIf="!loading" color="primary" style="width: 100%;margin: auto;">
         <h3 mat-subheader>Songs</h3>
-        <mat-list-item class="item" *ngFor="let file of files; let i = index;" (click)="openFile(file, i)">
+        <mat-list-item class="item" *ngFor="let file of files | songPipe:filterNameArtist; let i = index;"
+          (click)="openFile(file, i)">
           <mat-icon class="music-icon" style="cursor: pointer;background-color: #FF4081;" color="primary" mat-list-icon>
             music_note
           </mat-icon>

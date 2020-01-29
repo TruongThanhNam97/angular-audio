@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, DoCheck } from '@angular/core';
 import { AudioService } from '../../services/audio.service';
 import { CloudService } from '../../services/cloud.service';
 import { StreamState } from '../../interfaces/stream-state';
@@ -31,6 +31,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
   destroySubscription$: Subject<boolean> = new Subject();
   loading = false;
   id: string;
+  filterNameArtist: string;
 
   categoryName: string = null;
   username: string = null;
@@ -357,6 +358,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
   }
 
   openFile(file, index) {
+    const exactIndex = this.files.findIndex(item => item.id === file.id);
     this.cloudService.resetTempAndLastCurrentTime().next(true);
     this.audioService.updatePlayMode();
     if (this.username && this.selectedAlbum === this.username || this.categoryName && this.selectedCategory === this.categoryName
@@ -364,10 +366,10 @@ export class PlayerComponent implements OnInit, OnDestroy {
       || this.top100Love && this.selectedTop100Love === this.top100Love
       || this.top100Hear && this.selectedTop100Hear === this.top100Hear
     ) {
-      this.currentFile = { index, file };
+      this.currentFile = { index: exactIndex, file };
       this.arrSongContent = this.currentFile.file.songcontent.detail.split('\n');
     }
-    this.audioService.updateCurrentFile1({ index, file });
+    this.audioService.updateCurrentFile1({ index: exactIndex, file });
     this.audioService.stop();
     this.audioService.playStream(file.url).subscribe();
     this.isMatchCurrentPlayListAndCurrentPlayerAudio = true;

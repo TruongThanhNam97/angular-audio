@@ -17,6 +17,7 @@ export class ManagePlaylistComponent implements OnInit, OnDestroy {
   playLists: any[];
   currentUser: any;
   destroySubscription$: Subject<boolean> = new Subject();
+  playlistName: string;
 
   constructor(
     private authService: AuthService,

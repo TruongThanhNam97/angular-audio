@@ -1,6 +1,15 @@
 <ng-container *ngIf="categories && categories.length > 0; else elseTemplate">
-  <div class="container mt-5" style="display: flex;flex-wrap: wrap;">
-    <div (click)="onNavigateToSeeCategory(category)" class="wrap-category" *ngFor="let category of categories">
+  <div class="container mt-5">
+    <div class="row">
+      <div class="form-group col-6">
+        <input type="text" class="form-control" aria-describedby="helpId" placeholder="Search by category name"
+          [(ngModel)]="categoryName">
+      </div>
+    </div>
+  </div>
+  <div class="container" style="display: flex;flex-wrap: wrap;">
+    <div (click)="onNavigateToSeeCategory(category)" class="wrap-category"
+      *ngFor="let category of categories | namePipe:categoryName">
       <img class="category-img"
         src="{{ category.avatar ?  category.avatar : '../../../../../assets/apple-music-note-800x420.jpg'}}"
         alt="{{category.name}}">

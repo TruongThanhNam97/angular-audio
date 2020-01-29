@@ -42,6 +42,8 @@ export class ManageSongsComponent implements OnInit, OnDestroy {
   username: string = null;
   artistName: string = null;
 
+  filterNameArtist: string;
+
   constructor(
     private categoryService: CategoryService,
     private authService: AuthService,
@@ -143,13 +145,14 @@ export class ManageSongsComponent implements OnInit, OnDestroy {
   }
 
   openFile(file, index) {
+    const exactIndex = this.mySongs.findIndex(item => item.id === file.id);
     this.cloudService.resetTempAndLastCurrentTime().next(true);
     this.audioService.updatePlayMode();
     if (this.username && this.selectedAlbum === this.username || this.categoryName && this.selectedCategory === this.categoryName
       || this.artistName && this.selectedArtist === this.artistName) {
-      this.currentFile = { index, file };
+      this.currentFile = { index: exactIndex, file };
     }
-    this.audioService.updateCurrentFile1({ index, file });
+    this.audioService.updateCurrentFile1({ index: exactIndex, file });
     this.audioService.stop();
     this.audioService.playStream(file.url).subscribe();
   }

@@ -18,6 +18,8 @@ export class EditArtistComponent implements OnInit, OnDestroy {
 
   artists: any[];
 
+  artistName: string;
+
   constructor(
     private artistsService: ArtistsService,
     private alertifyService: AlertifyService,

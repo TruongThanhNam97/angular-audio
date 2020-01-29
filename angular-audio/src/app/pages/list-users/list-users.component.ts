@@ -26,6 +26,8 @@ export class ListUsersComponent implements OnInit, OnDestroy {
 
   currentUser: any;
 
+  username: string;
+
   constructor(
     private albumService: AlbumService,
     private router: Router,

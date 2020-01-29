@@ -48,6 +48,9 @@ import { PopupEditComponent } from './pages/edit-songs/popup-edit/popup-edit.com
 import { PopupEditCategoryComponent } from './pages/edit-category/popup-edit-category/popup-edit-category.component';
 import { PopupEditArtistComponent } from './pages/edit-artist/popup-edit-artist/popup-edit-artist.component';
 import { Top100Component } from './pages/top100/top100.component';
+import { NamePipe } from './pipes/filter-name.pipe';
+import { UsernamePipe } from './pipes/filter-username.pipe';
+import { SongPipe } from './pipes/filter-song.pipe';
 
 @NgModule({
   declarations: [
@@ -92,7 +95,10 @@ import { Top100Component } from './pages/top100/top100.component';
     PopupEditComponent,
     PopupEditCategoryComponent,
     PopupEditArtistComponent,
-    Top100Component
+    Top100Component,
+    NamePipe,
+    UsernamePipe,
+    SongPipe
   ],
   imports: [
     BrowserModule,

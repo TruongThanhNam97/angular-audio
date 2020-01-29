@@ -24,7 +24,7 @@ import { PopupVideoComponent } from '../../manage-songs/popup-video/popup-video.
 })
 export class PlaylistPlayingComponent implements OnInit, OnDestroy {
 
-  files: any;
+  files: any[];
   state: StreamState;
   currentFile: any = {};
   currentUser: any;
@@ -34,6 +34,7 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
   id: string;
   categoryName: string;
   arrSongContent = [];
+  filterNameArtist: string;
 
   constructor(
     private audioService: AudioService,
@@ -170,13 +171,14 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
   }
 
   openFile(file, index) {
+    const exactIndex = this.files.findIndex(item => item.id === file.id);
     this.cloudService.resetTempAndLastCurrentTime().next(true);
     this.cloudService.setSelectedSongId(file.id);
     this.songInfoService.getModeSubject().next('displayBtnPlay');
     this.audioService.updatePlayMode();
-    this.currentFile = { index, file };
+    this.currentFile = { index: exactIndex, file };
     this.arrSongContent = this.currentFile.file.songcontent.detail.split('\n');
-    this.audioService.updateCurrentFile1({ index, file });
+    this.audioService.updateCurrentFile1({ index: exactIndex, file });
     this.audioService.stop();
     this.audioService.playStream(file.url).subscribe();
     this.cloudService.getCurrentFileSubject().next(this.currentFile);

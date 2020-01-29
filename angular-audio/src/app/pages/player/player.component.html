@@ -31,9 +31,14 @@
     </div>
     <div style="width: 70%;">
       <mat-spinner *ngIf="loading"></mat-spinner>
+      <div class="form-group" style="width: 50%;">
+        <input type="text" class="form-control" aria-describedby="helpId" placeholder="Search by name/artist of song"
+          [(ngModel)]="filterNameArtist">
+      </div>
       <mat-list *ngIf="!loading" color="primary" style="width: 100%;margin: auto;">
         <h3 mat-subheader>Songs</h3>
-        <mat-list-item class="item" *ngFor="let file of files; let i = index;" (click)="update(file);openFile(file, i)">
+        <mat-list-item class="item" *ngFor="let file of files | songPipe:filterNameArtist; let i = index;"
+          (click)="update(file);openFile(file, i)">
           <mat-icon class="music-icon" style="cursor: pointer;background-color: #FF4081;" color="primary" mat-list-icon>
             music_note
           </mat-icon>
