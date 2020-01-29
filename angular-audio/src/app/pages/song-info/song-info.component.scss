@@ -98,6 +98,15 @@ p {
     align-items: center;
   }
 }
+.alertLogin {
+  width: 966px;
+  padding: 0;
+  .wrap-alert-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
 
 .header-song-info {
   display: flex;

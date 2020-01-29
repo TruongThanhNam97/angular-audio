@@ -34,6 +34,12 @@
     You have blocked this song
   </div>
 </div>
+<div class="container alertLogin" *ngIf="isEmpty(currentUser)">
+  <div class="alert alert-info wrap-alert-icon" role="alert">
+    <mat-icon color="primary" mat-list-icon class="mr-2">info</mat-icon>
+    Please login to use more features
+  </div>
+</div>
 <div class="container listFeatures">
   <div class="btn btn-primary btnPlayAudio">
     <div *ngIf="!isPlay && !isBlocked" style="display: flex;" (click)="openFile()">
@@ -63,12 +69,11 @@
     <mat-icon matTooltip="Add to playlist" color="primary" mat-list-icon class="mr-2">queue_music</mat-icon>
     Add to my playlist
   </div>
-  <div (click)="onAddSongToCurrentPlayList()" class="btnAddToCurrentPlayList"
-    *ngIf="currentUser && currentUser.username !== 'superadmin'">
+  <div (click)="onAddSongToCurrentPlayList()" class="btnAddToCurrentPlayList">
     <mat-icon matTooltip="Add to current playlist" color="primary" mat-list-icon class="mr-2">queue_music</mat-icon>
     Add to current playlist
   </div>
-  <div (click)="onDownloadFile()" class="btnDownLoad" *ngIf="currentUser && currentUser.username !== 'superadmin'">
+  <div (click)="onDownloadFile()" class="btnDownLoad">
     <mat-icon matTooltip="Download" color="primary" mat-list-icon class="mr-2">cloud_download</mat-icon>
     Download
   </div>
