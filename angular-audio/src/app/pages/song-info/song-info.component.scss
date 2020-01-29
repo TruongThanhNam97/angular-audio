@@ -115,29 +115,52 @@ p {
     width: 80%;
     padding-left: 15px;
     position: relative;
-    .likedUsers {
-      height: auto;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+    .info:hover {
       color: white;
+    }
+    .wrap-like-headset-icon {
       position: absolute;
       bottom: 0;
       right: 0;
-      .liked-icon {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      .likedUsers {
+        height: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         color: white;
-        font-size: 20px;
-        font-weight: bold;
-        .like-icon {
-          font-size: 35px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
+        .liked-icon {
+          color: white;
+          font-size: 20px;
+          font-weight: bold;
+          .like-icon {
+            font-size: 35px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
         }
       }
-    }
-    .info:hover {
-      color: white;
+      .views {
+        height: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        .liked-icon {
+          color: white;
+          font-size: 20px;
+          font-weight: bold;
+          .like-icon {
+            font-size: 35px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+        }
+      }
     }
   }
 }

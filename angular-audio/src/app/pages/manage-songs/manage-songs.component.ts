@@ -143,6 +143,7 @@ export class ManageSongsComponent implements OnInit, OnDestroy {
   }
 
   openFile(file, index) {
+    this.cloudService.resetTempAndLastCurrentTime().next(true);
     this.audioService.updatePlayMode();
     if (this.username && this.selectedAlbum === this.username || this.categoryName && this.selectedCategory === this.categoryName
       || this.artistName && this.selectedArtist === this.artistName) {

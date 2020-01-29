@@ -164,6 +164,19 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
           [...this.top20FavoriteSongs.filter((v, i) => i < index), { ...song }, ...this.top20FavoriteSongs.filter((v, i) => i > index)];
       }
     });
+    this.socketIo.getViewsRealTime().pipe(
+      takeUntil(this.destroySubsction$)
+    ).subscribe((song: any) => {
+      if (this.selectedSong.id === song.id) {
+        this.selectedSong = { ...song };
+        this.likedUsers = this.selectedSong.likedUsers.length;
+      }
+      if (this.top20FavoriteSongs.filter(item => item.id === song.id).length > 0) {
+        const index = this.top20FavoriteSongs.findIndex(item => item.id === song.id);
+        this.top20FavoriteSongs =
+          [...this.top20FavoriteSongs.filter((v, i) => i < index), { ...song }, ...this.top20FavoriteSongs.filter((v, i) => i > index)];
+      }
+    });
     this.socketIo.getFollwersRealTime().pipe(
       takeUntil(this.destroySubsction$)
     ).subscribe((res: any) => {
@@ -241,6 +254,7 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
 
   openFile() {
     if ((this.isMatch && !this.audioService.getPlayMode()) || !this.isMatch) {
+      this.cloudService.resetTempAndLastCurrentTime().next(true);
       this.cloudService.setSelectedSongId(this.seletedSongId);
       this.isMatch = true;
       this.isPlay = true;

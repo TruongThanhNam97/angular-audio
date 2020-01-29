@@ -36,7 +36,8 @@ export class SocketIoService {
                     likedUsers: song.likedUsers,
                     comments: song.comments ? song.comments : [],
                     songcontent: song.songcontent,
-                    video: song.video ? song.video : null
+                    video: song.video ? song.video : null,
+                    views: song.views
                 });
             });
         });
@@ -62,7 +63,31 @@ export class SocketIoService {
                     likedUsers: song.likedUsers,
                     comments: song.comments ? song.comments : [],
                     songcontent: song.songcontent,
-                    video: song.video ? song.video : null
+                    video: song.video ? song.video : null,
+                    views: song.views
+                });
+            });
+        });
+    }
+
+    getViewsRealTime() {
+        return new Observable((observer) => {
+            this.socket.on('views', (song) => {
+                observer.next({
+                    id: song._id,
+                    url: this.SERVER_URL_SOUND + song.url,
+                    name: song.name,
+                    artist: song.artist,
+                    nameToDownload: song.url,
+                    userId: song.userId,
+                    userName: song.userName,
+                    categoryId: song.categoryId ? song.categoryId : null,
+                    artistId: song.artistId ? song.artistId : null,
+                    likedUsers: song.likedUsers,
+                    comments: song.comments ? song.comments : [],
+                    songcontent: song.songcontent,
+                    video: song.video ? song.video : null,
+                    views: song.views
                 });
             });
         });

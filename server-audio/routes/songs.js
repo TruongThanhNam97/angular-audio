@@ -9,6 +9,13 @@ var path = require("path");
 var passport = require("passport");
 const validateComment = require('../validation/validate-comment');
 
+const rateLimit = require("express-rate-limit");
+const upView = rateLimit({
+    windowMs: 8 * 1000, // 8 minutes
+    max: 2, // start blocking after 2 requests
+    message: "You spam !!!"
+});
+
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, "./assets/original-songs");
@@ -62,10 +69,39 @@ router.get("/", (req, res, next) => {
         .find({ status: { $eq: 0 } })
         .populate('comments.user', ['_id', 'username', 'avatar'])
         .populate('comments.subComments.user', ['_id', 'username', 'avatar'])
-        .select('_id url name artist userId userName categoryId artistId likedUsers comments songcontent video')
+        .select('_id url name artist userId userName categoryId artistId likedUsers comments songcontent video views')
         .then(songs => {
             let results = songs.sort((a, b) => b.likedUsers.length - a.likedUsers.length);
             res.status(200).json(results.slice(0, 20));
+        })
+        .catch(err => res.status(404).json({ notfound: "Not found songs" }));
+});
+
+/* GET top 100 favorite songs. */
+router.get("/getTop100Love", (req, res, next) => {
+    songModel
+        .find({ status: { $eq: 0 } })
+        .populate('comments.user', ['_id', 'username', 'avatar'])
+        .populate('comments.subComments.user', ['_id', 'username', 'avatar'])
+        .select('_id url name artist userId userName categoryId artistId likedUsers comments songcontent video views')
+        .then(songs => {
+            let results = songs.sort((a, b) => b.likedUsers.length - a.likedUsers.length);
+            res.status(200).json(results.slice(0, 100));
+        })
+        .catch(err => res.status(404).json({ notfound: "Not found songs" }));
+});
+
+/* GET top 100 favorite songs. */
+router.get("/getTop100Hear", (req, res, next) => {
+    songModel
+        .find({ status: { $eq: 0 } })
+        .sort({ views: -1 })
+        .limit(100)
+        .populate('comments.user', ['_id', 'username', 'avatar'])
+        .populate('comments.subComments.user', ['_id', 'username', 'avatar'])
+        .select('_id url name artist userId userName categoryId artistId likedUsers comments songcontent video views')
+        .then(songs => {
+            res.status(200).json(songs);
         })
         .catch(err => res.status(404).json({ notfound: "Not found songs" }));
 });
@@ -208,7 +244,7 @@ router.get("/getAllSongs", (req, res, next) => {
         .find({ status: { $eq: 0 } })
         .populate('comments.user', ['_id', 'username', 'avatar'])
         .populate('comments.subComments.user', ['_id', 'username', 'avatar'])
-        .select('_id url name artist userId userName categoryId artistId likedUsers comments songcontent video')
+        .select('_id url name artist userId userName categoryId artistId likedUsers comments songcontent video views')
         .then(songs => res.status(200).json(songs))
         .catch(err => res.status(404).json({ notfound: "Not found songs" }));
 });
@@ -219,7 +255,7 @@ router.get("/getSongBySongId", (req, res, next) => {
         .findOne({ _id: { $eq: req.query.id }, status: { $eq: 0 } })
         .populate('comments.user', ['_id', 'username', 'avatar'])
         .populate('comments.subComments.user', ['_id', 'username', 'avatar'])
-        .select('_id url name artist userId userName categoryId artistId likedUsers comments songcontent video')
+        .select('_id url name artist userId userName categoryId artistId likedUsers comments songcontent video views')
         .then(songs => res.status(200).json(songs))
         .catch(err => res.status(404).json({ notfound: "Not found songs" }));
 });
@@ -231,7 +267,7 @@ router.get("/getSongs", (req, res, next) => {
             // .populate('likedSongs.song', ['_id', 'url', 'name', 'artist', 'userId', 'userName', 'categoryId', 'artistId', 'likedUsers', 'comments'])
             .populate({
                 path: 'likedSongs.song',
-                select: ['_id', 'url', 'name', 'artist', 'userId', 'userName', 'categoryId', 'artistId', 'likedUsers', 'comments', 'songcontent', 'video'],
+                select: ['_id', 'url', 'name', 'artist', 'userId', 'userName', 'categoryId', 'artistId', 'likedUsers', 'comments', 'songcontent', 'video', 'views'],
                 populate: [
                     {
                         path: 'comments.user',
@@ -254,7 +290,7 @@ router.get("/getSongs", (req, res, next) => {
             .find({ userId: { $eq: req.query.id }, status: { $eq: 0 } })
             .populate('comments.user', ['_id', 'username', 'avatar'])
             .populate('comments.subComments.user', ['_id', 'username', 'avatar'])
-            .select('_id url name artist userId userName categoryId artistId likedUsers comments songcontent video')
+            .select('_id url name artist userId userName categoryId artistId likedUsers comments songcontent video views')
             .then(songs => res.status(200).json(songs))
             .catch(err => res.status(404).json({ notfound: "Not found songs" }));
     }
@@ -266,7 +302,7 @@ router.get("/getSongsByCategory", (req, res, next) => {
         .find({ categoryId: { $eq: req.query.id }, status: { $eq: 0 } })
         .populate('comments.user', ['_id', 'username', 'avatar'])
         .populate('comments.subComments.user', ['_id', 'username', 'avatar'])
-        .select('_id url name artist userId userName categoryId artistId likedUsers comments songcontent video')
+        .select('_id url name artist userId userName categoryId artistId likedUsers comments songcontent video views')
         .then(songs => res.status(200).json(songs))
         .catch(err => res.status(404).json({ notfound: "Not found songs" }));
 });
@@ -277,7 +313,7 @@ router.get("/getSongsByArtist", (req, res, next) => {
         .find({ artistId: { $eq: req.query.id }, status: { $eq: 0 } })
         .populate('comments.user', ['_id', 'username', 'avatar'])
         .populate('comments.subComments.user', ['_id', 'username', 'avatar'])
-        .select('_id url name artist userId userName categoryId artistId likedUsers comments songcontent video')
+        .select('_id url name artist userId userName categoryId artistId likedUsers comments songcontent video views')
         .then(songs => res.status(200).json(songs))
         .catch(err => res.status(404).json({ notfound: "Not found songs" }));
 });
@@ -303,13 +339,13 @@ router.post("/edit-song", passport.authenticate('jwt', { session: false }), uplo
                 }, { new: true })
                     .populate('comments.user', ['_id', 'username', 'avatar'])
                     .populate('comments.subComments.user', ['_id', 'username', 'avatar'])
-                    .select('_id url name artist userId userName categoryId artistId likedUsers comments songcontent video')
+                    .select('_id url name artist userId userName categoryId artistId likedUsers comments songcontent video views')
                     .then(song => res.status(200).json(song)).catch(err => console.log(err));
             } else {
                 songModel.findOneAndUpdate({ _id: id }, { $set: { name, artist, songcontent: { detail, status: false } } }, { new: true })
                     .populate('comments.user', ['_id', 'username', 'avatar'])
                     .populate('comments.subComments.user', ['_id', 'username', 'avatar'])
-                    .select('_id url name artist userId userName categoryId artistId likedUsers comments songcontent video')
+                    .select('_id url name artist userId userName categoryId artistId likedUsers comments songcontent video views')
                     .then(song => res.status(200).json(song)).catch(err => console.log(err));
             }
         } else {
@@ -317,7 +353,7 @@ router.post("/edit-song", passport.authenticate('jwt', { session: false }), uplo
                 songModel.findOneAndUpdate({ _id: id }, { $set: { name, artist, categoryId, artistId, songcontent: { detail, status: true } } }, { new: true })
                     .populate('comments.user', ['_id', 'username', 'avatar'])
                     .populate('comments.subComments.user', ['_id', 'username', 'avatar'])
-                    .select('_id url name artist userId userName categoryId artistId likedUsers comments songcontent video')
+                    .select('_id url name artist userId userName categoryId artistId likedUsers comments songcontent video views')
                     .then(song => {
                         res.io.emit('approveMySongLyrics', { song: song, approver: req.user })
                         res.status(200).json(song);
@@ -350,7 +386,7 @@ router.post("/edit-song", passport.authenticate('jwt', { session: false }), uplo
                 songModel.findOneAndUpdate({ _id: id }, { $set: { name, artist, categoryId, artistId } }, { new: true })
                     .populate('comments.user', ['_id', 'username', 'avatar'])
                     .populate('comments.subComments.user', ['_id', 'username', 'avatar'])
-                    .select('_id url name artist userId userName categoryId artistId likedUsers comments songcontent video')
+                    .select('_id url name artist userId userName categoryId artistId likedUsers comments songcontent video views')
                     .then(song => res.status(200).json(song)).catch(err => console.log(err));
             }
         }
@@ -363,7 +399,7 @@ router.post("/approve-song", passport.authenticate('jwt', { session: false }), (
     songModel.findById({ _id: id })
         .populate('comments.user', ['_id', 'username', 'avatar'])
         .populate('comments.subComments.user', ['_id', 'username', 'avatar'])
-        .select('_id url name artist userId userName categoryId artistId likedUsers comments songcontent video')
+        .select('_id url name artist userId userName categoryId artistId likedUsers comments songcontent video views')
         .then(song => {
             if (req.user.username !== 'superadmin') {
                 return res.status(401).json('Unauthorized');
@@ -418,7 +454,7 @@ router.post("/delete-song", passport.authenticate('jwt', { session: false }), (r
         songModel.findOneAndUpdate({ _id: id }, { $set: { status: 1 } }, { new: true })
             .populate('comments.user', ['_id', 'username', 'avatar'])
             .populate('comments.subComments.user', ['_id', 'username', 'avatar'])
-            .select('_id url name artist userId userName categoryId artistId likedUsers comments songcontent video')
+            .select('_id url name artist userId userName categoryId artistId likedUsers comments songcontent video views')
             .then(song => res.status(200).json({})).catch(err => console.log(err));
     });
 });
@@ -941,45 +977,22 @@ router.post("/unlikeComment", passport.authenticate('jwt', { session: false }), 
     }).catch(err => console.log(err));
 });
 
-/* Unlike subComment in comment */
-router.post("/unlikeSubComment", passport.authenticate('jwt', { session: false }), (req, res, next) => {
-    const { songId, commentId, subCommentId } = req.body;
-    songModel.findById({ _id: songId }).then(song => {
-        if (!song) {
-            return res.status(404).json('Song not found');
-        }
-        if (song.comments.filter(comment => comment._id.toString() === commentId.toString()).length === 0) {
-            return res.status(404).json('Comment not found');
-        }
-        const comment = song.comments.find(com => com._id.toString() === commentId.toString());
-        if (comment.subComments.filter(subCom => subCom._id.toString() === subCommentId.toString()).length === 0) {
-            return res.status(404).json('SubComment not found');
-        }
-        const index = song.comments.findIndex(com => com._id.toString() === commentId.toString());
-        const subComment = song.comments[index].subComments.find(subCom => subCom._id.toString() === subCommentId.toString());
-        const indexSub = song.comments[index].subComments.findIndex(subCom => subCom._id.toString() === subCommentId.toString());
-        if (subComment.unliked.filter(unlike => unlike.toString() === req.user._id.toString()).length > 0) {
-            song.comments[index].subComments[indexSub].unliked =
-                song.comments[index].subComments[indexSub].unliked.filter(unlike => unlike.toString() !== req.user._id.toString());
-        } else {
-            song.comments[index].subComments[indexSub].unliked = [...song.comments[index].subComments[indexSub].unliked, req.user._id];
-        }
-
-        if (song.comments[index].subComments[indexSub].liked.filter(like => like.toString() === req.user._id.toString()).length > 0) {
-            song.comments[index].subComments[indexSub].liked =
-                song.comments[index].subComments[indexSub].liked.filter(like => like.toString() !== req.user._id.toString());
-        }
-        song.save().then(updatedSong => {
-            songModel.findById({ _id: songId })
-                .populate('comments.user', ['_id', 'username', 'avatar'])
-                .populate('comments.subComments.user', ['_id', 'username', 'avatar'])
-                .then(song => {
-                    res.io.emit('song', song);
-                    res.status(200).json(song);
-                })
-                .catch(err => console.log(err));
-        });
-    }).catch(err => console.log(err));
+/* update views of song */
+router.post("/views", upView, (req, res, next) => {
+    const { id } = req.body;
+    songModel.findById({ _id: id })
+        .populate('comments.user', ['_id', 'username', 'avatar'])
+        .populate('comments.subComments.user', ['_id', 'username', 'avatar'])
+        .then(song => {
+            if (!song) {
+                return res.status(404).json('Song not found');
+            }
+            song.views++;
+            song.save().then(song => {
+                res.status(200).json(song);
+                res.io.emit('views', song);
+            });
+        }).catch(err => console.log(err));
 });
 
 module.exports = router;

@@ -5,11 +5,19 @@
     </div>
     <div class="right">
       <p class="songName"><strong>{{ data.name }}</strong></p>
-      <div class="likedUsers">
-        <mat-icon class="more-icon mr-1" color="primary">
-          favorite_border
-        </mat-icon>
-        <span style="color:#929191;">{{ formatLikedUsers(data.likedUsers.length) }}</span>
+      <div class="wrap-like-view-icon">
+        <div class="view mr-2">
+          <mat-icon class="more-icon mr-1" color="primary">
+            headset
+          </mat-icon>
+          <span style="color:#929191;">{{ formatLikedUsers(data.views) }}</span>
+        </div>
+        <div class="likedUsers">
+          <mat-icon class="more-icon mr-1" color="primary">
+            favorite_border
+          </mat-icon>
+          <span style="color:#929191;">{{ formatLikedUsers(data.likedUsers.length) }}</span>
+        </div>
       </div>
     </div>
   </div>
@@ -39,7 +47,7 @@
   </mat-list-item>
   <mat-list-item *ngIf="data.temp === 'fromPlaylist'" (click)="onDeleteSong()" class="feature"
     style="display: flex;justify-content: left; cursor: pointer;">
-    <mat-icon color="primary" mat-list-icon>delete_forever</mat-icon>
+    <mat-icon color="primary" mat-list-icon>block</mat-icon>
     <h5 style="margin: 0;">Delete</h5>
   </mat-list-item>
 </mat-list>

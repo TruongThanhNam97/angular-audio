@@ -108,6 +108,30 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
         this.arrSongContent = this.currentFile.file.songcontent.detail.split('\n');
       }
     });
+    this.socketIo.getLikeSongRealTime().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe((updatedSong: any) => {
+      if (this.files.filter(song => song.id === updatedSong.id).length > 0) {
+        const index = this.files.findIndex(song => song.id === updatedSong.id);
+        this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
+      }
+      if (this.currentFile.file && this.currentFile.file.id === updatedSong.id) {
+        this.currentFile = { ...this.currentFile, file: updatedSong };
+        this.arrSongContent = this.currentFile.file.songcontent.detail.split('\n');
+      }
+    });
+    this.socketIo.getViewsRealTime().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe((updatedSong: any) => {
+      if (this.files.filter(song => song.id === updatedSong.id).length > 0) {
+        const index = this.files.findIndex(song => song.id === updatedSong.id);
+        this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
+      }
+      if (this.currentFile.file && this.currentFile.file.id === updatedSong.id) {
+        this.currentFile = { ...this.currentFile, file: updatedSong };
+        this.arrSongContent = this.currentFile.file.songcontent.detail.split('\n');
+      }
+    });
   }
 
   isLiked(song: any): boolean {
@@ -146,6 +170,7 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
   }
 
   openFile(file, index) {
+    this.cloudService.resetTempAndLastCurrentTime().next(true);
     this.cloudService.setSelectedSongId(file.id);
     this.songInfoService.getModeSubject().next('displayBtnPlay');
     this.audioService.updatePlayMode();

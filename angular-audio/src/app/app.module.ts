@@ -47,6 +47,7 @@ import { PopupVideoComponent } from './pages/manage-songs/popup-video/popup-vide
 import { PopupEditComponent } from './pages/edit-songs/popup-edit/popup-edit.component';
 import { PopupEditCategoryComponent } from './pages/edit-category/popup-edit-category/popup-edit-category.component';
 import { PopupEditArtistComponent } from './pages/edit-artist/popup-edit-artist/popup-edit-artist.component';
+import { Top100Component } from './pages/top100/top100.component';
 
 @NgModule({
   declarations: [
@@ -90,7 +91,8 @@ import { PopupEditArtistComponent } from './pages/edit-artist/popup-edit-artist/
     PopupVideoComponent,
     PopupEditComponent,
     PopupEditCategoryComponent,
-    PopupEditArtistComponent
+    PopupEditArtistComponent,
+    Top100Component
   ],
   imports: [
     BrowserModule,

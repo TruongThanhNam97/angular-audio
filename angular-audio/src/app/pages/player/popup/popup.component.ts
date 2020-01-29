@@ -44,6 +44,20 @@ export class PopupComponent implements OnInit, OnDestroy {
         this.data = { ...song };
       }
     });
+    this.socketIo.getViewsRealTime().pipe(
+      takeUntil(this.destroySubscriptions)
+    ).subscribe((song: any) => {
+      if (this.data.id === song.id) {
+        this.data = { ...song };
+      }
+    });
+    this.socketIo.getCommentsRealTime().pipe(
+      takeUntil(this.destroySubscriptions)
+    ).subscribe((updatedSong: any) => {
+      if (this.data.id === updatedSong.id) {
+        this.data = { ...updatedSong };
+      }
+    });
     console.log(this.data);
   }
 

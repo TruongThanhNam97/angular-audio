@@ -42,7 +42,8 @@ export class PlayListService {
             categoryId: song.categoryId ? song.categoryId : null,
             comments: song.comments ? song.comments : [],
             songcontent: song.songcontent,
-            video: song.video ? song.video : null
+            video: song.video ? song.video : null,
+            views: song.views
         }));
         this.listSongsOfPlayList = this.listSongsOfPlayList.filter(song => !blockedSongs.includes(song.id));
     }

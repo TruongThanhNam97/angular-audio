@@ -11,7 +11,7 @@ export class CloudService {
   private SERVER_URL: string;
   private SERVER_URL_SOUND: string;
 
-  private currentPlayList: any;
+
   private allowGetSongs = true;
 
   private currentPlayListSubject$: Subject<any> = new Subject();
@@ -23,14 +23,15 @@ export class CloudService {
 
   private currentFileSubject$: Subject<any> = new Subject();
 
-  private selectedFavoriteSongs: string;
-
-
   private blockedSongsOfUser: any[] = [];
   private blockedSongsAfterBlockSubject$: Subject<any> = new Subject();
 
   private selectedSong: any;
   private selectedSongId: string;
+  private selectedFavoriteSongs: string;
+  private selectedTop100Love: string;
+  private selectedTop100Hear: string;
+  private currentPlayList: any;
 
   private updateSongAfterManipulatingSubject$: Subject<any> = new Subject();
 
@@ -40,10 +41,40 @@ export class CloudService {
 
   private updateSongsAfterAdd$: Subject<any> = new Subject();
 
+  private resetTempAndLastCurrentTime$: Subject<boolean> = new Subject();
+
 
   constructor(private http: HttpClient) {
     this.SERVER_URL = environment.SERVER_URL;
     this.SERVER_URL_SOUND = environment.SERVER_URL_SOUND;
+  }
+
+  getSelectedTop100Hear() {
+    return this.selectedTop100Hear;
+  }
+
+  setSelectedTop100Hear(mode) {
+    this.selectedTop100Hear = mode;
+  }
+
+  resetSelectedTop100Hear() {
+    this.selectedTop100Hear = null;
+  }
+
+  resetTempAndLastCurrentTime() {
+    return this.resetTempAndLastCurrentTime$;
+  }
+
+  getSelectedTop100Love() {
+    return this.selectedTop100Love;
+  }
+
+  setSelectedTop100Love(mode) {
+    this.selectedTop100Love = mode;
+  }
+
+  resetSelectedTop100Love() {
+    this.selectedTop100Love = null;
   }
 
   getUpdateSongsAfterAdd() {
@@ -103,13 +134,82 @@ export class CloudService {
             likedUsers: cur.likedUsers,
             comments: cur.comments ? cur.comments : [],
             songcontent: cur.songcontent,
-            video: cur.video ? cur.video : null
+            video: cur.video ? cur.video : null,
+            views: cur.views
           };
           acc.push(obj);
           return acc;
         }, []);
         result = result.filter(song => !this.blockedSongsOfUser.includes(song.id));
         return result;
+      })
+    );
+  }
+
+  getTop100FavoriteSongs() {
+    return this.http.get(`${this.SERVER_URL}getTop100Love`).pipe(
+      map((files: any) => {
+        let result = files.reduce((acc, cur) => {
+          const obj = {
+            id: cur._id,
+            url: this.SERVER_URL_SOUND + cur.url,
+            name: cur.name,
+            artist: cur.artist,
+            nameToDownload: cur.url,
+            userId: cur.userId,
+            userName: cur.userName,
+            categoryId: cur.categoryId ? cur.categoryId : null,
+            artistId: cur.artistId ? cur.artistId : null,
+            likedUsers: cur.likedUsers,
+            comments: cur.comments ? cur.comments : [],
+            songcontent: cur.songcontent,
+            video: cur.video ? cur.video : null,
+            views: cur.views
+          };
+          acc.push(obj);
+          return acc;
+        }, []);
+        result = result.filter(song => !this.blockedSongsOfUser.includes(song.id));
+        return result;
+      }),
+      tap(files => {
+        this.allowGetSongs = false;
+        this.currentPlayList = [...files];
+        // this.currentPlayListSubject$.next(this.currentPlayList);
+      })
+    );
+  }
+
+  getTop100Hear() {
+    return this.http.get(`${this.SERVER_URL}getTop100Hear`).pipe(
+      map((files: any) => {
+        let result = files.reduce((acc, cur) => {
+          const obj = {
+            id: cur._id,
+            url: this.SERVER_URL_SOUND + cur.url,
+            name: cur.name,
+            artist: cur.artist,
+            nameToDownload: cur.url,
+            userId: cur.userId,
+            userName: cur.userName,
+            categoryId: cur.categoryId ? cur.categoryId : null,
+            artistId: cur.artistId ? cur.artistId : null,
+            likedUsers: cur.likedUsers,
+            comments: cur.comments ? cur.comments : [],
+            songcontent: cur.songcontent,
+            video: cur.video ? cur.video : null,
+            views: cur.views
+          };
+          acc.push(obj);
+          return acc;
+        }, []);
+        result = result.filter(song => !this.blockedSongsOfUser.includes(song.id));
+        return result;
+      }),
+      tap(files => {
+        this.allowGetSongs = false;
+        this.currentPlayList = [...files];
+        // this.currentPlayListSubject$.next(this.currentPlayList);
       })
     );
   }
@@ -131,7 +231,8 @@ export class CloudService {
             likedUsers: cur.likedUsers,
             comments: cur.comments ? cur.comments : [],
             songcontent: cur.songcontent,
-            video: cur.video ? cur.video : null
+            video: cur.video ? cur.video : null,
+            views: cur.views
           };
           acc.push(obj);
           return acc;
@@ -158,7 +259,8 @@ export class CloudService {
           likedUsers: song.likedUsers,
           comments: song.comments ? song.comments : [],
           songcontent: song.songcontent,
-          video: song.video ? song.video : null
+          video: song.video ? song.video : null,
+          views: song.views
         };
         return result;
       }),
@@ -187,7 +289,8 @@ export class CloudService {
             likedUsers: cur.likedUsers,
             comments: cur.comments ? cur.comments : [],
             songcontent: cur.songcontent,
-            video: cur.video ? cur.video : null
+            video: cur.video ? cur.video : null,
+            views: cur.views
           };
           acc.push(obj);
           return acc;
@@ -220,7 +323,8 @@ export class CloudService {
             likedUsers: cur.song.likedUsers,
             comments: cur.song.comments ? cur.song.comments : [],
             songcontent: cur.song.songcontent,
-            video: cur.song.video ? cur.song.video : null
+            video: cur.song.video ? cur.song.video : null,
+            views: cur.song.views
           };
           acc.push(obj);
           return acc;
@@ -253,7 +357,8 @@ export class CloudService {
             likedUsers: cur.likedUsers,
             comments: cur.comments ? cur.comments : [],
             songcontent: cur.songcontent,
-            video: cur.video ? cur.video : null
+            video: cur.video ? cur.video : null,
+            views: cur.views
           };
           acc.push(obj);
           return acc;
@@ -286,7 +391,8 @@ export class CloudService {
             likedUsers: cur.likedUsers,
             comments: cur.comments ? cur.comments : [],
             songcontent: cur.songcontent,
-            video: cur.video ? cur.video : null
+            video: cur.video ? cur.video : null,
+            views: cur.views
           };
           acc.push(obj);
           return acc;
@@ -322,7 +428,8 @@ export class CloudService {
           likedUsers: song.likedUsers,
           comments: song.comments ? song.comments : [],
           songcontent: song.songcontent,
-          video: song.video ? song.video : null
+          video: song.video ? song.video : null,
+          views: song.views
         };
       })
     );
@@ -348,7 +455,8 @@ export class CloudService {
           likedUsers: song.likedUsers,
           comments: song.comments ? song.comments : [],
           songcontent: song.songcontent,
-          video: song.video ? song.video : null
+          video: song.video ? song.video : null,
+          views: song.views
         };
       })
     );
@@ -382,7 +490,8 @@ export class CloudService {
           likedUsers: song.likedUsers,
           comments: song.comments ? song.comments : [],
           songcontent: song.songcontent,
-          video: song.video ? song.video : null
+          video: song.video ? song.video : null,
+          views: song.views
         };
       })
     );
@@ -480,7 +589,8 @@ export class CloudService {
         likedUsers: song.likedUsers,
         comments: song.comments ? song.comments : [],
         songcontent: song.songcontent,
-        video: song.video ? song.video : null
+        video: song.video ? song.video : null,
+        views: song.views
       }))
     );
   }
@@ -504,7 +614,8 @@ export class CloudService {
         likedUsers: song.likedUsers,
         comments: song.comments ? song.comments : [],
         songcontent: song.songcontent,
-        video: song.video ? song.video : null
+        video: song.video ? song.video : null,
+        views: song.views
       }))
     );
   }
@@ -529,7 +640,8 @@ export class CloudService {
         likedUsers: song.likedUsers,
         comments: song.comments ? song.comments : [],
         songcontent: song.songcontent,
-        video: song.video ? song.video : null
+        video: song.video ? song.video : null,
+        views: song.views
       }))
     );
   }
@@ -553,7 +665,8 @@ export class CloudService {
         likedUsers: song.likedUsers,
         comments: song.comments ? song.comments : [],
         songcontent: song.songcontent,
-        video: song.video ? song.video : null
+        video: song.video ? song.video : null,
+        views: song.views
       }))
     );
   }
@@ -577,7 +690,8 @@ export class CloudService {
         likedUsers: song.likedUsers,
         comments: song.comments ? song.comments : [],
         songcontent: song.songcontent,
-        video: song.video ? song.video : null
+        video: song.video ? song.video : null,
+        views: song.views
       }))
     );
   }
@@ -601,7 +715,8 @@ export class CloudService {
         likedUsers: song.likedUsers,
         comments: song.comments ? song.comments : [],
         songcontent: song.songcontent,
-        video: song.video ? song.video : null
+        video: song.video ? song.video : null,
+        views: song.views
       }))
     );
   }
@@ -625,7 +740,8 @@ export class CloudService {
         likedUsers: song.likedUsers,
         comments: song.comments ? song.comments : [],
         songcontent: song.songcontent,
-        video: song.video ? song.video : null
+        video: song.video ? song.video : null,
+        views: song.views
       }))
     );
   }
@@ -649,7 +765,8 @@ export class CloudService {
         likedUsers: song.likedUsers,
         comments: song.comments ? song.comments : [],
         songcontent: song.songcontent,
-        video: song.video ? song.video : null
+        video: song.video ? song.video : null,
+        views: song.views
       }))
     );
   }
@@ -673,7 +790,8 @@ export class CloudService {
         likedUsers: song.likedUsers,
         comments: song.comments ? song.comments : [],
         songcontent: song.songcontent,
-        video: song.video ? song.video : null
+        video: song.video ? song.video : null,
+        views: song.views
       }))
     );
   }
@@ -697,7 +815,29 @@ export class CloudService {
         likedUsers: song.likedUsers,
         comments: song.comments ? song.comments : [],
         songcontent: song.songcontent,
-        video: song.video ? song.video : null
+        video: song.video ? song.video : null,
+        views: song.views
+      }))
+    );
+  }
+
+  updateViewsOfSong(data) {
+    return this.http.post(`${this.SERVER_URL}views`, data).pipe(
+      map((song: any) => ({
+        id: song._id,
+        url: this.SERVER_URL_SOUND + song.url,
+        name: song.name,
+        artist: song.artist,
+        nameToDownload: song.url,
+        userId: song.userId,
+        userName: song.userName,
+        categoryId: song.categoryId ? song.categoryId : null,
+        artistId: song.artistId ? song.artistId : null,
+        likedUsers: song.likedUsers,
+        comments: song.comments ? song.comments : [],
+        songcontent: song.songcontent,
+        video: song.video ? song.video : null,
+        views: song.views
       }))
     );
   }

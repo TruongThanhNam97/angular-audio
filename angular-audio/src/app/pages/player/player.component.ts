@@ -31,17 +31,25 @@ export class PlayerComponent implements OnInit, OnDestroy {
   destroySubscription$: Subject<boolean> = new Subject();
   loading = false;
   id: string;
+
   categoryName: string = null;
   username: string = null;
   artistName: string = null;
   favoriteMode: string = null;
   playlist: string = null;
+  top100Love: string = null;
+  top100Hear: string = null;
+
   displayButtonBack: string = null;
+
   selectedAlbum: string;
   selectedCategory: string;
   selectedArtist: string;
   selectedFavoriteMode: string;
   selectedPlayList: string;
+  selectedTop100Love: string;
+  selectedTop100Hear: string;
+
   arrSongContent = [];
 
   isMatchCurrentPlayListAndCurrentPlayerAudio: boolean;
@@ -75,6 +83,8 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.selectedCategory = this.categoryService.getSelectedCategory();
     this.selectedArtist = this.artistsService.getSelectedArtist();
     this.selectedFavoriteMode = this.cloudService.getSelectedFavoriteSongs();
+    this.selectedTop100Love = this.cloudService.getSelectedTop100Love();
+    this.selectedTop100Hear = this.cloudService.getSelectedTop100Hear();
     this.selectedPlayList = this.playListService.getSelectedPlayList();
     this.route.params.subscribe(param => this.id = param.id);
     this.route.queryParams.subscribe(param => {
@@ -102,13 +112,23 @@ export class PlayerComponent implements OnInit, OnDestroy {
         this.playlist = param.playlist;
         this.loadSongsByPlayList();
       }
+      if (param.top100Love) {
+        this.top100Love = param.top100Love;
+        this.loadTop100Love();
+      }
+      if (param.top100Hear) {
+        this.top100Hear = param.top100Hear;
+        this.loadTop100Hear();
+      }
     });
     this.audioService.getResetCurrentFileSubject().pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(currentFile => this.currentFile = currentFile);
     if (this.audioService.getPlayMode() && ((this.username !== this.selectedAlbum) || (this.categoryName !== this.selectedCategory)
       || (this.artistName !== this.selectedArtist) || (this.favoriteMode !== this.selectedFavoriteMode)
-      || (this.playlist !== this.selectedPlayList))) {
+      || (this.playlist !== this.selectedPlayList)
+      || (this.top100Love !== this.selectedTop100Love)
+      || (this.top100Hear !== this.selectedTop100Hear))) {
       this.currentFile = {};
       this.arrSongContent = [];
     } else {
@@ -150,6 +170,39 @@ export class PlayerComponent implements OnInit, OnDestroy {
       if (this.files.filter(song => song.id === updatedSong.id).length > 0) {
         const index = this.files.findIndex(song => song.id === updatedSong.id);
         this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
+      }
+    });
+    this.socketIo.getCommentsRealTime().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe((updatedSong: any) => {
+      if (this.files.filter(song => song.id === updatedSong.id).length > 0) {
+        const index = this.files.findIndex(song => song.id === updatedSong.id);
+        this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
+      }
+      if (this.currentFile.file && this.currentFile.file.id === updatedSong.id) {
+        this.currentFile = { ...this.currentFile, file: updatedSong };
+      }
+    });
+    this.socketIo.getLikeSongRealTime().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe((updatedSong: any) => {
+      if (this.files.filter(song => song.id === updatedSong.id).length > 0) {
+        const index = this.files.findIndex(song => song.id === updatedSong.id);
+        this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
+      }
+      if (this.currentFile.file && this.currentFile.file.id === updatedSong.id) {
+        this.currentFile = { ...this.currentFile, file: updatedSong };
+      }
+    });
+    this.socketIo.getViewsRealTime().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe((updatedSong: any) => {
+      if (this.files.filter(song => song.id === updatedSong.id).length > 0) {
+        const index = this.files.findIndex(song => song.id === updatedSong.id);
+        this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
+      }
+      if (this.currentFile.file && this.currentFile.file.id === updatedSong.id) {
+        this.currentFile = { ...this.currentFile, file: updatedSong };
       }
     });
   }
@@ -267,14 +320,50 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.cloudService.setCurrentPlayList(this.files);
   }
 
+  loadTop100Love() {
+    this.loading = true;
+    this.cloudService.getTop100FavoriteSongs().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(files => {
+      this.files = files;
+      if (this.currentFile.index >= 0) {
+        const newIndex = this.files.findIndex(song => song.id === this.currentFile.file.id);
+        if (newIndex !== this.currentFile.index) {
+          this.currentFile = { index: newIndex, file: this.currentFile.file };
+          this.arrSongContent = this.currentFile.file.songcontent.detail.split('\n');
+        }
+      }
+    }, err => { }, () => this.loading = false);
+  }
+
+  loadTop100Hear() {
+    this.loading = true;
+    this.cloudService.getTop100Hear().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(files => {
+      this.files = files;
+      if (this.currentFile.index >= 0) {
+        const newIndex = this.files.findIndex(song => song.id === this.currentFile.file.id);
+        if (newIndex !== this.currentFile.index) {
+          this.currentFile = { index: newIndex, file: this.currentFile.file };
+          this.arrSongContent = this.currentFile.file.songcontent.detail.split('\n');
+        }
+      }
+    }, err => { }, () => this.loading = false);
+  }
+
   ngOnDestroy() {
     this.destroySubscription$.next(true);
   }
 
   openFile(file, index) {
+    this.cloudService.resetTempAndLastCurrentTime().next(true);
     this.audioService.updatePlayMode();
     if (this.username && this.selectedAlbum === this.username || this.categoryName && this.selectedCategory === this.categoryName
-      || this.artistName && this.selectedArtist === this.artistName || this.playlist && this.selectedPlayList === this.playlist) {
+      || this.artistName && this.selectedArtist === this.artistName || this.playlist && this.selectedPlayList === this.playlist
+      || this.top100Love && this.selectedTop100Love === this.top100Love
+      || this.top100Hear && this.selectedTop100Hear === this.top100Hear
+    ) {
       this.currentFile = { index, file };
       this.arrSongContent = this.currentFile.file.songcontent.detail.split('\n');
     }
@@ -302,6 +391,9 @@ export class PlayerComponent implements OnInit, OnDestroy {
     if (this.artistName) {
       this.router.navigate(['/artists']);
     }
+    if (this.top100Love || this.top100Hear) {
+      this.router.navigate(['/top100']);
+    }
   }
 
   update(file) {
@@ -310,6 +402,8 @@ export class PlayerComponent implements OnInit, OnDestroy {
       this.artistsService.resetSelectedArtist();
       this.cloudService.resetSelectedFavoriteSongs();
       this.playListService.resetSelectedPlayList();
+      this.cloudService.resetSelectedTop100Love();
+      this.cloudService.resetSelectedTop100Hear();
       this.album.setSelectedAlbum(this.username);
       this.selectedAlbum = this.username;
     }
@@ -318,6 +412,8 @@ export class PlayerComponent implements OnInit, OnDestroy {
       this.artistsService.resetSelectedArtist();
       this.cloudService.resetSelectedFavoriteSongs();
       this.playListService.resetSelectedPlayList();
+      this.cloudService.resetSelectedTop100Love();
+      this.cloudService.resetSelectedTop100Hear();
       this.categoryService.setSelectedCategory(this.categoryName);
       this.selectedCategory = this.categoryName;
     }
@@ -326,6 +422,8 @@ export class PlayerComponent implements OnInit, OnDestroy {
       this.categoryService.resetSelectedCategory();
       this.cloudService.resetSelectedFavoriteSongs();
       this.playListService.resetSelectedPlayList();
+      this.cloudService.resetSelectedTop100Love();
+      this.cloudService.resetSelectedTop100Hear();
       this.artistsService.setSelectedArtist(this.artistName);
       this.selectedArtist = this.artistName;
     }
@@ -333,6 +431,8 @@ export class PlayerComponent implements OnInit, OnDestroy {
       this.categoryService.resetSelectedCategory();
       this.artistsService.resetSelectedArtist();
       this.playListService.resetSelectedPlayList();
+      this.cloudService.resetSelectedTop100Love();
+      this.cloudService.resetSelectedTop100Hear();
       this.cloudService.setSelectedFavoriteSongs(this.favoriteMode);
       this.selectedFavoriteMode = this.favoriteMode;
     }
@@ -341,8 +441,30 @@ export class PlayerComponent implements OnInit, OnDestroy {
       this.categoryService.resetSelectedCategory();
       this.artistsService.resetSelectedArtist();
       this.cloudService.resetSelectedFavoriteSongs();
+      this.cloudService.resetSelectedTop100Love();
+      this.cloudService.resetSelectedTop100Hear();
       this.playListService.setSelectedPlayList(this.playlist);
       this.selectedPlayList = this.playlist;
+    }
+    if (this.top100Love) {
+      this.album.resetSelectedAlbum();
+      this.artistsService.resetSelectedArtist();
+      this.cloudService.resetSelectedFavoriteSongs();
+      this.playListService.resetSelectedPlayList();
+      this.categoryService.resetSelectedCategory();
+      this.cloudService.resetSelectedTop100Hear();
+      this.cloudService.setSelectedTop100Love(this.top100Love);
+      this.selectedTop100Love = this.top100Love;
+    }
+    if (this.top100Hear) {
+      this.album.resetSelectedAlbum();
+      this.artistsService.resetSelectedArtist();
+      this.cloudService.resetSelectedFavoriteSongs();
+      this.playListService.resetSelectedPlayList();
+      this.categoryService.resetSelectedCategory();
+      this.cloudService.resetSelectedTop100Love();
+      this.cloudService.setSelectedTop100Hear(this.top100Hear);
+      this.selectedTop100Hear = this.top100Hear;
     }
     this.cloudService.setSelectedSongId(file.id);
     this.songInfoService.setStatusAudio('play');

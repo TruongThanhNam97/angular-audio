@@ -12,11 +12,19 @@
     </p>
     <p style="color: #a0a0a0;">Category: <span (click)="onSeeCategoryOfSong()" class="info"
         style="cursor: pointer;">{{ category ? category.name : '' }}</span></p>
-    <div class="likedUsers">
-      <span class="liked-icon">{{ formatNumber(likedUsers)  }}</span>
-      <mat-icon class="more-icon like-icon ml-3">
-        favorite
-      </mat-icon>
+    <div class="wrap-like-headset-icon">
+      <div class="views">
+        <mat-icon class="more-icon like-icon mr-2">
+          headset
+        </mat-icon>
+        <span class="liked-icon">{{ formatNumber(selectedSong.views)  }}</span>
+      </div>
+      <div class="likedUsers ml-3">
+        <mat-icon class="more-icon like-icon mr-2">
+          favorite
+        </mat-icon>
+        <span class="liked-icon">{{ formatNumber(likedUsers)  }}</span>
+      </div>
     </div>
   </div>
 </div>
