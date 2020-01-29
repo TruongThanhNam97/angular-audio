@@ -59,19 +59,16 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
     ).subscribe(state => {
       this.state = state;
       if (this.state.currentTime - this.lastCurrentTime >= 1) {
-        console.log(this.temp);
         this.lastCurrentTime = this.state.currentTime;
         this.temp++;
       }
       if (this.state.readableCurrentTime === this.state.readableDuration
         && this.state.readableCurrentTime !== '' && this.state.readableDuration !== '') {
-        console.log(this.currentFile);
-        console.log((this.temp / this.state.duration) * 100);
         const check = (this.temp / this.state.duration) * 100 >= 60 ? true : false;
         if (check) {
           this.cloudService.updateViewsOfSong({ id: this.currentFile.file.id }).pipe(
             takeUntil(this.destroySubscription$)
-          ).subscribe(res => console.log(res));
+          ).subscribe(res => { });
         }
         this.temp = 0;
         this.lastCurrentTime = 0;

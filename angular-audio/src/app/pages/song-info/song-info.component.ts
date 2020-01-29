@@ -71,7 +71,6 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     this.currentUser = this.authService.getCurrentUser();
     this.route.queryParams.subscribe(param => {
-      console.log(this.songInfoService.getStatusAudio());
       this.isPlay = false;
       this.isBlocked = false;
       this.seletedSongId = param.songId;
@@ -113,7 +112,6 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
     this.socketIo.getCommentsRealTime().pipe(
       takeUntil(this.destroySubsction$)
     ).subscribe((song: any) => {
-      console.log('listener socket');
       if (song.id === this.selectedSong.id) {
         this.selectedSong = { ...song };
       }
@@ -180,7 +178,6 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
     this.socketIo.getFollwersRealTime().pipe(
       takeUntil(this.destroySubsction$)
     ).subscribe((res: any) => {
-      console.log(res);
       if (this.uploader.id === res.followedUser.id) {
         this.uploader = { ...res.followedUser };
       }
@@ -206,7 +203,6 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
     this.authService.getUserById(this.selectedSong.userId).pipe(
       takeUntil(this.destroySubsction$)
     ).subscribe(user => this.uploader = { ...user });
-    console.log(this.selectedSong);
   }
 
   ngAfterViewInit(): void {

@@ -30,7 +30,6 @@ export class PopupVideoComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.currentUser = this.authService.getCurrentUser();
-    console.log(this.data);
   }
 
   ngOnDestroy() {
@@ -41,7 +40,6 @@ export class PopupVideoComponent implements OnInit, OnDestroy {
     this.cloudService.approveSong({ id: this.data.id, mode: 'approve' }).pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(song => {
-      console.log(song);
       this.alertify.success('Approve successfully');
       this.dialogRef.close();
       this.cloudService.getUpdateSongAfterEdit().next(song);
@@ -52,7 +50,6 @@ export class PopupVideoComponent implements OnInit, OnDestroy {
     this.cloudService.approveSong({ id: this.data.id, mode: 'reject' }).pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(song => {
-      console.log(song);
       this.alertify.success('Approve successfully');
       this.dialogRef.close();
       this.cloudService.getUpdateSongAfterEdit().next(song);

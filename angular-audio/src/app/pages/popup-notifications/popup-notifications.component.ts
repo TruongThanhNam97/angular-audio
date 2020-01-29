@@ -37,7 +37,6 @@ export class PopupNotificationsComponent implements OnInit, OnDestroy {
     this.socketIo.getNotificationsRealTime().pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe((res: any) => {
-      console.log(res);
       if (this.currentUser
         && res.owner.filter(id => id === this.currentUser.id).length > 0
         && res.notifications.length === 1

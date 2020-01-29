@@ -10,6 +10,7 @@ var passport = require("passport");
 const validateComment = require('../validation/validate-comment');
 
 const rateLimit = require("express-rate-limit");
+
 const upView = rateLimit({
     windowMs: 8 * 1000, // 8 minutes
     max: 2, // start blocking after 2 requests

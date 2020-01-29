@@ -58,7 +58,6 @@ export class PopupComponent implements OnInit, OnDestroy {
         this.data = { ...updatedSong };
       }
     });
-    console.log(this.data);
   }
 
   ngOnDestroy() {

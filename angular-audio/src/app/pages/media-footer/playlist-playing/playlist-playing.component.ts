@@ -58,7 +58,6 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
     this.currentUser = this.authService.getCurrentUser();
     this.files = [...this.data];
     this.currentFile = this.audioService.getCurrentFile();
-    console.log(this.currentFile);
     this.arrSongContent = this.currentFile.file.songcontent.detail.split('\n');
     this.audioService.getResetCurrentFileSubject().pipe(
       takeUntil(this.destroySubscription$)

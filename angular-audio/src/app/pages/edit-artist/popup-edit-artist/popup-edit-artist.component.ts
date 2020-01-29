@@ -82,7 +82,6 @@ export class PopupEditArtistComponent implements OnInit, OnDestroy {
       this.disableMode = false;
       this.dialogRef.close();
     }, err => {
-      console.log(err);
       this.signForm.enable();
       this.disableMode = false;
     });

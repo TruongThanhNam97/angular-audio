@@ -52,7 +52,6 @@ export class AppComponent implements OnInit {
 
   listenerRealTimeBySocketIo() {
     this.socketIo.getFollwersRealTime().subscribe((res: any) => {
-      console.log(res);
       if (this.currentUser && this.currentUser.id === res.followedUser.id && this.currentUser.id !== res.follower._id) {
         const html = `<div class="wrap-notify">
         <div style="width: 20%;">
@@ -67,7 +66,6 @@ export class AppComponent implements OnInit {
       }
     });
     this.socketIo.getLikeMySongRealTime().subscribe((res: any) => {
-      console.log(res);
       if (this.currentUser && this.currentUser.id === res.song.userId && this.currentUser.id !== res.liker._id) {
         const html = `<div class="wrap-notify">
         <div style="width: 20%;">
@@ -146,7 +144,6 @@ export class AppComponent implements OnInit {
       }
     });
     this.socketIo.getNotificationsRealTime().subscribe((res: any) => {
-      console.log(res);
       if (this.currentUser
         && res.owner.filter(id => id === this.currentUser.id).length > 0
         && res.notifications.length === 1

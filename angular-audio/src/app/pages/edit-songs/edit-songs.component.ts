@@ -67,7 +67,6 @@ export class EditSongsComponent implements OnInit, OnDestroy {
       takeUntil(this.destroySubscription$)
     ).subscribe(songs => {
       this.mySongs = songs;
-      console.log(this.mySongs);
     });
   }
 

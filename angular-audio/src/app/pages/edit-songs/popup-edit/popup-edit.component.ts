@@ -97,7 +97,6 @@ export class PopupEditComponent implements OnInit, OnDestroy {
       this.dialogRef.close();
       this.modeDisable = false;
     }, err => {
-      console.log(err);
       this.modeDisable = false;
     });
   }
