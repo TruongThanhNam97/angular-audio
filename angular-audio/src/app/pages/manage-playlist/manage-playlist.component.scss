@@ -108,3 +108,14 @@
 .playlist-item:hover .btnEditPlayList {
   opacity: 1;
 }
+.search-icon {
+  position: absolute;
+  left: 2px;
+  top: 0;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 35px;
+  color: gray;
+}

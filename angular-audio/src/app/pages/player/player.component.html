@@ -31,9 +31,10 @@
     </div>
     <div style="width: 70%;">
       <mat-spinner *ngIf="loading"></mat-spinner>
-      <div class="form-group" style="width: 50%;">
+      <div class="form-group" style="width: 50%; position: relative;">
         <input type="text" class="form-control" aria-describedby="helpId" placeholder="Search by name/artist of song"
-          [(ngModel)]="filterNameArtist">
+          [(ngModel)]="filterNameArtist" style="padding-left: 35px;">
+        <mat-icon class="search-icon">search</mat-icon>
       </div>
       <mat-list *ngIf="!loading" color="primary" style="width: 100%;margin: auto;">
         <h3 mat-subheader>Songs</h3>
