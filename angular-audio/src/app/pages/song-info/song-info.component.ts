@@ -17,6 +17,7 @@ import { PopupThreeTypesComponent } from '../player/popup-three-types/popup-thre
 import { PopupCommentsComponent } from './popup-comments/popup-comments.component';
 import { SocketIoService } from 'src/app/services/socket-io.service';
 import { environment } from 'src/environments/environment';
+import { ValidateService } from 'src/app/services/validate.service';
 
 @Component({
   selector: 'app-song-info',
@@ -40,6 +41,7 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
   uploader: any;
   arrSongContent = [];
   hideMode = true;
+  SERVER_URL_VIDEO: string;
 
   SERVER_URL_IMAGE: string;
 
@@ -57,8 +59,10 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
     private authService: AuthService,
     private alertify: AlertifyService,
     public dialog: MatDialog,
-    private socketIo: SocketIoService) {
+    private socketIo: SocketIoService,
+    private validateService: ValidateService) {
     this.SERVER_URL_IMAGE = environment.SERVER_URL_IMAGE;
+    this.SERVER_URL_VIDEO = environment.SERVER_URL_VIDEO;
   }
 
   ngOnInit() {
@@ -67,7 +71,6 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     this.currentUser = this.authService.getCurrentUser();
     this.route.queryParams.subscribe(param => {
-      console.log(this.songInfoService.getStatusAudio());
       this.isPlay = false;
       this.isBlocked = false;
       this.seletedSongId = param.songId;
@@ -109,7 +112,6 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
     this.socketIo.getCommentsRealTime().pipe(
       takeUntil(this.destroySubsction$)
     ).subscribe((song: any) => {
-      console.log('listener socket');
       if (song.id === this.selectedSong.id) {
         this.selectedSong = { ...song };
       }
@@ -160,10 +162,22 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
           [...this.top20FavoriteSongs.filter((v, i) => i < index), { ...song }, ...this.top20FavoriteSongs.filter((v, i) => i > index)];
       }
     });
+    this.socketIo.getViewsRealTime().pipe(
+      takeUntil(this.destroySubsction$)
+    ).subscribe((song: any) => {
+      if (this.selectedSong.id === song.id) {
+        this.selectedSong = { ...song };
+        this.likedUsers = this.selectedSong.likedUsers.length;
+      }
+      if (this.top20FavoriteSongs.filter(item => item.id === song.id).length > 0) {
+        const index = this.top20FavoriteSongs.findIndex(item => item.id === song.id);
+        this.top20FavoriteSongs =
+          [...this.top20FavoriteSongs.filter((v, i) => i < index), { ...song }, ...this.top20FavoriteSongs.filter((v, i) => i > index)];
+      }
+    });
     this.socketIo.getFollwersRealTime().pipe(
       takeUntil(this.destroySubsction$)
     ).subscribe((res: any) => {
-      console.log(res);
       if (this.uploader.id === res.followedUser.id) {
         this.uploader = { ...res.followedUser };
       }
@@ -189,7 +203,6 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
     this.authService.getUserById(this.selectedSong.userId).pipe(
       takeUntil(this.destroySubsction$)
     ).subscribe(user => this.uploader = { ...user });
-    console.log(this.selectedSong);
   }
 
   ngAfterViewInit(): void {
@@ -237,6 +250,7 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
 
   openFile() {
     if ((this.isMatch && !this.audioService.getPlayMode()) || !this.isMatch) {
+      this.cloudService.resetTempAndLastCurrentTime().next(true);
       this.cloudService.setSelectedSongId(this.seletedSongId);
       this.isMatch = true;
       this.isPlay = true;
@@ -362,6 +376,15 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
     document.execCommand('copy');
     document.body.removeChild(el);
     this.alertify.success('Copied');
+  }
+
+  isEmpty(data) {
+    return this.validateService.isEmpty(data);
+  }
+
+  onAddSongToCurrentPlayList() {
+    this.cloudService.getUpdateSongsAfterAdd().next(this.selectedSong);
+    this.alertify.success('Added');
   }
 
 }

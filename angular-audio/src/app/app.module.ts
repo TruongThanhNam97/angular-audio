@@ -43,6 +43,14 @@ import { PopupCommentsComponent } from './pages/song-info/popup-comments/popup-c
 import { AuthFocusDirective } from './directives/autofocus.directive';
 import { PopupConfirmDeleteComponent } from './pages/song-info/popup-confirm-delete/popup-confirm-delete.component';
 import { PopupNotificationsComponent } from './pages/popup-notifications/popup-notifications.component';
+import { PopupVideoComponent } from './pages/manage-songs/popup-video/popup-video.component';
+import { PopupEditComponent } from './pages/edit-songs/popup-edit/popup-edit.component';
+import { PopupEditCategoryComponent } from './pages/edit-category/popup-edit-category/popup-edit-category.component';
+import { PopupEditArtistComponent } from './pages/edit-artist/popup-edit-artist/popup-edit-artist.component';
+import { Top100Component } from './pages/top100/top100.component';
+import { NamePipe } from './pipes/filter-name.pipe';
+import { UsernamePipe } from './pipes/filter-username.pipe';
+import { SongPipe } from './pipes/filter-song.pipe';
 
 @NgModule({
   declarations: [
@@ -82,7 +90,15 @@ import { PopupNotificationsComponent } from './pages/popup-notifications/popup-n
     TimeAgoPipe,
     AuthFocusDirective,
     PopupConfirmDeleteComponent,
-    PopupNotificationsComponent
+    PopupNotificationsComponent,
+    PopupVideoComponent,
+    PopupEditComponent,
+    PopupEditCategoryComponent,
+    PopupEditArtistComponent,
+    Top100Component,
+    NamePipe,
+    UsernamePipe,
+    SongPipe
   ],
   imports: [
     BrowserModule,
@@ -103,7 +119,11 @@ import { PopupNotificationsComponent } from './pages/popup-notifications/popup-n
     PopupMoveSongToPlaylistComponent,
     PopupCommentsComponent,
     PopupConfirmDeleteComponent,
-    PopupNotificationsComponent
+    PopupNotificationsComponent,
+    PopupVideoComponent,
+    PopupEditComponent,
+    PopupEditCategoryComponent,
+    PopupEditArtistComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

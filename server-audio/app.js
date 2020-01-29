@@ -37,7 +37,7 @@ mongoose
 // Set API rate limit for all request
 const limiter = rateLimit({
   windowMs: 1000, // 1s
-  max: 50 // limit each IP to 10 requests per windowMs
+  max: 30 // limit each IP to 30 requests per windowMs
 });
 
 // view engine setup

@@ -1,0 +1,47 @@
+<div *ngIf="signForm" style="width: 600px;">
+  <span style="color: gray;font-style: italic;" class="mb-2">NK MP3 supports mp4 (Maximum size is
+    100MB)</span>
+  <div *ngIf="signForm" style="padding-top: 10px;">
+    <form [formGroup]="signForm" (submit)="onSubmit()">
+      <div class="form-group">
+        <input [ngClass]="{'is-invalid': signForm.get('name').invalid && signForm.get('name').touched }" type="text"
+          class="form-control" formControlName="name" placeholder="Song name">
+        <span class="invalid-feedback" *ngIf="signForm.get('name').invalid">
+          <span *ngIf="signForm.get('name').hasError('required')">Song name field is required</span>
+          <span *ngIf="signForm.get('name').hasError('maxlength')">Max length of song name field: 50</span>
+        </span>
+      </div>
+      <div class="form-group">
+        <input [ngClass]="{'is-invalid': signForm.get('artist').invalid && signForm.get('artist').touched}" type="text"
+          class="form-control" formControlName="artist" placeholder="Artist of song">
+        <span class="invalid-feedback" *ngIf="signForm.get('artist').invalid">
+          <span *ngIf="signForm.get('artist').hasError('required')">Artist field is required</span>
+          <span *ngIf="signForm.get('artist').hasError('maxlength')">Max length of artist field: 50</span>
+        </span>
+      </div>
+      <div class="form-group">
+        <textarea class="form-control" formControlName="detail" rows="3"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="btnMv" class="btn btn-success mr-2"
+          style="display: inline-flex;justify-content: center;align-items: center;">
+          <mat-icon class="mr-2" style="color: white;">music_video</mat-icon>
+          MV
+        </label>
+        <input (change)="onSelectVideo($event)" style="display: none;" type="file" class="form-control-file" id="btnMv"
+          aria-describedby="fileHelpId">
+        <span style="color: red;" *ngIf="signForm.get('video').invalid">
+          <span *ngIf="signForm.get('video').hasError('invalid')">Video is invalid</span>
+          <span *ngIf="signForm.get('video').hasError('invalidSize')">Video size is invalid</span>
+        </span>
+      </div>
+      <div class="form-group" style="display: flex;">
+        <span style="font-size: 13px;width: 80%;"
+          *ngIf="signForm.get('video').value && signForm.get('video').valid">{{ signForm.get('video').value.name }}</span>
+        <span style="font-size: 13px;width: 20%;text-align: right;"
+          *ngIf="signForm.get('video').value && signForm.get('video').valid">{{ (signForm.get('video').value.size/1000000).toFixed(1) + 'MB' }}</span>
+      </div>
+      <button [disabled]="signForm.invalid || modeDisable" class="btn btn-info btn-block">Save file</button>
+    </form>
+  </div>
+</div>

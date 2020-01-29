@@ -12,11 +12,19 @@
     </p>
     <p style="color: #a0a0a0;">Category: <span (click)="onSeeCategoryOfSong()" class="info"
         style="cursor: pointer;">{{ category ? category.name : '' }}</span></p>
-    <div class="likedUsers">
-      <span class="liked-icon">{{ formatNumber(likedUsers)  }}</span>
-      <mat-icon class="more-icon like-icon ml-3">
-        favorite
-      </mat-icon>
+    <div class="wrap-like-headset-icon">
+      <div class="views">
+        <mat-icon class="more-icon like-icon mr-2">
+          headset
+        </mat-icon>
+        <span class="liked-icon">{{ formatNumber(selectedSong.views)  }}</span>
+      </div>
+      <div class="likedUsers ml-3">
+        <mat-icon class="more-icon like-icon mr-2">
+          favorite
+        </mat-icon>
+        <span class="liked-icon">{{ formatNumber(likedUsers)  }}</span>
+      </div>
     </div>
   </div>
 </div>
@@ -24,6 +32,12 @@
   <div class="alert alert-secondary wrap-alert-icon" role="alert">
     <mat-icon color="primary" mat-list-icon class="mr-2">lock</mat-icon>
     You have blocked this song
+  </div>
+</div>
+<div class="container alertLogin" *ngIf="isEmpty(currentUser)">
+  <div class="alert alert-info wrap-alert-icon" role="alert">
+    <mat-icon color="primary" mat-list-icon class="mr-2">info</mat-icon>
+    Please login to use more features
   </div>
 </div>
 <div class="container listFeatures">
@@ -53,9 +67,13 @@
   <div (click)="onAddSongToPlayList()" class="btnAddToPlayList"
     *ngIf="currentUser && currentUser.username !== 'superadmin'">
     <mat-icon matTooltip="Add to playlist" color="primary" mat-list-icon class="mr-2">queue_music</mat-icon>
-    Add to playlist
+    Add to my playlist
   </div>
-  <div (click)="onDownloadFile()" class="btnDownLoad" *ngIf="currentUser && currentUser.username !== 'superadmin'">
+  <div (click)="onAddSongToCurrentPlayList()" class="btnAddToCurrentPlayList">
+    <mat-icon matTooltip="Add to current playlist" color="primary" mat-list-icon class="mr-2">queue_music</mat-icon>
+    Add to current playlist
+  </div>
+  <div (click)="onDownloadFile()" class="btnDownLoad">
     <mat-icon matTooltip="Download" color="primary" mat-list-icon class="mr-2">cloud_download</mat-icon>
     Download
   </div>
@@ -102,10 +120,10 @@
     <div class="song-content">
       <h5>Lyrics</h5>
       <p style="color: #a2a2a2; font-size: 14px;" *ngIf="selectedSong.songcontent.status">Approved by admin</p>
-      <p style="color: #a2a2a2; font-size: 14px;"
-        *ngIf="!selectedSong.songcontent.status && selectedSong.songcontent.detail">Waiting admin approve</p>
-      <p style="color: #a2a2a2; font-size: 14px;"
-        *ngIf="!selectedSong.songcontent.status && !selectedSong.songcontent.detail">No lyrics</p>
+      <p class="alert alert-warning" *ngIf="!selectedSong.songcontent.status && selectedSong.songcontent.detail">Waiting
+        approve</p>
+      <p class="alert alert-info" *ngIf="!selectedSong.songcontent.status && !selectedSong.songcontent.detail">No lyrics
+      </p>
       <br>
       <div style="width: 100%;" *ngIf="selectedSong.songcontent.status">
         <p *ngFor="let text of arrSongContent;let i =index;"
@@ -120,6 +138,22 @@
         <mat-icon matTooltip="Copy lyrics" mat-list-icon class="mr-2">filter_none</mat-icon>
         Copy lyrics
       </div>
+    </div>
+    <div class="wrap-mv">
+      <h5>Watch the song MV</h5>
+      <p class="alert alert-info"
+        *ngIf="!isEmpty(selectedSong.video) && !selectedSong.video.status && isEmpty(selectedSong.video.url)">No video
+      </p>
+      <p class="alert alert-warning"
+        *ngIf="!isEmpty(selectedSong.video) && !selectedSong.video.status && !isEmpty(selectedSong.video.url) && selectedSong.video.url !== 'reject'">
+        Waiting approve</p>
+      <p class="alert alert-danger"
+        *ngIf="!isEmpty(selectedSong.video) && !selectedSong.video.status && selectedSong.video.url === 'reject'">
+        Rejected</p>
+      <video *ngIf="selectedSong.video.status" controls style="width: 100%;height: 100%;">
+        <source [src]="SERVER_URL_VIDEO+selectedSong.video.url" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
     </div>
   </div>
   <div class="right-body">
@@ -140,3 +174,13 @@
     </div>
   </div>
 </div>
+
+
+<!-- <td style="background-color: #17a2b8;" *ngIf="!isEmpty(song.video) && !song.video.status && isEmpty(song.video.url)">No
+  video</td>
+<td style="background-color: #ffc107;"
+  *ngIf="!isEmpty(song.video) && !song.video.status && !isEmpty(song.video.url) && song.video.url !== 'reject'">
+  Waiting approve
+</td>
+<td *ngIf="!isEmpty(song.video) && !song.video.status && song.video.url === 'reject'"
+  style="background-color: #dc3545;">Rejected</td> -->

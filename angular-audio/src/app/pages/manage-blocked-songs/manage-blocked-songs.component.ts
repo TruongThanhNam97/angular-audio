@@ -15,6 +15,8 @@ export class ManageBlockedSongsComponent implements OnInit, OnDestroy {
 
   blockedSongs: any[];
 
+  filterNameArtist: string;
+
   constructor(private cloudService: CloudService, private alertify: AlertifyService) { }
 
   ngOnInit() {

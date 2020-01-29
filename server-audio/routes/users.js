@@ -9,6 +9,13 @@ const passport = require("passport"); // authorize user
 const validateRegisterInput = require('../validation/register');
 const validateLoginInput = require('../validation/login');
 
+const rateLimit = require("express-rate-limit");
+const registerRateLimit = rateLimit({
+  windowMs: 24 * 60 * 1000, // 1 day
+  max: 5, // start blocking after 5 requests
+  message: "You spam !!!"
+});
+
 const userModel = require('../models/user');
 
 var multer = require("multer");
@@ -59,7 +66,7 @@ router.get('/getAllUsers', passport.authenticate('jwt', { session: false }), (re
 //@route    POST /users/register
 //@desc     Register user
 //@access   Public
-router.post('/register', upload.any(), (req, res, next) => {
+router.post('/register', registerRateLimit, upload.any(), (req, res, next) => {
   const { errors, isValid } = validateRegisterInput(req.body);
   // Check Validation
   if (!isValid) {

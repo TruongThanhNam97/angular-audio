@@ -26,6 +26,8 @@ export class ListUsersComponent implements OnInit, OnDestroy {
 
   currentUser: any;
 
+  username: string;
+
   constructor(
     private albumService: AlbumService,
     private router: Router,
@@ -61,7 +63,7 @@ export class ListUsersComponent implements OnInit, OnDestroy {
   getAlbums() {
     this.albumService.getAlbums().pipe(
       takeUntil(this.destroySubscription$)
-    ).subscribe((albums: any) => { this.listAlbums = [...albums]; console.log(this.listAlbums); });
+    ).subscribe((albums: any) => this.listAlbums = [...albums]);
   }
 
   onNavigateToSeeAlbum(album) {

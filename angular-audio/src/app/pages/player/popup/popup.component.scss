@@ -7,7 +7,8 @@
 
 .songInfo {
   display: flex;
-  height: 50px;
+  min-height: 50px;
+  height: auto;
   border-bottom: 1px dashed #d0cfcf;
   .left {
     width: 20%;
@@ -28,9 +29,17 @@
       margin: 0;
       font-size: 15px;
     }
-    .likedUsers {
-      height: auto;
+    .wrap-like-view-icon {
       display: flex;
+      align-items: center;
+      .likedUsers {
+        height: auto;
+        display: flex;
+      }
+      .view {
+        height: auto;
+        display: flex;
+      }
     }
   }
 }

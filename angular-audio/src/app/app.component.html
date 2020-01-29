@@ -37,6 +37,10 @@
             [routerLinkActiveOptions]="{ exact: true }">ARTISTS</a>
         </li>
         <li *ngIf="currentUser?.username !== 'superadmin'" class="nav-item">
+          <a class="nav-link" [routerLink]="['/top100']" [routerLinkActive]="'active'"
+            [routerLinkActiveOptions]="{ exact: true }">TOP 100</a>
+        </li>
+        <li *ngIf="currentUser?.username !== 'superadmin'" class="nav-item">
           <a class="nav-link" [routerLink]="['/albums']" [routerLinkActive]="'active'"
             [routerLinkActiveOptions]="{ exact: true }">ALBUM</a>
         </li>
@@ -92,5 +96,14 @@
   </div>
 </nav>
 <router-outlet></router-outlet>
-<div style="height: 200px;"></div>
-<app-media-footer *ngIf="playMode"></app-media-footer>
+<div style="height: 350px;"></div>
+<div class="footer">
+  <div class="product-info" *ngIf="!playMode">
+    <div class="info">
+      <div class="center">
+        <h5>NK MP3</h5>
+      </div>
+    </div>
+  </div>
+  <app-media-footer *ngIf="playMode"></app-media-footer>
+</div>

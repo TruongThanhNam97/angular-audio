@@ -15,6 +15,7 @@ import { SongInfoService } from 'src/app/services/song-info.service';
 import { SocketIoService } from 'src/app/services/socket-io.service';
 import { Router } from '@angular/router';
 import { ValidateService } from 'src/app/services/validate.service';
+import { PopupVideoComponent } from '../../manage-songs/popup-video/popup-video.component';
 
 @Component({
   selector: 'app-playlist-playing',
@@ -23,7 +24,7 @@ import { ValidateService } from 'src/app/services/validate.service';
 })
 export class PlaylistPlayingComponent implements OnInit, OnDestroy {
 
-  files: any;
+  files: any[];
   state: StreamState;
   currentFile: any = {};
   currentUser: any;
@@ -33,6 +34,7 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
   id: string;
   categoryName: string;
   arrSongContent = [];
+  filterNameArtist: string;
 
   constructor(
     private audioService: AudioService,
@@ -56,13 +58,14 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
     this.currentUser = this.authService.getCurrentUser();
     this.files = [...this.data];
     this.currentFile = this.audioService.getCurrentFile();
-    console.log(this.currentFile);
     this.arrSongContent = this.currentFile.file.songcontent.detail.split('\n');
     this.audioService.getResetCurrentFileSubject().pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(currentFile => {
-      this.currentFile = currentFile;
-      this.arrSongContent = this.currentFile.file.songcontent.detail.split('\n');
+      if (currentFile) {
+        this.currentFile = currentFile;
+        this.arrSongContent = this.currentFile.file.songcontent.detail.split('\n');
+      }
     });
     this.audioService.getCurrentFileSubject2().pipe(
       takeUntil(this.destroySubscription$)
@@ -81,6 +84,12 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
       this.files = this.files.filter(song => song.id !== blockedSong.id);
       this.cdt.detectChanges();
     });
+    this.cloudService.getUpdateSongsAfterDelete().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(selectedSong => {
+      this.files = this.files.filter(song => song.id !== selectedSong.id);
+      this.cdt.detectChanges();
+    });
     this.playlistService.getListSongsAfterDeleteFromPlayListSubject().pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(data => {
@@ -88,6 +97,30 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
       this.cdt.detectChanges();
     });
     this.socketIo.getCommentsRealTime().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe((updatedSong: any) => {
+      if (this.files.filter(song => song.id === updatedSong.id).length > 0) {
+        const index = this.files.findIndex(song => song.id === updatedSong.id);
+        this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
+      }
+      if (this.currentFile.file && this.currentFile.file.id === updatedSong.id) {
+        this.currentFile = { ...this.currentFile, file: updatedSong };
+        this.arrSongContent = this.currentFile.file.songcontent.detail.split('\n');
+      }
+    });
+    this.socketIo.getLikeSongRealTime().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe((updatedSong: any) => {
+      if (this.files.filter(song => song.id === updatedSong.id).length > 0) {
+        const index = this.files.findIndex(song => song.id === updatedSong.id);
+        this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
+      }
+      if (this.currentFile.file && this.currentFile.file.id === updatedSong.id) {
+        this.currentFile = { ...this.currentFile, file: updatedSong };
+        this.arrSongContent = this.currentFile.file.songcontent.detail.split('\n');
+      }
+    });
+    this.socketIo.getViewsRealTime().pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe((updatedSong: any) => {
       if (this.files.filter(song => song.id === updatedSong.id).length > 0) {
@@ -137,12 +170,14 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
   }
 
   openFile(file, index) {
+    const exactIndex = this.files.findIndex(item => item.id === file.id);
+    this.cloudService.resetTempAndLastCurrentTime().next(true);
     this.cloudService.setSelectedSongId(file.id);
     this.songInfoService.getModeSubject().next('displayBtnPlay');
     this.audioService.updatePlayMode();
-    this.currentFile = { index, file };
+    this.currentFile = { index: exactIndex, file };
     this.arrSongContent = this.currentFile.file.songcontent.detail.split('\n');
-    this.audioService.updateCurrentFile1({ index, file });
+    this.audioService.updateCurrentFile1({ index: exactIndex, file });
     this.audioService.stop();
     this.audioService.playStream(file.url).subscribe();
     this.cloudService.getCurrentFileSubject().next(this.currentFile);
@@ -151,6 +186,7 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
   }
 
   openDialog(file: any): void {
+    file.temp = 'fromPlaylist';
     this.dialog.open(PopupComponent, { data: file });
   }
 
@@ -167,6 +203,10 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
 
   isEmpty() {
     return this.validateService.isEmpty(this.currentFile);
+  }
+
+  onSeeVideo(file) {
+    this.dialog.open(PopupVideoComponent, { data: file });
   }
 
 }

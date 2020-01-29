@@ -12,6 +12,8 @@ import { AudioService } from 'src/app/services/audio.service';
 import { AlbumService } from 'src/app/services/album.service';
 import { PopupThreeTypesComponent } from '../player/popup-three-types/popup-three-types.component';
 import { ArtistsService } from 'src/app/services/artists.service';
+import { ValidateService } from 'src/app/services/validate.service';
+import { PopupVideoComponent } from './popup-video/popup-video.component';
 
 @Component({
   selector: 'app-manage-songs',
@@ -40,6 +42,8 @@ export class ManageSongsComponent implements OnInit, OnDestroy {
   username: string = null;
   artistName: string = null;
 
+  filterNameArtist: string;
+
   constructor(
     private categoryService: CategoryService,
     private authService: AuthService,
@@ -48,7 +52,8 @@ export class ManageSongsComponent implements OnInit, OnDestroy {
     public dialog: MatDialog,
     private audioService: AudioService,
     private album: AlbumService,
-    private artistsService: ArtistsService
+    private artistsService: ArtistsService,
+    private validateService: ValidateService
   ) { }
 
   ngOnInit() {
@@ -70,6 +75,12 @@ export class ManageSongsComponent implements OnInit, OnDestroy {
       const index = this.mySongs.findIndex(v => v.id === updatedSong.id);
       this.mySongs = [...this.mySongs.filter((v, i) => i < index), { ...updatedSong }, ...this.mySongs.filter((v, i) => i > index)];
       this.alertifyService.success('Update successfully');
+    });
+    this.cloudService.getUpdateSongAfterEdit().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(updatedSong => {
+      const index = this.mySongs.findIndex(v => v.id === updatedSong.id);
+      this.mySongs = [...this.mySongs.filter((v, i) => i < index), { ...updatedSong }, ...this.mySongs.filter((v, i) => i > index)];
     });
   }
 
@@ -134,12 +145,14 @@ export class ManageSongsComponent implements OnInit, OnDestroy {
   }
 
   openFile(file, index) {
+    const exactIndex = this.mySongs.findIndex(item => item.id === file.id);
+    this.cloudService.resetTempAndLastCurrentTime().next(true);
     this.audioService.updatePlayMode();
     if (this.username && this.selectedAlbum === this.username || this.categoryName && this.selectedCategory === this.categoryName
       || this.artistName && this.selectedArtist === this.artistName) {
-      this.currentFile = { index, file };
+      this.currentFile = { index: exactIndex, file };
     }
-    this.audioService.updateCurrentFile1({ index, file });
+    this.audioService.updateCurrentFile1({ index: exactIndex, file });
     this.audioService.stop();
     this.audioService.playStream(file.url).subscribe();
   }
@@ -153,6 +166,14 @@ export class ManageSongsComponent implements OnInit, OnDestroy {
 
   downloadFile(data) {
     this.dialog.open(PopupThreeTypesComponent, { data });
+  }
+
+  isEmpty(data) {
+    return this.validateService.isEmpty(data);
+  }
+
+  onSeeVideo(data) {
+    this.dialog.open(PopupVideoComponent, { data });
   }
 
 }

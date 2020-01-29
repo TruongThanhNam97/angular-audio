@@ -25,6 +25,8 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
   previousVolume: number;
   loop = false;
   randomMode = false;
+  temp = 0;
+  lastCurrentTime = 0;
 
   destroySubscription$: Subject<boolean> = new Subject();
 
@@ -56,8 +58,20 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
       takeUntil(this.destroySubscription$)
     ).subscribe(state => {
       this.state = state;
+      if (this.state.currentTime - this.lastCurrentTime >= 1) {
+        this.lastCurrentTime = this.state.currentTime;
+        this.temp++;
+      }
       if (this.state.readableCurrentTime === this.state.readableDuration
         && this.state.readableCurrentTime !== '' && this.state.readableDuration !== '') {
+        const check = (this.temp / this.state.duration) * 100 >= 60 ? true : false;
+        if (check) {
+          this.cloudService.updateViewsOfSong({ id: this.currentFile.file.id }).pipe(
+            takeUntil(this.destroySubscription$)
+          ).subscribe(res => { });
+        }
+        this.temp = 0;
+        this.lastCurrentTime = 0;
         if (this.randomMode) {
           this.random();
         } else if (!this.loop && this.currentFile.index !== this.files.length - 1) {
@@ -92,6 +106,33 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
         this.audioService.getResetCurrentFileSubject().next({ index: newIndex, file: this.currentFile.file });
         this.audioService.setCurrentFile({ index: newIndex, file: this.currentFile.file });
       }
+    });
+    this.cloudService.getUpdateSongsAfterDelete().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(selectedSong => {
+      this.files = this.files.filter(song => song.id !== selectedSong.id);
+      const newIndex = this.files.findIndex(file => file.id === this.currentFile.file.id);
+      if (selectedSong.id === this.currentFile.file.id) {
+        const nextIndex = this.currentFile.index;
+        const preIndex = this.currentFile.index - 1;
+        if (this.files[nextIndex]) {
+          this.next1();
+        } else if (this.files[preIndex]) {
+          this.previous1();
+        } else {
+          this.audioService.resetCurentFile();
+          this.audioService.closePlayMode();
+          this.audioService.stop();
+        }
+      } else if (newIndex !== this.currentFile.index) {
+        this.audioService.getResetCurrentFileSubject().next({ index: newIndex, file: this.currentFile.file });
+        this.audioService.setCurrentFile({ index: newIndex, file: this.currentFile.file });
+      }
+    });
+    this.cloudService.getUpdateSongsAfterAdd().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(selectedSong => {
+      this.files = [...this.files, selectedSong];
     });
     this.playlistService.getListSongsAfterDeleteFromPlayListSubject().pipe(
       takeUntil(this.destroySubscription$)
@@ -137,6 +178,34 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
         this.currentFile = { ...this.currentFile, file: updatedSong };
       }
     });
+    this.socketIo.getLikeSongRealTime().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe((updatedSong: any) => {
+      if (this.files.filter(song => song.id === updatedSong.id).length > 0) {
+        const index = this.files.findIndex(song => song.id === updatedSong.id);
+        this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
+      }
+      if (this.currentFile.file && this.currentFile.file.id === updatedSong.id) {
+        this.currentFile = { ...this.currentFile, file: updatedSong };
+      }
+    });
+    this.socketIo.getViewsRealTime().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe((updatedSong: any) => {
+      if (this.files.filter(song => song.id === updatedSong.id).length > 0) {
+        const index = this.files.findIndex(song => song.id === updatedSong.id);
+        this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
+      }
+      if (this.currentFile.file && this.currentFile.file.id === updatedSong.id) {
+        this.currentFile = { ...this.currentFile, file: updatedSong };
+      }
+    });
+    this.cloudService.resetTempAndLastCurrentTime().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(res => {
+      this.temp = 0;
+      this.lastCurrentTime = 0;
+    });
   }
 
   ngOnDestroy() {
@@ -160,6 +229,8 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
   }
 
   next() {
+    this.temp = 0;
+    this.lastCurrentTime = 0;
     this.songInfoService.getModeSubject().next('displayBtnPlay');
     const index = this.currentFile.index + 1;
     if (index <= this.files.length - 1) {
@@ -170,6 +241,8 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
   }
 
   next1() {
+    this.temp = 0;
+    this.lastCurrentTime = 0;
     this.songInfoService.getModeSubject().next('displayBtnPlay');
     const index = this.currentFile.index;
     if (index <= this.files.length - 1) {
@@ -180,6 +253,8 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
   }
 
   previous() {
+    this.temp = 0;
+    this.lastCurrentTime = 0;
     this.songInfoService.getModeSubject().next('displayBtnPlay');
     const index = this.currentFile.index - 1;
     const file = this.files[index];
@@ -190,6 +265,8 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
   }
 
   previous1() {
+    this.temp = 0;
+    this.lastCurrentTime = 0;
     this.songInfoService.getModeSubject().next('displayBtnPlay');
     const index = this.currentFile.index - 1;
     const file = this.files[index];
@@ -200,6 +277,8 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
   }
 
   random() {
+    this.temp = 0;
+    this.lastCurrentTime = 0;
     this.songInfoService.getModeSubject().next('displayBtnPlay');
     const index = this.getRandomIndex(this.files.length);
     const file = this.files[index];

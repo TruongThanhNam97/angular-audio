@@ -37,7 +37,6 @@ export class PopupNotificationsComponent implements OnInit, OnDestroy {
     this.socketIo.getNotificationsRealTime().pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe((res: any) => {
-      console.log(res);
       if (this.currentUser
         && res.owner.filter(id => id === this.currentUser.id).length > 0
         && res.notifications.length === 1
@@ -91,7 +90,8 @@ export class PopupNotificationsComponent implements OnInit, OnDestroy {
       this.dialogRef.close();
       this.router.navigate(['/albums', notification.user._id], { queryParams: { username: notification.user.username } });
     }
-    if (notification.mode === 'like' || notification.mode === 'comment') {
+    if (notification.mode === 'like' || notification.mode === 'comment' || notification.mode === 'approveLyrics'
+      || notification.mode === 'approveVideo') {
       let song = JSON.parse(notification.song);
       song = {
         id: song._id,
@@ -105,7 +105,9 @@ export class PopupNotificationsComponent implements OnInit, OnDestroy {
         artistId: song.artistId ? song.artistId : null,
         likedUsers: song.likedUsers,
         comments: song.comments ? song.comments : [],
-        songcontent: song.songcontent
+        songcontent: song.songcontent,
+        video: song.video ? song.video : null,
+        views: song.views
       };
       this.cloudService.setSelectedSong(song);
       this.dialogRef.close();

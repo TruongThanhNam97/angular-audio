@@ -22,9 +22,15 @@
     </div>
     <div style="width: 70%; max-height: 600px; overflow-y: scroll;">
       <mat-spinner *ngIf="loading"></mat-spinner>
+      <div class="form-group mt-3" style="width: 50%; position: relative;">
+        <input type="text" class="form-control" aria-describedby="helpId" placeholder="Search by name/artist of song"
+          [(ngModel)]="filterNameArtist" style="padding-left: 35px;">
+        <mat-icon class="search-icon">search</mat-icon>
+      </div>
       <mat-list *ngIf="!loading" color="primary" style="width: 100%;margin: auto;">
         <h3 mat-subheader>Songs</h3>
-        <mat-list-item class="item" *ngFor="let file of files; let i = index;" (click)="openFile(file, i)">
+        <mat-list-item class="item" *ngFor="let file of files | songPipe:filterNameArtist; let i = index;"
+          (click)="openFile(file, i)">
           <mat-icon class="music-icon" style="cursor: pointer;background-color: #FF4081;" color="primary" mat-list-icon>
             music_note
           </mat-icon>
@@ -32,18 +38,22 @@
           <h5 mat-line>by {{ file.artist }}</h5>
           <mat-icon color="primary" *ngIf="currentFile && currentFile?.index === i && !state?.error">volume_up
           </mat-icon>
+          <mat-icon (click)="$event.stopPropagation();onSeeVideo(file)" matTooltip="MV" *ngIf="file.video.status"
+            style="cursor: pointer;" class="more-icon ml-2" color="primary">
+            music_video
+          </mat-icon>
           <h6 *ngIf="currentFile && currentFile?.index === i && state?.error">ERROR</h6>
           <mat-icon (click)="$event.stopPropagation();onLikeSong(file)" matTooltip="Like"
             *ngIf="currentUser && currentUser.username !== 'superadmin' && !isLiked(file)" style="cursor: pointer;"
-            class="more-icon" color="primary">
+            class="more-icon ml-2" color="primary">
             favorite_border
           </mat-icon>
           <mat-icon (click)="$event.stopPropagation();onLikeSong(file)" matTooltip="Unlike"
             *ngIf="currentUser && currentUser.username !== 'superadmin' && isLiked(file)" style="cursor: pointer;"
-            class="more-icon" color="primary">
+            class="more-icon ml-2" color="primary">
             favorite
           </mat-icon>
-          <mat-icon (click)="$event.stopPropagation();openDialog(file)" style="cursor: pointer;" class="more-icon"
+          <mat-icon (click)="$event.stopPropagation();openDialog(file)" style="cursor: pointer;" class="more-icon ml-2"
             color="primary">more_horiz
           </mat-icon>
           <mat-divider></mat-divider>

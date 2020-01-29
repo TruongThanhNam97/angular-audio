@@ -17,6 +17,13 @@
   <div class="container mt-3">No albums</div>
 </ng-template> -->
 
+<div class="container">
+  <div class="form-group" style="width: 50%; position: relative;">
+    <input type="text" class="form-control" placeholder="Search by playlist name" [(ngModel)]="playlistName"
+      style="padding-left: 35px;">
+      <mat-icon class="search-icon">search</mat-icon>
+  </div>
+</div>
 <div class="container" style="display: flex;flex-wrap: wrap;">
   <div class="wrap-playlist">
     <div class="create-playlist" (click)="onCreatePlayList()">
@@ -27,7 +34,7 @@
       </div>
     </div>
   </div>
-  <div *ngFor="let playList of playLists" class="playlist-item">
+  <div *ngFor="let playList of playLists | namePipe:playlistName" class="playlist-item">
     <div class="btnDeletePlayList" (click)="onDeletePlayList(playList)">
       <mat-icon mat-list-icon>close</mat-icon>
     </div>

@@ -51,7 +51,6 @@ export class PopupCommentsComponent implements OnInit, OnDestroy {
     this.socketIo.getCommentsRealTime().pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe((song: any) => {
-      console.log('listener socket');
       if (song.id === this.data.id && !this.editMode && !this.replyMode && !this.editReplyMode) {
         this.data = { ...song };
         if (this.filterBy === 'Featured comment') {

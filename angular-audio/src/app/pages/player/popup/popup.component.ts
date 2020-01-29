@@ -1,6 +1,5 @@
 import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
-import { PlayerComponent } from '../player.component';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialog, MatBottomSheet } from '@angular/material';
 import { PopupThreeTypesComponent } from '../popup-three-types/popup-three-types.component';
 import { CloudService } from 'src/app/services/cloud.service';
 import { Subject } from 'rxjs';
@@ -9,7 +8,6 @@ import { AlertifyService } from 'src/app/services/alertify.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { PopupMoveSongToPlaylistComponent } from '../../manage-playlist/popup-move-song-to-playlist/popup-move-song-to-playlist.component';
 import { PlayListService } from 'src/app/services/playlist.service';
-import { ThrowStmt } from '@angular/compiler';
 import { Router } from '@angular/router';
 import { SocketIoService } from 'src/app/services/socket-io.service';
 
@@ -25,7 +23,7 @@ export class PopupComponent implements OnInit, OnDestroy {
   currentUser: any;
 
   constructor(
-    public dialogRef: MatDialogRef<PlayerComponent>,
+    public dialogRef: MatDialogRef<PopupComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     public dialog: MatDialog,
     private cloudService: CloudService,
@@ -33,7 +31,8 @@ export class PopupComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private playlistService: PlayListService,
     private router: Router,
-    private socketIo: SocketIoService
+    private socketIo: SocketIoService,
+    private bottomSheet: MatBottomSheet
   ) { }
 
   ngOnInit() {
@@ -43,6 +42,20 @@ export class PopupComponent implements OnInit, OnDestroy {
     ).subscribe((song: any) => {
       if (this.data.id === song.id) {
         this.data = { ...song };
+      }
+    });
+    this.socketIo.getViewsRealTime().pipe(
+      takeUntil(this.destroySubscriptions)
+    ).subscribe((song: any) => {
+      if (this.data.id === song.id) {
+        this.data = { ...song };
+      }
+    });
+    this.socketIo.getCommentsRealTime().pipe(
+      takeUntil(this.destroySubscriptions)
+    ).subscribe((updatedSong: any) => {
+      if (this.data.id === updatedSong.id) {
+        this.data = { ...updatedSong };
       }
     });
   }
@@ -102,6 +115,17 @@ export class PopupComponent implements OnInit, OnDestroy {
       this.playlistService.getUdatedPlayListAfterAddOrDeleteSongSubject().next(playlist);
       this.playlistService.getListSongsAfterDeleteFromPlayListSubject().next({ playlist, songId: this.data.id });
     });
+  }
+
+  onDeleteSong() {
+    this.cloudService.getUpdateSongsAfterDelete().next(this.data);
+    this.dialogRef.close();
+  }
+
+  onAddToCurrentPlaylist() {
+    this.cloudService.getUpdateSongsAfterAdd().next(this.data);
+    this.dialogRef.close();
+    this.alertify.success('Added');
   }
 
 }

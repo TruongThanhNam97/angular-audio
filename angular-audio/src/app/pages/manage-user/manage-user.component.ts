@@ -20,6 +20,8 @@ export class ManageUserComponent implements OnInit, OnDestroy {
 
   uploadedSongs: any;
 
+  username: string;
+
   constructor(
     private albumService: AlbumService,
     private cloudService: CloudService,

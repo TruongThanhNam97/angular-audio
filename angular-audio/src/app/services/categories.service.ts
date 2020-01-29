@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { map } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
@@ -12,9 +13,15 @@ export class CategoryService {
 
     selectedCategory: string;
 
+    private upadteCategoryAfterEdit$: Subject<any> = new Subject();
+
     constructor(private http: HttpClient) {
         this.SERVER_URL = environment.SERVER_URL;
         this.SERVER_URL_IMAGE = environment.SERVER_URL_IMAGE;
+    }
+
+    getUpdateCategoryAfterEdit() {
+        return this.upadteCategoryAfterEdit$;
     }
 
     upload(data) {

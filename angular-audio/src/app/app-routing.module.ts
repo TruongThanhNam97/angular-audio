@@ -24,6 +24,7 @@ import { ArtistsComponent } from './pages/artists/artists.component';
 import { ManageBlockedSongsComponent } from './pages/manage-blocked-songs/manage-blocked-songs.component';
 import { ManagePlaylistComponent } from './pages/manage-playlist/manage-playlist.component';
 import { SongInfoComponent } from './pages/song-info/song-info.component';
+import { Top100Component } from './pages/top100/top100.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/categories', pathMatch: 'full' },
@@ -76,6 +77,9 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   { path: 'categories', component: CategoriesComponent },
+  { path: 'top100', component: Top100Component },
+  { path: 'top100/top100Loves', component: PlayerComponent },
+  { path: 'top100/top100Hear', component: PlayerComponent },
   { path: 'categories/:id', component: PlayerComponent },
   { path: 'artists', component: ArtistsComponent },
   { path: 'artists/:id', component: PlayerComponent },

@@ -15,6 +15,8 @@ export class CategoriesComponent implements OnInit, OnDestroy {
 
   categories: any;
 
+  categoryName: string;
+
   constructor(
     private categoriesService: CategoryService,
     private router: Router,

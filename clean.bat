@@ -26,6 +26,11 @@ del *.wav
 del *.WAV
 popd
 
+pushd public\videos
+del *.mp4
+del *.MP4
+popd 
+
 pushd public\images
 del *.jpg
 del *.JPG

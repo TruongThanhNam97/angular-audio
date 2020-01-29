@@ -1,6 +1,16 @@
 <ng-container *ngIf="artists && artists.length > 0; else elseTemplate">
-  <div class="container mt-5" style="display: flex;flex-wrap: wrap;">
-    <div (click)="onNavigateToSeeArtist(artist)" class="wrap-category" *ngFor="let artist of artists">
+  <div class="container mt-5">
+    <div class="row">
+      <div class="form-group col-6" style="position: relative;">
+        <input style="padding-left:35px;" type="text" class="form-control" aria-describedby="helpId"
+          placeholder="Search by artist name" [(ngModel)]="artistName">
+        <mat-icon class="search-icon">search</mat-icon>
+      </div>
+    </div>
+  </div>
+  <div class="container" style="display: flex;flex-wrap: wrap;">
+    <div (click)="onNavigateToSeeArtist(artist)" class="wrap-category"
+      *ngFor="let artist of artists | namePipe:artistName">
       <img class="category-img"
         src="{{ artist.avatar ?  artist.avatar : '../../../../../assets/apple-music-note-800x420.jpg'}}"
         alt="{{artist.name}}">
