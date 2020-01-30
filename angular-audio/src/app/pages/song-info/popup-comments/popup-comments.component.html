@@ -84,10 +84,12 @@
           <div class="wrap-right-comment">
             <div class="right-comment">
               <div class="wrap-username-dated">
-                <div (click)="onNavigateToUserAlbum(subComment)" class="username mr-2">{{subComment.user.username}}</div>
+                <div (click)="onNavigateToUserAlbum(subComment)" class="username mr-2">{{subComment.user.username}}
+                </div>
                 <div class="date">{{ subComment.date | timeAgo }}</div>
               </div>
-              <div class="wrap-text" *ngIf="indexToEditReply !== subIndex || !editReplyMode">{{ subComment.text }}</div>
+              <div class="wrap-text" *ngIf="indexToEditReply !== subIndex || !editReplyMode ||indexToEdit !== i ">
+                {{ subComment.text }}</div>
               <form class="wrap-text" *ngIf="indexToEditReply === subIndex && editReplyMode && indexToEdit === i">
                 <div class="form-group" [formGroup]="editReplyForm">
                   <input appAutoFocus (keyup.enter)="onEditReplySubmit()" type="text" class="form-control"
@@ -146,7 +148,7 @@
           <input type="text" class="form-control" placeholder="Write a comment..." formControlName="text">
         </div>
         <div class="col-2">
-          <button [disabled]="signForm.invalid" class="btn btn-primary">Send</button>
+          <button [disabled]="signForm.invalid || loadingWriteComment" class="btn btn-primary">Send</button>
         </div>
       </div>
     </form>

@@ -1,10 +1,13 @@
-<div class="container mt-4">
+<div class="container" *ngIf="loading" style="display: flex;justify-content: center;align-items: center;">
+  <mat-spinner></mat-spinner>
+</div>
+<div class="container mt-4" *ngIf="!loading">
   <div class="row">
     <div class="col-6">
       <div class="form-group" style="position: relative;">
         <input type="text" class="form-control" placeholder="Search by name/artist of song"
           [(ngModel)]="filterNameArtist" style="padding-left: 35px;">
-          <mat-icon class="search-icon">search</mat-icon>
+        <mat-icon class="search-icon">search</mat-icon>
       </div>
     </div>
     <div class="col-12">
@@ -22,7 +25,7 @@
           </thead>
           <tbody>
             <tr *ngFor="let song of mySongs | songPipe:filterNameArtist; let i = index;">
-              <td>{{ song.name }}</td>
+              <td style="width: 250px;">{{ song.name }}</td>
               <td>{{ song.artist }}</td>
               <td [ngStyle]="{'background-color': !song.categoryId ? '#17a2b8' : ''}">
                 {{ song.categoryId ? getCategoryNameById(song.categoryId) : 'No category' }}</td>

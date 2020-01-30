@@ -28,6 +28,10 @@ export class ListUsersComponent implements OnInit, OnDestroy {
 
   username: string;
 
+  disableMode = false;
+
+  loading = false;
+
   constructor(
     private albumService: AlbumService,
     private router: Router,
@@ -61,9 +65,13 @@ export class ListUsersComponent implements OnInit, OnDestroy {
   }
 
   getAlbums() {
+    this.loading = true;
     this.albumService.getAlbums().pipe(
       takeUntil(this.destroySubscription$)
-    ).subscribe((albums: any) => this.listAlbums = [...albums]);
+    ).subscribe((albums: any) => {
+      this.listAlbums = [...albums];
+      this.loading = false;
+    }, err => this.loading = false);
   }
 
   onNavigateToSeeAlbum(album) {
@@ -81,11 +89,13 @@ export class ListUsersComponent implements OnInit, OnDestroy {
   }
 
   follows(uploader) {
+    this.disableMode = true;
     this.authService.followsUser({ id: uploader.id }).pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe((res: any) => {
       this.alertify.success(`${res.message} ${uploader.username} successfully`);
-    });
+      this.disableMode = false;
+    }, err => this.disableMode = false);
   }
 
   isFollowed(uploader) {

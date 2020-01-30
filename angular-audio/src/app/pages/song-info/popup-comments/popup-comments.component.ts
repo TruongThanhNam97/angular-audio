@@ -34,6 +34,10 @@ export class PopupCommentsComponent implements OnInit, OnDestroy {
   sortMode = false;
   filterBy = 'Latest comment';
 
+  loadingWriteComment = false;
+  loadingEditComment = false;
+  loadingLikeUnlikeComment = false;
+
   constructor(
     public dialogRef: MatDialogRef<PopupCommentsComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -71,18 +75,9 @@ export class PopupCommentsComponent implements OnInit, OnDestroy {
   }
 
   onDeleteComment(comment) {
+    this.resetAll();
     comment.songId = this.data.id;
     this.dialog.open(PopupConfirmDeleteComponent, { data: comment });
-  }
-
-  onEditComment(comment, index) {
-    this.indexToEdit = index;
-    this.editMode = true;
-    this.replyMode = false;
-    this.editForm.patchValue({
-      text: comment.text,
-      commentId: comment._id
-    });
   }
 
   isMyComment(comment) {
@@ -151,6 +146,7 @@ export class PopupCommentsComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
+    this.loadingWriteComment = true;
     this.cloudService.addComment(this.signForm.value).pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(song => {
@@ -158,11 +154,13 @@ export class PopupCommentsComponent implements OnInit, OnDestroy {
       this.signForm.get('text').reset();
       this.alertify.success('Add comment successfully');
       this.resetAll();
-    });
+      this.loadingWriteComment = false;
+    }, err => this.loadingWriteComment = false);
   }
 
   onEditSubmit() {
-    if (this.editForm.valid) {
+    if (this.editForm.valid && !this.loadingEditComment) {
+      this.loadingEditComment = true;
       this.cloudService.editComment(this.editForm.value).pipe(
         takeUntil(this.destroySubscription$)
       ).subscribe(song => {
@@ -170,7 +168,8 @@ export class PopupCommentsComponent implements OnInit, OnDestroy {
         this.resetAll();
         this.alertify.success('Edit comment successfully');
         this.data = { ...song };
-      });
+        this.loadingEditComment = false;
+      }, err => this.loadingEditComment = false);
     }
   }
 
@@ -182,29 +181,37 @@ export class PopupCommentsComponent implements OnInit, OnDestroy {
   }
 
   onLikeComment(comment) {
-    this.cloudService.likeComment({ songId: this.data.id, commentId: comment._id }).pipe(
-      takeUntil(this.destroySubscription$)
-    ).subscribe(song => {
-      this.cloudService.setSelectedSong(song);
-      // this.socketIo.sendCommentRealTime();
-    }, err => {
-      if (err.error.message) {
-        this.alertify.error(err.error.message);
-      }
-    });
+    if (!this.loadingLikeUnlikeComment) {
+      this.loadingLikeUnlikeComment = true;
+      this.cloudService.likeComment({ songId: this.data.id, commentId: comment._id }).pipe(
+        takeUntil(this.destroySubscription$)
+      ).subscribe(song => {
+        this.cloudService.setSelectedSong(song);
+        this.loadingLikeUnlikeComment = false;
+      }, err => {
+        if (err.error.message) {
+          this.alertify.error(err.error.message);
+        }
+        this.loadingLikeUnlikeComment = false;
+      });
+    }
   }
 
   onUnlikeComment(comment) {
-    this.cloudService.unlikeComment({ songId: this.data.id, commentId: comment._id }).pipe(
-      takeUntil(this.destroySubscription$)
-    ).subscribe(song => {
-      this.cloudService.setSelectedSong(song);
-      // this.socketIo.sendCommentRealTime();
-    }, err => {
-      if (err.error.message) {
-        this.alertify.error(err.error.message);
-      }
-    });
+    if (!this.loadingLikeUnlikeComment) {
+      this.loadingLikeUnlikeComment = true;
+      this.cloudService.unlikeComment({ songId: this.data.id, commentId: comment._id }).pipe(
+        takeUntil(this.destroySubscription$)
+      ).subscribe(song => {
+        this.cloudService.setSelectedSong(song);
+        this.loadingLikeUnlikeComment = false;
+      }, err => {
+        if (err.error.message) {
+          this.alertify.error(err.error.message);
+        }
+        this.loadingLikeUnlikeComment = false;
+      });
+    }
   }
 
   isReactedComment(listId: string[]): boolean {
@@ -226,6 +233,7 @@ export class PopupCommentsComponent implements OnInit, OnDestroy {
 
   onReply() {
     if (this.replyForm.valid) {
+      this.replyForm.disable();
       this.cloudService.addSubComment(this.replyForm.value).pipe(
         takeUntil(this.destroySubscription$)
       ).subscribe(song => {
@@ -233,13 +241,15 @@ export class PopupCommentsComponent implements OnInit, OnDestroy {
         this.resetAll();
         this.alertify.success('Reply comment successfully');
         this.data = { ...song };
-      });
+        this.replyForm.enable();
+      }, err => this.replyForm.enable());
       this.replyForm.get('text').reset();
     }
   }
 
   onEditReplySubmit() {
-    if (this.editReplyForm.valid) {
+    if (this.editReplyForm.valid && !this.loadingEditComment) {
+      this.loadingEditComment = true;
       this.cloudService.editSubComment(this.editReplyForm.value).pipe(
         takeUntil(this.destroySubscription$)
       ).subscribe(song => {
@@ -247,40 +257,61 @@ export class PopupCommentsComponent implements OnInit, OnDestroy {
         this.resetAll();
         this.alertify.success('Edit reply successfully');
         this.data = { ...song };
-      });
+        this.loadingEditComment = false;
+      }, err => this.loadingEditComment = false);
     }
   }
 
   onLikeReplyComment(subComment, comment) {
-    this.cloudService.likeSubComment({ songId: this.data.id, commentId: comment._id, subCommentId: subComment._id }).pipe(
-      takeUntil(this.destroySubscription$)
-    ).subscribe(song => {
-      this.cloudService.setSelectedSong(song);
-      // this.socketIo.sendCommentRealTime();
-    }, err => {
-      if (err.error.message) {
-        this.alertify.error(err.error.message);
-      }
-    });
+    if (!this.loadingLikeUnlikeComment) {
+      this.loadingLikeUnlikeComment = true;
+      this.cloudService.likeSubComment({ songId: this.data.id, commentId: comment._id, subCommentId: subComment._id }).pipe(
+        takeUntil(this.destroySubscription$)
+      ).subscribe(song => {
+        this.cloudService.setSelectedSong(song);
+        this.loadingLikeUnlikeComment = false;
+      }, err => {
+        if (err.error.message) {
+          this.alertify.error(err.error.message);
+        }
+        this.loadingLikeUnlikeComment = false;
+      });
+    }
   }
 
   onUnlikeSubComment(subComment, comment) {
-    this.cloudService.unlikeSubComment({ songId: this.data.id, commentId: comment._id, subCommentId: subComment._id }).pipe(
-      takeUntil(this.destroySubscription$)
-    ).subscribe(song => {
-      this.cloudService.setSelectedSong(song);
-      // this.socketIo.sendCommentRealTime();
-    }, err => {
-      if (err.error.message) {
-        this.alertify.error(err.error.message);
-      }
-    });
+    if (!this.loadingLikeUnlikeComment) {
+      this.loadingLikeUnlikeComment = true;
+      this.cloudService.unlikeSubComment({ songId: this.data.id, commentId: comment._id, subCommentId: subComment._id }).pipe(
+        takeUntil(this.destroySubscription$)
+      ).subscribe(song => {
+        this.cloudService.setSelectedSong(song);
+        this.loadingLikeUnlikeComment = false;
+      }, err => {
+        if (err.error.message) {
+          this.alertify.error(err.error.message);
+        }
+        this.loadingLikeUnlikeComment = false;
+      });
+    }
   }
 
   onDeleteSubComment(subComment, comment) {
+    this.resetAll();
     subComment.songId = this.data.id;
     subComment.commentId = comment._id;
     this.dialog.open(PopupConfirmDeleteComponent, { data: subComment });
+  }
+
+  onEditComment(comment, index) {
+    this.indexToEdit = index;
+    this.editMode = true;
+    this.replyMode = false;
+    this.editReplyMode = false;
+    this.editForm.patchValue({
+      text: comment.text,
+      commentId: comment._id
+    });
   }
 
   onEditSubComment(subComment, comment, subIndex, index) {

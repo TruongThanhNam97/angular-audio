@@ -16,6 +16,8 @@ export class PopupEditSongComponent implements OnInit, OnDestroy {
 
   destroySubscription$: Subject<boolean> = new Subject();
 
+  loading = false;
+
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private cloudService: CloudService,
@@ -49,13 +51,15 @@ export class PopupEditSongComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
+    this.loading = true;
     this.signForm.value.detail = this.signForm.value.detail.trim();
     this.cloudService.updateSong(this.signForm.value).pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(song => {
       this.cloudService.setUpdatedSong(song);
       this.dialogRef.close();
-    });
+      this.loading = false;
+    }, _ => this.loading = false);
   }
 
 }

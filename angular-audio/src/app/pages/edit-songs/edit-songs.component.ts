@@ -32,6 +32,10 @@ export class EditSongsComponent implements OnInit, OnDestroy {
 
   filterNameArtist: string;
 
+  disableMode = false;
+
+  loading = false;
+
   constructor(
     private categoryService: CategoryService,
     private authService: AuthService,
@@ -50,12 +54,6 @@ export class EditSongsComponent implements OnInit, OnDestroy {
       const index = this.mySongs.findIndex(v => v.id === song.id);
       this.mySongs = [...this.mySongs.filter((v, i) => i < index), { ...song }, ...this.mySongs.filter((v, i) => i > index)];
     });
-    // this.categoryService.getCategories().pipe(
-    //   takeUntil(this.destroySubscription$)
-    // ).subscribe(categories => {
-    //   this.categories = categories;
-    //   this.initializeForm();
-    // });
   }
 
   ngOnDestroy() {
@@ -63,11 +61,13 @@ export class EditSongsComponent implements OnInit, OnDestroy {
   }
 
   loadSongsByUserId(userId: string) {
+    this.loading = true;
     this.cloudService.getSongsByUserId(userId).pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(songs => {
       this.mySongs = songs;
-    });
+      this.loading = false;
+    }, err => this.loading = false);
   }
 
   onEdit(song: any) {
@@ -75,12 +75,14 @@ export class EditSongsComponent implements OnInit, OnDestroy {
   }
 
   onDelete(song: any, index: number) {
+    this.disableMode = true;
     this.cloudService.deleteSong({ id: song.id }).pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(() => {
       this.mySongs = this.mySongs.filter((v, i) => i !== index);
       this.alertifyService.success('Delete successfully');
-    });
+      this.disableMode = false;
+    }, err => this.disableMode = false);
   }
 
   isEmpty(data) {

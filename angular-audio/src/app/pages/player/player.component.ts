@@ -55,6 +55,9 @@ export class PlayerComponent implements OnInit, OnDestroy {
 
   isMatchCurrentPlayListAndCurrentPlayerAudio: boolean;
 
+  loadingLike = false;
+
+
   constructor(
     private audioService: AudioService,
     private cloudService: CloudService,
@@ -138,6 +141,12 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.audioService.getCurrentFileSubject2().pipe(takeUntil(this.audioService.getDestroyGeneralSubject$())).subscribe((v: any) => {
       this.openFile(v.file, v.index);
     });
+    // Test
+    // this.cloudService.getUpdateListFilesAfterAddDelete().pipe(
+    //   takeUntil(this.audioService.getDestroyGeneralSubject$())
+    // ).subscribe(files => {
+    //   this.files = [...files];
+    // });
     this.cloudService.getCurrentFileSubject().pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(currentFile => {
@@ -215,35 +224,37 @@ export class PlayerComponent implements OnInit, OnDestroy {
   }
 
   onLikeSong(song: any) {
-    return this.cloudService.likeSong({ id: song.id }).pipe(
-      takeUntil(this.destroySubscription$)
-    ).subscribe(song => {
-      const index = this.files.findIndex(item => item.id === song.id);
-      this.files = [...this.files.filter((v, i) => i < index), { ...song }, ...this.files.filter((v, i) => i > index)];
-      if (this.playlist) {
-        this.files = this.files.map(song => {
-          song.playlistId = this.id;
-          song.playlistName = this.playlist;
-          return song;
-        });
-        this.cloudService.getUpdateSongAfterManipulatingSubject().next({ ...song, playlistId: this.id, playlistName: this.playlist });
-      } else {
-        this.cloudService.getUpdateSongAfterManipulatingSubject().next(song);
-      }
-      if (this.isMatchCurrentPlayListAndCurrentPlayerAudio) {
-        this.cloudService.getUpdatedSongsAfterLikingSubject().next(this.files);
-      }
-      if (!this.audioService.getPlayMode()) {
-        this.cloudService.setCurrentPlayList(this.files);
-      }
-      if (this.isLiked(song)) {
-        this.alertify.success('Like successfully');
-      } else {
-        this.alertify.success('UnLike successfully');
-      }
-      // this.cloudService.getUpdateSongAfterManipulatingSubject().next(song);
-      // this.socketIo.likeSongRealTime();
-    }, err => console.log(err));
+    if (!this.loadingLike) {
+      this.loadingLike = true;
+      this.cloudService.likeSong({ id: song.id }).pipe(
+        takeUntil(this.destroySubscription$)
+      ).subscribe(song => {
+        const index = this.files.findIndex(item => item.id === song.id);
+        this.files = [...this.files.filter((v, i) => i < index), { ...song }, ...this.files.filter((v, i) => i > index)];
+        if (this.playlist) {
+          this.files = this.files.map(song => {
+            song.playlistId = this.id;
+            song.playlistName = this.playlist;
+            return song;
+          });
+          this.cloudService.getUpdateSongAfterManipulatingSubject().next({ ...song, playlistId: this.id, playlistName: this.playlist });
+        } else {
+          this.cloudService.getUpdateSongAfterManipulatingSubject().next(song);
+        }
+        if (this.isMatchCurrentPlayListAndCurrentPlayerAudio) {
+          this.cloudService.getUpdatedSongsAfterLikingSubject().next(this.files);
+        }
+        if (!this.audioService.getPlayMode()) {
+          this.cloudService.setCurrentPlayList(this.files);
+        }
+        if (this.isLiked(song)) {
+          this.alertify.success('Like successfully');
+        } else {
+          this.alertify.success('UnLike successfully');
+        }
+        this.loadingLike = false;
+      }, err => this.loadingLike = false);
+    }
   }
 
   loadSongsByUserId(id: string): void {

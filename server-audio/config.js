@@ -5,13 +5,11 @@ config.DB_IP = "mongodb://127.0.0.1:27017";
 config.DB_NAME = "audio";
 
 
-if (DEVELOPMENT)
-{
+if (DEVELOPMENT) {
     config.DB_IP = "mongodb://127.0.0.1:27017";
     config.DB_NAME = "audio";
 }
-else
-{
+else {
     config.DB_IP = "mongodb://truongthanhnam:nam29041997@ds137008.mlab.com:37008";
     config.DB_NAME = "audio";
 }

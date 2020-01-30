@@ -1,4 +1,7 @@
-<div class="container">
+<div class="container" *ngIf="loading" style="display: flex;justify-content: center;align-items: center;">
+  <mat-spinner></mat-spinner>
+</div>
+<div class="container" *ngIf="!loading">
   <div *ngIf="!displayButtonBack" (click)="onBack()" class="btn btn-secondary mt-1 mb-1">Back</div>
   <a *ngIf="displayButtonBack && playlist" [routerLink]="['../']" class="btn btn-secondary mt-1 mb-1">Back</a>
   <mat-toolbar color="primary" class="main-toolbar">
@@ -30,7 +33,6 @@
       </p>
     </div>
     <div style="width: 70%;">
-      <mat-spinner *ngIf="loading"></mat-spinner>
       <div class="form-group" style="width: 50%; position: relative;">
         <input type="text" class="form-control" aria-describedby="helpId" placeholder="Search by name/artist of song"
           [(ngModel)]="filterNameArtist" style="padding-left: 35px;">

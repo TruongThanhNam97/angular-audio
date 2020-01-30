@@ -11,9 +11,13 @@
   <input type="text" class="form-control mt-3" placeholder="Search playlist" name="playlistName"
     [(ngModel)]="playlistName">
 </div>
-<div style="max-height: 200px; overflow-y: scroll;" class="mt-3">
+<div *ngIf="loadingPlaylists" style="width: 100%;display: flex;justify-content: center;align-items: center;">
+  <mat-spinner></mat-spinner>
+</div>
+<div style="max-height: 200px; overflow-y: scroll;" class="mt-3" *ngIf="!loadingPlaylists">
   <div (click)="onAddToPlayList(playlist)" class="playlist-item"
     *ngFor="let playlist of playLists | filterPlayListName:playlistName">
     {{ playlist.name }}
   </div>
 </div>
+<app-loading *ngIf="loading"></app-loading>

@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { CategoryService } from 'src/app/services/categories.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -20,6 +19,10 @@ export class EditCategoryComponent implements OnInit, OnDestroy {
 
   categoryName: string;
 
+  loading = false;
+
+  loadingDelete = false;
+
   constructor(
     private categoryService: CategoryService,
     private alertifyService: AlertifyService,
@@ -36,11 +39,13 @@ export class EditCategoryComponent implements OnInit, OnDestroy {
   }
 
   loadCategories() {
+    this.loading = true;
     this.categoryService.getCategories().pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe((categories: any) => {
       this.categories = categories;
-    }, _ => { });
+      this.loading = false;
+    }, _ => this.loading = false);
   }
 
   ngOnDestroy() {
@@ -52,12 +57,16 @@ export class EditCategoryComponent implements OnInit, OnDestroy {
   }
 
   onDelete(categoryId, index) {
-    this.categoryService.deleteCategory({ id: categoryId }).pipe(
-      takeUntil(this.destroySubscription$)
-    ).subscribe(_ => { }, err => console.log(err), () => {
-      this.categories = this.categories.filter((v, i) => i !== index);
-      this.alertifyService.success('Delete successfully');
-    });
+    if (!this.loadingDelete) {
+      this.loadingDelete = true;
+      this.categoryService.deleteCategory({ id: categoryId }).pipe(
+        takeUntil(this.destroySubscription$)
+      ).subscribe(_ => { }, err => this.loadingDelete = false, () => {
+        this.categories = this.categories.filter((v, i) => i !== index);
+        this.alertifyService.success('Delete successfully');
+        this.loadingDelete = false;
+      });
+    }
   }
 
 }

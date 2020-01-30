@@ -17,6 +17,8 @@ export class CategoriesComponent implements OnInit, OnDestroy {
 
   categoryName: string;
 
+  loading = false;
+
   constructor(
     private categoriesService: CategoryService,
     private router: Router,
@@ -31,9 +33,13 @@ export class CategoriesComponent implements OnInit, OnDestroy {
   }
 
   loadCategories() {
+    this.loading = true;
     this.categoriesService.getCategories().pipe(
       takeUntil(this.destroySubscription$)
-    ).subscribe(categories => this.categories = [...categories]);
+    ).subscribe(categories => {
+      this.categories = [...categories];
+      this.loading = false;
+    }, err => this.loading = false);
   }
 
   onNavigateToSeeCategory(category) {

@@ -1,42 +1,48 @@
-<ng-container *ngIf="listAlbums && listAlbums.length > 0; else elseTemplate">
-  <div class="container mt-5">
-    <div class="row">
-      <div class="form-group col-6" style="position: relative;">
-        <input type="text" class="form-control" aria-describedby="helpId" placeholder="Search by username"
-          [(ngModel)]="username" style="padding-left: 35px;">
+<div class="container" *ngIf="loading" style="display: flex;justify-content: center;align-items: center;">
+  <mat-spinner></mat-spinner>
+</div>
+<div *ngIf="!loading">
+  <ng-container *ngIf="listAlbums && listAlbums.length > 0; else elseTemplate">
+    <div class="container mt-5">
+      <div class="row">
+        <div class="form-group col-6" style="position: relative;">
+          <input type="text" class="form-control" aria-describedby="helpId" placeholder="Search by username"
+            [(ngModel)]="username" style="padding-left: 35px;">
           <mat-icon class="search-icon">search</mat-icon>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="container" style="display: flex;flex-wrap: wrap;">
-    <div *ngFor="let album of listAlbums | usernamePipe:username" class="card wrap-card"
-      style="width: 32%; margin-right: 1%; margin-bottom: 1%; background: white;">
-      <div class="album-image" (click)="onNavigateToSeeAlbum(album)">
-        <img style="height: 200px;"
-          src="{{ album['avatar'] ? SERVER_URL_IMAGE+album['avatar'] : '../../../../../assets/apple-music-note-800x420.jpg'  }}"
-          class="card-img-top" alt="{{ album.username }}">
-      </div>
-      <div class="card-body">
-        <h5 class="card-title">{{ album.username }}</h5>
-        <div class="wrap-follow">
-          <div class="left">
-            <span style="color: #a0a0a0;font-size: 16px;">{{ formatNumber(album.followers.length) }} followers</span>
-          </div>
-          <div class="right" *ngIf="currentUser && currentUser.username !== 'superadmin'">
-            <div class="buttonFollow" (click)="follows(album)" *ngIf="!isFollowed(album)">
-              <mat-icon matTooltip="Follow" color="primary" mat-list-icon class="mr-2">person_add</mat-icon>
-              Follow
+    <div class="container" style="display: flex;flex-wrap: wrap;">
+      <div *ngFor="let album of listAlbums | usernamePipe:username" class="card wrap-card"
+        style="width: 32%; margin-right: 1%; margin-bottom: 1%; background: white;">
+        <div class="album-image" (click)="onNavigateToSeeAlbum(album)">
+          <img style="height: 200px;"
+            src="{{ album['avatar'] ? SERVER_URL_IMAGE+album['avatar'] : '../../../../../assets/apple-music-note-800x420.jpg'  }}"
+            class="card-img-top" alt="{{ album.username }}">
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">{{ album.username }}</h5>
+          <div class="wrap-follow">
+            <div class="left">
+              <span style="color: #a0a0a0;font-size: 16px;">{{ formatNumber(album.followers.length) }} followers</span>
             </div>
-            <div class="buttonFollow" (click)="follows(album)" *ngIf="isFollowed(album)">
-              <mat-icon matTooltip="Unfollow" color="primary" mat-list-icon class="mr-2">person_add_disabled</mat-icon>
-              Unfollow
+            <div class="right" *ngIf="currentUser && currentUser.username !== 'superadmin'">
+              <button [disabled]="disableMode" class="buttonFollow" (click)="follows(album)" *ngIf="!isFollowed(album)">
+                <mat-icon matTooltip="Follow" color="primary" mat-list-icon class="mr-2">person_add</mat-icon>
+                Follow
+              </button>
+              <button [disabled]="disableMode" class="buttonFollow" (click)="follows(album)" *ngIf="isFollowed(album)">
+                <mat-icon matTooltip="Unfollow" color="primary" mat-list-icon class="mr-2">person_add_disabled
+                </mat-icon>
+                Unfollow
+              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</ng-container>
-<ng-template #elseTemplate>
-  <div class="container mt-3">No albums</div>
-</ng-template>
+  </ng-container>
+  <ng-template #elseTemplate>
+    <div class="container mt-3">No albums</div>
+  </ng-template>
+</div>

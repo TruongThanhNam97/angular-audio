@@ -20,6 +20,9 @@ export class EditArtistComponent implements OnInit, OnDestroy {
 
   artistName: string;
 
+  loading = false;
+  loadingDelete = false;
+
   constructor(
     private artistsService: ArtistsService,
     private alertifyService: AlertifyService,
@@ -36,11 +39,13 @@ export class EditArtistComponent implements OnInit, OnDestroy {
   }
 
   loadArtists() {
+    this.loading = true;
     this.artistsService.getArtists().pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe((artists: any) => {
       this.artists = artists;
-    }, _ => { });
+      this.loading = false;
+    }, _ => this.loading = false);
   }
 
   ngOnDestroy() {
@@ -52,12 +57,16 @@ export class EditArtistComponent implements OnInit, OnDestroy {
   }
 
   onDelete(artistId, index) {
-    this.artistsService.deleteArtist({ id: artistId }).pipe(
-      takeUntil(this.destroySubscription$)
-    ).subscribe(_ => { }, err => console.log(err), () => {
-      this.artists = this.artists.filter((v, i) => i !== index);
-      this.alertifyService.success('Delete successfully');
-    });
+    if (!this.loadingDelete) {
+      this.loadingDelete = true;
+      this.artistsService.deleteArtist({ id: artistId }).pipe(
+        takeUntil(this.destroySubscription$)
+      ).subscribe(_ => { }, err => this.loadingDelete = false, () => {
+        this.artists = this.artists.filter((v, i) => i !== index);
+        this.alertifyService.success('Delete successfully');
+        this.loadingDelete = false;
+      });
+    }
   }
 
 }

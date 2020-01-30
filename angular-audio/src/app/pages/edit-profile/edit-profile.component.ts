@@ -21,6 +21,8 @@ export class EditProfileComponent implements OnInit, OnDestroy {
 
   destroySubscription$: Subject<boolean> = new Subject();
 
+  disableMode = false;
+
   constructor(private authService: AuthService, private alertifyService: AlertifyService) { }
 
   ngOnInit() {
@@ -60,6 +62,8 @@ export class EditProfileComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
+    this.signForm.disable();
+    this.disableMode = true;
     const formData = new FormData();
     formData.append('id', this.signForm.value.id);
     formData.append('oldpassword', this.signForm.value.oldpassword);
@@ -79,6 +83,14 @@ export class EditProfileComponent implements OnInit, OnDestroy {
         this.signForm.patchValue({
           id: this.currentUser.id
         });
+        this.signForm.enable();
+        this.signForm.patchValue({
+          oldpassword: null,
+          password: null,
+          password2: null,
+          avatar: null
+        });
+        this.disableMode = false;
       },
       error => {
         if (error.error.username) {
@@ -90,6 +102,8 @@ export class EditProfileComponent implements OnInit, OnDestroy {
         if (error.error.password2) {
           this.alertifyService.error(error.error.password2);
         }
+        this.signForm.enable();
+        this.disableMode = false;
       }
     );
   }

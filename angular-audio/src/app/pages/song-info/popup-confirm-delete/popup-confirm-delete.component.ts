@@ -15,6 +15,8 @@ export class PopupConfirmDeleteComponent implements OnInit, OnDestroy {
 
   destroySubscription$: Subject<boolean> = new Subject();
 
+  loading = false;
+
   constructor(
     public dialogRef: MatDialogRef<PopupConfirmDeleteComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -35,6 +37,7 @@ export class PopupConfirmDeleteComponent implements OnInit, OnDestroy {
   }
 
   onDelete() {
+    this.loading = true;
     if (!this.data.commentId) {
       this.cloudService.deleteComment({ songId: this.data.songId, commentId: this.data._id }).pipe(
         takeUntil(this.destroySubscription$)
@@ -43,7 +46,8 @@ export class PopupConfirmDeleteComponent implements OnInit, OnDestroy {
         this.socketIo.sendCommentRealTime();
         this.alertify.success('Delete comment successfully');
         this.dialogRef.close();
-      });
+        this.loading = false;
+      }, err => this.loading = false);
     } else {
       this.cloudService.deleteSubComment({ songId: this.data.songId, commentId: this.data.commentId, subCommentId: this.data._id }).pipe(
         takeUntil(this.destroySubscription$)
@@ -52,7 +56,8 @@ export class PopupConfirmDeleteComponent implements OnInit, OnDestroy {
         this.socketIo.sendCommentRealTime();
         this.alertify.success('Delete subComment successfully');
         this.dialogRef.close();
-      });
+        this.loading = false;
+      }, err => this.loading = false);
     }
   }
 

@@ -21,13 +21,12 @@
         No lyrics</p>
     </div>
     <div style="width: 70%; max-height: 600px; overflow-y: scroll;">
-      <mat-spinner *ngIf="loading"></mat-spinner>
       <div class="form-group mt-3" style="width: 50%; position: relative;">
         <input type="text" class="form-control" aria-describedby="helpId" placeholder="Search by name/artist of song"
           [(ngModel)]="filterNameArtist" style="padding-left: 35px;">
         <mat-icon class="search-icon">search</mat-icon>
       </div>
-      <mat-list *ngIf="!loading" color="primary" style="width: 100%;margin: auto;">
+      <mat-list color="primary" style="width: 100%;margin: auto;">
         <h3 mat-subheader>Songs</h3>
         <mat-list-item class="item" *ngFor="let file of files | songPipe:filterNameArtist; let i = index;"
           (click)="openFile(file, i)">

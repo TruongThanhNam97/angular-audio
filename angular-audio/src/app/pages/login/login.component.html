@@ -14,6 +14,6 @@
         <span *ngIf="signForm.get('password').errors['required']">Password field is required</span>
       </span>
     </div>
-    <button [disabled]="signForm.invalid" class="btn btn-success btn-block">Login</button>
+    <button [disabled]="signForm.invalid || disableMode" class="btn btn-success btn-block">Login</button>
   </form>
 </div>

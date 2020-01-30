@@ -1,27 +1,32 @@
-<ng-container *ngIf="artists && artists.length > 0; else elseTemplate">
-  <div class="container mt-5">
-    <div class="row">
-      <div class="form-group col-6" style="position: relative;">
-        <input style="padding-left:35px;" type="text" class="form-control" aria-describedby="helpId"
-          placeholder="Search by artist name" [(ngModel)]="artistName">
-        <mat-icon class="search-icon">search</mat-icon>
+<div class="container" *ngIf="loading" style="display: flex;justify-content: center;align-items: center;">
+  <mat-spinner></mat-spinner>
+</div>
+<div *ngIf="!loading">
+  <ng-container *ngIf="artists && artists.length > 0; else elseTemplate">
+    <div class="container mt-5">
+      <div class="row">
+        <div class="form-group col-6" style="position: relative;">
+          <input style="padding-left:35px;" type="text" class="form-control" aria-describedby="helpId"
+            placeholder="Search by artist name" [(ngModel)]="artistName">
+          <mat-icon class="search-icon">search</mat-icon>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="container" style="display: flex;flex-wrap: wrap;">
-    <div (click)="onNavigateToSeeArtist(artist)" class="wrap-category"
-      *ngFor="let artist of artists | namePipe:artistName">
-      <img class="category-img"
-        src="{{ artist.avatar ?  artist.avatar : '../../../../../assets/apple-music-note-800x420.jpg'}}"
-        alt="{{artist.name}}">
-      <div class="back-screen">
-      </div>
-      <div class="category-name">
-        {{ artist.name}}
+    <div class="container" style="display: flex;flex-wrap: wrap;">
+      <div (click)="onNavigateToSeeArtist(artist)" class="wrap-category"
+        *ngFor="let artist of artists | namePipe:artistName">
+        <img class="category-img"
+          src="{{ artist.avatar ?  artist.avatar : '../../../../../assets/apple-music-note-800x420.jpg'}}"
+          alt="{{artist.name}}">
+        <div class="back-screen">
+        </div>
+        <div class="category-name">
+          {{ artist.name}}
+        </div>
       </div>
     </div>
-  </div>
-</ng-container>
-<ng-template #elseTemplate>
-  <div class="container mt-3">No artists. Waiting admin to update artists...</div>
-</ng-template>
+  </ng-container>
+  <ng-template #elseTemplate>
+    <div class="container mt-3">No artists. Waiting admin to update artists...</div>
+  </ng-template>
+</div>

@@ -44,6 +44,9 @@ export class ManageSongsComponent implements OnInit, OnDestroy {
 
   filterNameArtist: string;
 
+  loading = false;
+  loadingDelete = false;
+
   constructor(
     private categoryService: CategoryService,
     private authService: AuthService,
@@ -122,13 +125,15 @@ export class ManageSongsComponent implements OnInit, OnDestroy {
   }
 
   loadAllSongs() {
+    this.loading = true;
     this.cloudService.getAllSongs().pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(songs => {
       this.mySongs = songs;
       this.setUpAudio();
       this.cloudService.setCurrentPlayList(this.mySongs);
-    });
+      this.loading = false;
+    }, _ => this.loading = false);
   }
 
   onEdit(song: any) {
@@ -136,12 +141,16 @@ export class ManageSongsComponent implements OnInit, OnDestroy {
   }
 
   onDelete(song: any, index: number) {
-    this.cloudService.deleteSong({ id: song.id }).pipe(
-      takeUntil(this.destroySubscription$)
-    ).subscribe(() => {
-      this.mySongs = this.mySongs.filter((v, i) => i !== index);
-      this.alertifyService.success('Delete successfully');
-    });
+    if (!this.loadingDelete) {
+      this.loadingDelete = true;
+      this.cloudService.deleteSong({ id: song.id }).pipe(
+        takeUntil(this.destroySubscription$)
+      ).subscribe(() => {
+        this.mySongs = this.mySongs.filter((v, i) => i !== index);
+        this.alertifyService.success('Delete successfully');
+        this.loadingDelete = false;
+      }, _ => this.loadingDelete = false);
+    }
   }
 
   openFile(file, index) {

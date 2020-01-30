@@ -6,12 +6,13 @@
       <span *ngIf="signForm.get('name').hasError('required')">Playlist name field is required</span>
     </span>
   </div>
-  <button [disabled]="signForm.invalid" class="btn btn-success btn-block">Submit</button>
+  <button [disabled]="signForm.invalid || disableMode" class="btn btn-success btn-block">Submit</button>
 </form>
 <div *ngIf="data.mode === 'delete'">
   <h5>Are you sure to delete {{ data.selected.name }}</h5>
   <div class="mt-3" style="display: flex;justify-content: flex-end;">
-    <button (click)="onNo()" class="btn btn-secondary mr-2">No</button>
-    <button (click)="onYes()" class="btn btn-secondary">Yes</button>
+    <button [disabled]="disableMode" (click)="onNo()" class="btn btn-secondary mr-2">No</button>
+    <button [disabled]="disableMode" (click)="onYes()" class="btn btn-secondary">Yes</button>
   </div>
 </div>
+<app-loading *ngIf="loading"></app-loading>
