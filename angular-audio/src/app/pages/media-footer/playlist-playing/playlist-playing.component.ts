@@ -29,7 +29,7 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
   currentFile: any = {};
   currentUser: any;
   destroySubscription$: Subject<boolean> = new Subject();
-  loading = false;
+  loadingLike = false;
   username: string;
   id: string;
   categoryName: string;
@@ -84,12 +84,12 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
       this.files = this.files.filter(song => song.id !== blockedSong.id);
       this.cdt.detectChanges();
     });
-    this.cloudService.getUpdateSongsAfterDelete().pipe(
-      takeUntil(this.destroySubscription$)
-    ).subscribe(selectedSong => {
-      this.files = this.files.filter(song => song.id !== selectedSong.id);
-      this.cdt.detectChanges();
-    });
+    // this.cloudService.getUpdateSongsAfterDelete().pipe(
+    //   takeUntil(this.destroySubscription$)
+    // ).subscribe(selectedSong => {
+    //   this.files = this.files.filter(song => song.id !== selectedSong.id);
+    //   this.cdt.detectChanges();
+    // });
     this.playlistService.getListSongsAfterDeleteFromPlayListSubject().pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(data => {
@@ -141,28 +141,31 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
   }
 
   onLikeSong(song: any) {
-    return this.cloudService.likeSong({ id: song.id }).pipe(
-      takeUntil(this.destroySubscription$)
-    ).subscribe(updatedSong => {
-      const index = this.files.findIndex(item => item.id === updatedSong.id);
-      this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
-      this.cdt.detectChanges();
-      if (song.playlistId && song.playlistName) {
-        this.files = this.files.map(item => {
-          item.playlistId = song.playlistId;
-          item.playlistName = song.playlistName;
-          return item;
-        });
-      }
-      this.cloudService.getUpdatedSongsAfterLikingSubject().next(this.files);
-      if (this.isLiked(updatedSong)) {
-        this.alertify.success('Like successfully');
-      } else {
-        this.alertify.success('UnLike successfully');
-      }
-      this.cloudService.getUpdateSongAfterManipulatingSubject().next(updatedSong);
-      // this.socketIo.likeSongRealTime();
-    }, err => console.log(err));
+    if (!this.loadingLike) {
+      this.loadingLike = true;
+      this.cloudService.likeSong({ id: song.id }).pipe(
+        takeUntil(this.destroySubscription$)
+      ).subscribe(updatedSong => {
+        const index = this.files.findIndex(item => item.id === updatedSong.id);
+        this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
+        this.cdt.detectChanges();
+        if (song.playlistId && song.playlistName) {
+          this.files = this.files.map(item => {
+            item.playlistId = song.playlistId;
+            item.playlistName = song.playlistName;
+            return item;
+          });
+        }
+        this.cloudService.getUpdatedSongsAfterLikingSubject().next(this.files);
+        if (this.isLiked(updatedSong)) {
+          this.alertify.success('Like successfully');
+        } else {
+          this.alertify.success('UnLike successfully');
+        }
+        this.cloudService.getUpdateSongAfterManipulatingSubject().next(updatedSong);
+        this.loadingLike = false;
+      }, err => this.loadingLike = false);
+    }
   }
 
   ngOnDestroy() {

@@ -21,6 +21,8 @@ export class PopupEditComponent implements OnInit, OnDestroy {
 
   modeDisable = false;
 
+  loading = false;
+
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     public dialogRef: MatDialogRef<PopupEditComponent>,
@@ -88,6 +90,7 @@ export class PopupEditComponent implements OnInit, OnDestroy {
     formData.append('video', this.signForm.value.video);
     this.signForm.disable();
     this.modeDisable = true;
+    this.loading = true;
     this.cloudService.updateSong(formData).pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(song => {
@@ -96,8 +99,10 @@ export class PopupEditComponent implements OnInit, OnDestroy {
       this.signForm.reset();
       this.dialogRef.close();
       this.modeDisable = false;
+      this.loading = false;
     }, err => {
       this.modeDisable = false;
+      this.loading = false;
     });
   }
 

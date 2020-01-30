@@ -1,30 +1,14 @@
-<!-- <ng-container *ngIf="listAlbums && listAlbums.length > 0; else elseTemplate">
-  <div class="container mt-5" style="display: flex;flex-wrap: wrap;">
-    <div (click)="onNavigateToSeeAlbum(album)" *ngFor="let album of listAlbums" class="card wrap-card"
-      style="width: 32%; margin-right: 1%; margin-bottom: 2%;cursor: pointer;  background: rgb(228, 228, 228);">
-      <div class="album-image">
-        <img style="height: 200px;"
-          src="{{ album['avatar'] ? SERVER_URL_IMAGE+album['avatar'] : '../../../../../assets/apple-music-note-800x420.jpg'  }}"
-          class="card-img-top" alt="{{ album.username }}">
-      </div>
-      <div class="card-body">
-        <h5 class="card-title">{{ album.username }}</h5>
-      </div>
-    </div>
-  </div>
-</ng-container>
-<ng-template #elseTemplate>
-  <div class="container mt-3">No albums</div>
-</ng-template> -->
-
-<div class="container">
+<div class="container" *ngIf="loading" style="display: flex;justify-content: center;align-items: center;">
+  <mat-spinner></mat-spinner>
+</div>
+<div class="container" *ngIf="!loading">
   <div class="form-group" style="width: 50%; position: relative;">
     <input type="text" class="form-control" placeholder="Search by playlist name" [(ngModel)]="playlistName"
       style="padding-left: 35px;">
-      <mat-icon class="search-icon">search</mat-icon>
+    <mat-icon class="search-icon">search</mat-icon>
   </div>
 </div>
-<div class="container" style="display: flex;flex-wrap: wrap;">
+<div class="container" style="display: flex;flex-wrap: wrap;" *ngIf="!loading">
   <div class="wrap-playlist">
     <div class="create-playlist" (click)="onCreatePlayList()">
       <div style="text-align: center;">

@@ -17,6 +17,8 @@ export class PopupMoveSongToPlaylistComponent implements OnInit, OnDestroy {
   signForm: FormGroup;
   playLists: any[];
   playlistName: string;
+  loading = false;
+  loadingPlaylists = false;
 
   constructor(
     public dialogRef: MatDialogRef<PopupMoveSongToPlaylistComponent>,
@@ -42,9 +44,13 @@ export class PopupMoveSongToPlaylistComponent implements OnInit, OnDestroy {
   }
 
   loadPlayLists() {
+    this.loadingPlaylists = true;
     this.playlistService.getPlayListByUser().pipe(
       takeUntil(this.destroySubscription$)
-    ).subscribe((playLists: any[]) => this.playLists = [...playLists]);
+    ).subscribe((playLists: any[]) => {
+      this.playLists = [...playLists];
+      this.loadingPlaylists = false;
+    }, err => this.loadingPlaylists = false);
   }
 
   onAddToPlayList(playlist) {
@@ -52,16 +58,22 @@ export class PopupMoveSongToPlaylistComponent implements OnInit, OnDestroy {
       playlistId: playlist._id,
       songId: this.data.id
     };
+    this.loading = true;
     this.playlistService.addSongToPlayList(data).pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(updatedPlaylist => {
       this.alertify.success('Successfully');
       this.dialogRef.close();
       this.playlistService.getUdatedPlayListAfterAddOrDeleteSongSubject().next(updatedPlaylist);
-    }, err => this.alertify.error(err.error));
+      this.loading = false;
+    }, err => {
+      this.alertify.error(err.error);
+      this.loading = false;
+    });
   }
 
   onSubmit() {
+    this.loading = true;
     this.playlistService.createPlayList(this.signForm.value).pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe((playList: any) => {
@@ -75,8 +87,12 @@ export class PopupMoveSongToPlaylistComponent implements OnInit, OnDestroy {
         this.alertify.success('Successfully');
         this.dialogRef.close();
         this.playlistService.getUdatedPlayListAfterAddOrDeleteSongSubject().next(updatedPlaylist);
-      }, err => this.alertify.error(err.error));
-    });
+        this.loading = false;
+      }, err => {
+        this.alertify.error(err.error);
+        this.loading = false;
+      });
+    }, err => this.loading = false);
   }
 
 }

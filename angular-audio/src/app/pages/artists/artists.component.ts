@@ -17,6 +17,8 @@ export class ArtistsComponent implements OnInit, OnDestroy {
 
   artistName: string;
 
+  loading = false;
+
   constructor(
     private artistsService: ArtistsService,
     private router: Router,
@@ -31,9 +33,13 @@ export class ArtistsComponent implements OnInit, OnDestroy {
   }
 
   loadCategories() {
+    this.loading = true;
     this.artistsService.getArtists().pipe(
       takeUntil(this.destroySubscription$)
-    ).subscribe(artists => this.artists = [...artists]);
+    ).subscribe(artists => {
+      this.artists = [...artists];
+      this.loading = false;
+    }, err => this.loading = false);
   }
 
   onNavigateToSeeArtist(artist) {

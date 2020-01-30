@@ -21,6 +21,8 @@ export class PopupEditCategoryComponent implements OnInit, OnDestroy {
 
   disableMode = false;
 
+  loading = false;
+
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     public dialogRef: MatDialogRef<PopupEditCategoryComponent>,
@@ -64,6 +66,7 @@ export class PopupEditCategoryComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
+    this.loading = true;
     this.signForm.disable();
     this.disableMode = true;
     const formData = new FormData();
@@ -81,9 +84,11 @@ export class PopupEditCategoryComponent implements OnInit, OnDestroy {
       this.signForm.reset();
       this.disableMode = false;
       this.dialogRef.close();
+      this.loading = false;
     }, err => {
       this.signForm.enable();
       this.disableMode = false;
+      this.loading = false;
     });
   }
 

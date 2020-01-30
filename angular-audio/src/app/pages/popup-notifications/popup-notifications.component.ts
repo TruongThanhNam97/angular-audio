@@ -20,6 +20,9 @@ export class PopupNotificationsComponent implements OnInit, OnDestroy {
   destroySubscription$: Subject<boolean> = new Subject();
   currentUser: any;
 
+  loadingDelete = false;
+  loading = false;
+
   constructor(
     public dialogRef: MatDialogRef<PopupNotificationsComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -67,22 +70,28 @@ export class PopupNotificationsComponent implements OnInit, OnDestroy {
 
   onClearAll() {
     if (this.data.length > 0) {
+      this.loading = true;
       this.authService.clearAllNotifications().pipe(
         takeUntil(this.destroySubscription$)
       ).subscribe((notifications: any) => {
         this.data = [...notifications];
         this.authService.getUpdatedNotifications().next(notifications);
-      });
+        this.loading = false;
+      }, err => this.loading = false);
     }
   }
 
   onDeleteNotification(notification) {
-    this.authService.deleteNotification({ id: notification._id }).pipe(
-      takeUntil(this.destroySubscription$)
-    ).subscribe((notifications: any) => {
-      this.data = [...notifications];
-      this.authService.getUpdatedNotifications().next(notifications);
-    });
+    if (!this.loadingDelete) {
+      this.loadingDelete = true;
+      this.authService.deleteNotification({ id: notification._id }).pipe(
+        takeUntil(this.destroySubscription$)
+      ).subscribe((notifications: any) => {
+        this.data = [...notifications];
+        this.authService.getUpdatedNotifications().next(notifications);
+        this.loadingDelete = false;
+      }, err => this.loadingDelete = false);
+    }
   }
 
   onNavigate(notification) {

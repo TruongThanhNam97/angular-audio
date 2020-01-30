@@ -22,6 +22,10 @@ export class ManageUserComponent implements OnInit, OnDestroy {
 
   username: string;
 
+  loading = false;
+  loadingBan = false;
+  loadingUnban = false;
+
   constructor(
     private albumService: AlbumService,
     private cloudService: CloudService,
@@ -40,17 +44,19 @@ export class ManageUserComponent implements OnInit, OnDestroy {
       takeUntil(this.destroySubscription$)
     ).subscribe(users => {
       this.users = users;
-    });
+      this.loading = false;
+    }, _ => this.loading = false);
   }
 
   loadAllSongs() {
+    this.loading = true;
     this.cloudService.getAllSongs().pipe(
       tap((songs: any[]) => this.caculateNumberOfUploadedSongs(songs)),
       takeUntil(this.destroySubscription$)
     ).subscribe(songs => {
       this.songs = songs;
       this.loadAllUsers();
-    });
+    }, _ => this.loading = false);
   }
 
   caculateNumberOfUploadedSongs(songs: any[]) {
@@ -71,29 +77,37 @@ export class ManageUserComponent implements OnInit, OnDestroy {
   }
 
   onUnban(user) {
-    this.albumService.unbanUser({ id: user.id }).pipe(
-      takeUntil(this.destroySubscription$)
-    ).subscribe(
-      (updatedUser: any) => {
-        const index = this.users.findIndex(item => item.id === updatedUser.id);
-        this.users = [...this.users.filter((v, i) => i < index), { ...updatedUser }, ...this.users.filter((v, i) => i > index)];
-        this.alertify.success('Unban successfully');
-      },
-      err => console.log(err)
-    );
+    if (!this.loadingUnban) {
+      this.loadingUnban = true;
+      this.albumService.unbanUser({ id: user.id }).pipe(
+        takeUntil(this.destroySubscription$)
+      ).subscribe(
+        (updatedUser: any) => {
+          const index = this.users.findIndex(item => item.id === updatedUser.id);
+          this.users = [...this.users.filter((v, i) => i < index), { ...updatedUser }, ...this.users.filter((v, i) => i > index)];
+          this.alertify.success('Unban successfully');
+          this.loadingUnban = false;
+        },
+        err => this.loadingUnban = false
+      );
+    }
   }
 
   onBan(user) {
-    this.albumService.banUser({ id: user.id }).pipe(
-      takeUntil(this.destroySubscription$)
-    ).subscribe(
-      (updatedUser: any) => {
-        const index = this.users.findIndex(item => item.id === updatedUser.id);
-        this.users = [...this.users.filter((v, i) => i < index), { ...updatedUser }, ...this.users.filter((v, i) => i > index)];
-        this.alertify.success('Ban successfully');
-      },
-      err => console.log(err)
-    );
+    if (!this.loadingBan) {
+      this.loadingBan = true;
+      this.albumService.banUser({ id: user.id }).pipe(
+        takeUntil(this.destroySubscription$)
+      ).subscribe(
+        (updatedUser: any) => {
+          const index = this.users.findIndex(item => item.id === updatedUser.id);
+          this.users = [...this.users.filter((v, i) => i < index), { ...updatedUser }, ...this.users.filter((v, i) => i > index)];
+          this.alertify.success('Ban successfully');
+          this.loadingBan = false;
+        },
+        err => this.loadingBan = false
+      );
+    }
   }
 
 }

@@ -15,6 +15,8 @@ export class PopupPlaylistComponent implements OnInit, OnDestroy {
 
   signForm: FormGroup;
   destroySubscription$: Subject<boolean> = new Subject();
+  disableMode = false;
+  loading = false;
 
   constructor(
     public dialogRef: MatDialogRef<PopupPlaylistComponent>,
@@ -46,6 +48,9 @@ export class PopupPlaylistComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
+    this.signForm.disable();
+    this.disableMode = true;
+    this.loading = true;
     if (this.data.mode === 'create') {
       this.playListService.createPlayList(this.signForm.value).pipe(
         takeUntil(this.destroySubscription$)
@@ -53,6 +58,11 @@ export class PopupPlaylistComponent implements OnInit, OnDestroy {
         this.playListService.getCreatedPlayListSubject().next(playList);
         this.dialogRef.close();
         this.alertify.success('Create playlist successfully');
+        this.loading = false;
+      }, err => {
+        this.disableMode = false;
+        this.signForm.enable();
+        this.loading = false;
       });
     }
     if (this.data.mode === 'edit') {
@@ -62,6 +72,11 @@ export class PopupPlaylistComponent implements OnInit, OnDestroy {
         this.playListService.getUpdatedPlayListSubject().next(playList);
         this.dialogRef.close();
         this.alertify.success('Edit playlist successfully');
+        this.loading = false;
+      }, err => {
+        this.disableMode = false;
+        this.signForm.enable();
+        this.loading = false;
       });
     }
   }
@@ -71,12 +86,18 @@ export class PopupPlaylistComponent implements OnInit, OnDestroy {
   }
 
   onYes() {
+    this.disableMode = true;
+    this.loading = true;
     this.playListService.deletePlayList({ playlistId: this.data.selected._id }).pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(playlist => {
       this.playListService.getDeletedPlayListSubject().next(playlist);
       this.dialogRef.close();
       this.alertify.success('Delete successfully');
+      this.loading = false;
+    }, err => {
+      this.disableMode = false;
+      this.loading = false;
     });
   }
 

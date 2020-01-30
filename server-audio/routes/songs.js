@@ -978,6 +978,47 @@ router.post("/unlikeComment", passport.authenticate('jwt', { session: false }), 
     }).catch(err => console.log(err));
 });
 
+/* Unlike subComment in comment */
+router.post("/unlikeSubComment", passport.authenticate('jwt', { session: false }), (req, res, next) => {
+    const { songId, commentId, subCommentId } = req.body;
+    songModel.findById({ _id: songId }).then(song => {
+        if (!song) {
+            return res.status(404).json('Song not found');
+        }
+        if (song.comments.filter(comment => comment._id.toString() === commentId.toString()).length === 0) {
+            return res.status(404).json('Comment not found');
+        }
+        const comment = song.comments.find(com => com._id.toString() === commentId.toString());
+        if (comment.subComments.filter(subCom => subCom._id.toString() === subCommentId.toString()).length === 0) {
+            return res.status(404).json('SubComment not found');
+        }
+        const index = song.comments.findIndex(com => com._id.toString() === commentId.toString());
+        const subComment = song.comments[index].subComments.find(subCom => subCom._id.toString() === subCommentId.toString());
+        const indexSub = song.comments[index].subComments.findIndex(subCom => subCom._id.toString() === subCommentId.toString());
+        if (subComment.unliked.filter(unlike => unlike.toString() === req.user._id.toString()).length > 0) {
+            song.comments[index].subComments[indexSub].unliked =
+                song.comments[index].subComments[indexSub].unliked.filter(unlike => unlike.toString() !== req.user._id.toString());
+        } else {
+            song.comments[index].subComments[indexSub].unliked = [...song.comments[index].subComments[indexSub].unliked, req.user._id];
+        }
+
+        if (song.comments[index].subComments[indexSub].liked.filter(like => like.toString() === req.user._id.toString()).length > 0) {
+            song.comments[index].subComments[indexSub].liked =
+                song.comments[index].subComments[indexSub].liked.filter(like => like.toString() !== req.user._id.toString());
+        }
+        song.save().then(updatedSong => {
+            songModel.findById({ _id: songId })
+                .populate('comments.user', ['_id', 'username', 'avatar'])
+                .populate('comments.subComments.user', ['_id', 'username', 'avatar'])
+                .then(song => {
+                    res.io.emit('song', song);
+                    res.status(200).json(song);
+                })
+                .catch(err => console.log(err));
+        });
+    }).catch(err => console.log(err));
+});
+
 /* update views of song */
 router.post("/views", upView, (req, res, next) => {
     const { id } = req.body;

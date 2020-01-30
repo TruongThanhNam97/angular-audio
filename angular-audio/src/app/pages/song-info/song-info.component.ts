@@ -41,8 +41,12 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
   uploader: any;
   arrSongContent = [];
   hideMode = true;
-  SERVER_URL_VIDEO: string;
 
+  loadingLike = false;
+  loadingBlock = false;
+  loadingFollow = false;
+
+  SERVER_URL_VIDEO: string;
   SERVER_URL_IMAGE: string;
 
   constructor(
@@ -280,21 +284,24 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onLikeSong() {
-    return this.cloudService.likeSong({ id: this.selectedSong.id }).pipe(
-      takeUntil(this.destroySubsction$)
-    ).subscribe(song => {
-      this.selectedSong = { ...song };
-      if (this.isLiked()) {
-        this.alertify.success('Like successfully');
-      } else {
-        this.alertify.success('Unlike successfully');
-      }
-      if (!this.audioService.getPlayMode()) {
-        this.cloudService.setCurrentPlayList([this.selectedSong]);
-      }
-      this.cloudService.getUpdateSongAfterManipulatingSubject().next(song);
-      // this.socketIo.likeSongRealTime();
-    }, err => console.log(err));
+    if (!this.loadingLike) {
+      this.loadingLike = true;
+      this.cloudService.likeSong({ id: this.selectedSong.id }).pipe(
+        takeUntil(this.destroySubsction$)
+      ).subscribe(song => {
+        this.selectedSong = { ...song };
+        if (this.isLiked()) {
+          this.alertify.success('Like successfully');
+        } else {
+          this.alertify.success('Unlike successfully');
+        }
+        if (!this.audioService.getPlayMode()) {
+          this.cloudService.setCurrentPlayList([this.selectedSong]);
+        }
+        this.cloudService.getUpdateSongAfterManipulatingSubject().next(song);
+        this.loadingLike = false;
+      }, err => this.loadingLike = false);
+    }
   }
 
   isLiked(): boolean {
@@ -322,24 +329,28 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onBlock() {
-    this.cloudService.blockSong({ id: this.selectedSong.id }).pipe(
-      takeUntil(this.destroySubsction$)
-    ).subscribe((blockedSongs: any[]) => {
-      this.cloudService.setBlockedSongsOfUser(blockedSongs);
-      this.cloudService.getBlockedSongsAfterBlockSubject().next(this.selectedSong);
-      if (!this.isBlocked) {
-        this.alertify.success('Block successfully');
-        this.isBlocked = true;
-        this.isPlay = false;
-        if (this.top20FavoriteSongs.filter(song => song.id === this.selectedSong.id).length > 0) {
-          this.top20FavoriteSongs = this.top20FavoriteSongs.filter(song => song.id !== this.selectedSong.id);
+    if (!this.loadingBlock) {
+      this.loadingBlock = true;
+      this.cloudService.blockSong({ id: this.selectedSong.id }).pipe(
+        takeUntil(this.destroySubsction$)
+      ).subscribe((blockedSongs: any[]) => {
+        this.cloudService.setBlockedSongsOfUser(blockedSongs);
+        this.cloudService.getBlockedSongsAfterBlockSubject().next(this.selectedSong);
+        if (!this.isBlocked) {
+          this.alertify.success('Block successfully');
+          this.isBlocked = true;
+          this.isPlay = false;
+          if (this.top20FavoriteSongs.filter(song => song.id === this.selectedSong.id).length > 0) {
+            this.top20FavoriteSongs = this.top20FavoriteSongs.filter(song => song.id !== this.selectedSong.id);
+          }
+        } else {
+          this.alertify.success('UnBlock successfully');
+          this.isBlocked = false;
+          this.isPlay = false;
         }
-      } else {
-        this.alertify.success('UnBlock successfully');
-        this.isBlocked = false;
-        this.isPlay = false;
-      }
-    });
+        this.loadingBlock = false;
+      }, err => this.loadingBlock = false);
+    }
   }
 
   onSeeComments() {
@@ -357,11 +368,13 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   follows(uploader) {
+    this.loadingFollow = true;
     this.authService.followsUser({ id: uploader.id }).pipe(
       takeUntil(this.destroySubsction$)
     ).subscribe((res: any) => {
       this.alertify.success(`${res.message} ${uploader.username} successfully`);
-    });
+      this.loadingFollow = false;
+    }, err => this.loadingFollow = false);
   }
 
   isFollowed(uploader) {
@@ -382,9 +395,8 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.validateService.isEmpty(data);
   }
 
-  onAddSongToCurrentPlayList() {
-    this.cloudService.getUpdateSongsAfterAdd().next(this.selectedSong);
-    this.alertify.success('Added');
-  }
+  // onAddSongToCurrentPlayList() {
+  //   this.cloudService.getUpdateSongsAfterAdd().next(this.selectedSong);
+  // }
 
 }

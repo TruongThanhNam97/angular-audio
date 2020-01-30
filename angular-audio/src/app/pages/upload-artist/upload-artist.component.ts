@@ -18,6 +18,8 @@ export class UploadArtistComponent implements OnInit, OnDestroy {
 
   destroySubscription$: Subject<boolean> = new Subject();
 
+  disableMode = false;
+
   constructor(private artistsService: ArtistsService, private alertify: AlertifyService) { }
 
   ngOnInit() {
@@ -51,17 +53,25 @@ export class UploadArtistComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
+    this.signForm.disable();
+    this.disableMode = true;
     const formData = new FormData();
     formData.append('name', this.signForm.value.name);
     formData.append('avatar', this.signForm.value.avatar);
     this.artistsService.upload(formData).pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(
-      _ => this.alertify.success('Upload successfully'),
+      _ => {
+        this.alertify.success('Upload successfully');
+        this.disableMode = false;
+        this.signForm.enable();
+      },
       err => {
         if (err.error.name) {
           this.alertify.error(err.error.name);
         }
+        this.disableMode = false;
+        this.signForm.enable();
       },
       () => this.signForm.reset()
     );

@@ -1,8 +1,11 @@
-<div class="container">
+<div class="container" *ngIf="loading" style="display: flex;justify-content: center;align-items: center;">
+  <mat-spinner></mat-spinner>
+</div>
+<div class="container" *ngIf="!loading">
   <div class="form-group" style="width: 50%; position: relative;">
     <input type="text" class="form-control" placeholder="Search by category name" [(ngModel)]="categoryName"
       style="padding-left: 35px;">
-      <mat-icon class="search-icon">search</mat-icon>
+    <mat-icon class="search-icon">search</mat-icon>
   </div>
   <table class="table table-striped table-inverse table-bordered table-hover" style="text-align: center;">
     <thead class="thead-inverse">

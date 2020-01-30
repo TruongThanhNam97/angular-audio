@@ -10,6 +10,7 @@ import { takeUntil } from 'rxjs/operators';
 import { PlayListService } from 'src/app/services/playlist.service';
 import { SongInfoService } from 'src/app/services/song-info.service';
 import { SocketIoService } from 'src/app/services/socket-io.service';
+import { AlertifyService } from 'src/app/services/alertify.service';
 
 @Component({
   selector: 'app-media-footer',
@@ -37,7 +38,8 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
     private bottomSheet: MatBottomSheet,
     private playlistService: PlayListService,
     private songInfoService: SongInfoService,
-    private socketIo: SocketIoService
+    private socketIo: SocketIoService,
+    private alertify: AlertifyService
   ) { }
 
   ngOnInit() {
@@ -48,11 +50,15 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
     this.currentFile = this.audioService.getCurrentFile();
     this.audioService.getResetCurrentFileSubject().pipe(
       takeUntil(this.destroySubscription$)
-    ).subscribe(currentFile => this.currentFile = currentFile);
+    ).subscribe(currentFile => {
+      this.currentFile = currentFile;
+    });
     this.audioService.getCurrentFileSubject1().pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(
-      (file: any) => this.currentFile = { ...file }
+      (file: any) => {
+        this.currentFile = { ...file };
+      }
     );
     this.audioService.getState().pipe(
       takeUntil(this.destroySubscription$)
@@ -107,33 +113,42 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
         this.audioService.setCurrentFile({ index: newIndex, file: this.currentFile.file });
       }
     });
-    this.cloudService.getUpdateSongsAfterDelete().pipe(
-      takeUntil(this.destroySubscription$)
-    ).subscribe(selectedSong => {
-      this.files = this.files.filter(song => song.id !== selectedSong.id);
-      const newIndex = this.files.findIndex(file => file.id === this.currentFile.file.id);
-      if (selectedSong.id === this.currentFile.file.id) {
-        const nextIndex = this.currentFile.index;
-        const preIndex = this.currentFile.index - 1;
-        if (this.files[nextIndex]) {
-          this.next1();
-        } else if (this.files[preIndex]) {
-          this.previous1();
-        } else {
-          this.audioService.resetCurentFile();
-          this.audioService.closePlayMode();
-          this.audioService.stop();
-        }
-      } else if (newIndex !== this.currentFile.index) {
-        this.audioService.getResetCurrentFileSubject().next({ index: newIndex, file: this.currentFile.file });
-        this.audioService.setCurrentFile({ index: newIndex, file: this.currentFile.file });
-      }
-    });
-    this.cloudService.getUpdateSongsAfterAdd().pipe(
-      takeUntil(this.destroySubscription$)
-    ).subscribe(selectedSong => {
-      this.files = [...this.files, selectedSong];
-    });
+    // this.cloudService.getUpdateSongsAfterDelete().pipe(
+    //   takeUntil(this.destroySubscription$)
+    // ).subscribe(selectedSong => {
+    //   this.files = this.files.filter(song => song.id !== selectedSong.id);
+    //   // Test
+    //   this.cloudService.getUpdateListFilesAfterAddDelete().next(this.files);
+    //   const newIndex = this.files.findIndex(file => file.id === this.currentFile.file.id);
+    //   if (selectedSong.id === this.currentFile.file.id) {
+    //     const nextIndex = this.currentFile.index;
+    //     const preIndex = this.currentFile.index - 1;
+    //     if (this.files[nextIndex]) {
+    //       this.next1();
+    //     } else if (this.files[preIndex]) {
+    //       this.previous1();
+    //     } else {
+    //       this.audioService.resetCurentFile();
+    //       this.audioService.closePlayMode();
+    //       this.audioService.stop();
+    //     }
+    //   } else if (newIndex !== this.currentFile.index) {
+    //     this.audioService.getResetCurrentFileSubject().next({ index: newIndex, file: this.currentFile.file });
+    //     this.audioService.setCurrentFile({ index: newIndex, file: this.currentFile.file });
+    //   }
+    // });
+    // this.cloudService.getUpdateSongsAfterAdd().pipe(
+    //   takeUntil(this.destroySubscription$)
+    // ).subscribe(selectedSong => {
+    //   if (this.files.filter(item => item.id === selectedSong.id).length === 0) {
+    //     this.files = [...this.files, selectedSong];
+    //     // Test
+    //     this.cloudService.getUpdateListFilesAfterAddDelete().next(this.files);
+    //     this.alertify.success('Added');
+    //   } else {
+    //     this.alertify.error('Already exists in current playlist');
+    //   }
+    // });
     this.playlistService.getListSongsAfterDeleteFromPlayListSubject().pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(data => {

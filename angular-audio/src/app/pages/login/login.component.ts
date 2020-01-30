@@ -16,6 +16,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   signForm: FormGroup;
   destroySubscription$: Subject<boolean> = new Subject();
+  disableMode = false;
 
   constructor(
     private authService: AuthService,
@@ -39,6 +40,8 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
+    this.signForm.disable();
+    this.disableMode = true;
     this.authService.login(this.signForm.value).pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(
@@ -58,6 +61,8 @@ export class LoginComponent implements OnInit, OnDestroy {
             data: error.error.message
           });
         }
+        this.signForm.enable();
+        this.disableMode = false;
       }
     );
   }

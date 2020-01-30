@@ -42,6 +42,6 @@
         {{ signForm.get('avatar').value.name }}
       </span>
     </div>
-    <button [disabled]="signForm.invalid" class="btn btn-success btn-block">Register</button>
+    <button [disabled]="signForm.invalid || disableMode" class="btn btn-success btn-block">Register</button>
   </form>
 </div>

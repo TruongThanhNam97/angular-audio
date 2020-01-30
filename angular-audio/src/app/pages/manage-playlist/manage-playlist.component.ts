@@ -19,6 +19,8 @@ export class ManagePlaylistComponent implements OnInit, OnDestroy {
   destroySubscription$: Subject<boolean> = new Subject();
   playlistName: string;
 
+  loading = false;
+
   constructor(
     private authService: AuthService,
     private playListService: PlayListService,
@@ -58,9 +60,13 @@ export class ManagePlaylistComponent implements OnInit, OnDestroy {
   }
 
   loadPlayList() {
+    this.loading = true;
     this.playListService.getPlayListByUser().pipe(
       takeUntil(this.destroySubscription$)
-    ).subscribe((data: any[]) => this.playLists = data);
+    ).subscribe((data: any[]) => {
+      this.playLists = data;
+      this.loading = false;
+    }, err => this.loading = false);
   }
 
   onCreatePlayList() {

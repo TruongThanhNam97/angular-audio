@@ -17,6 +17,10 @@ export class ManageBlockedSongsComponent implements OnInit, OnDestroy {
 
   filterNameArtist: string;
 
+  loading = false;
+
+  disableMode = false;
+
   constructor(private cloudService: CloudService, private alertify: AlertifyService) { }
 
   ngOnInit() {
@@ -24,9 +28,13 @@ export class ManageBlockedSongsComponent implements OnInit, OnDestroy {
   }
 
   loadBlockedSongs() {
+    this.loading = true;
     this.cloudService.getBlockedSongs().pipe(
       takeUntil(this.destroySubscriptions$)
-    ).subscribe((blockedSongs: any[]) => this.blockedSongs = [...blockedSongs]);
+    ).subscribe((blockedSongs: any[]) => {
+      this.blockedSongs = [...blockedSongs];
+      this.loading = false;
+    }, err => this.loading = false);
   }
 
   ngOnDestroy() {
@@ -34,6 +42,7 @@ export class ManageBlockedSongsComponent implements OnInit, OnDestroy {
   }
 
   onUnblock(song) {
+    this.disableMode = true;
     this.cloudService.blockSong({ id: song.id }).pipe(
       takeUntil(this.destroySubscriptions$)
     ).subscribe(blockedSongs => {
@@ -41,7 +50,8 @@ export class ManageBlockedSongsComponent implements OnInit, OnDestroy {
       this.cloudService.getBlockedSongsAfterBlockSubject().next(blockedSongs);
       this.blockedSongs = this.blockedSongs.filter(item => item.id !== song.id);
       this.alertify.success('Unblock successfully');
-    });
+      this.disableMode = false;
+    }, err => this.disableMode = false);
   }
 
 }

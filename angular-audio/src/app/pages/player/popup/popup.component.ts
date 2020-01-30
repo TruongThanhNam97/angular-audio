@@ -22,6 +22,8 @@ export class PopupComponent implements OnInit, OnDestroy {
 
   currentUser: any;
 
+  loading = false;
+
   constructor(
     public dialogRef: MatDialogRef<PopupComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -86,6 +88,7 @@ export class PopupComponent implements OnInit, OnDestroy {
   }
 
   onBlock() {
+    this.loading = true;
     this.cloudService.blockSong({ id: this.data.id }).pipe(
       takeUntil(this.destroySubscriptions)
     ).subscribe(blockedSongs => {
@@ -94,7 +97,8 @@ export class PopupComponent implements OnInit, OnDestroy {
       this.alertify.success('Block successfully');
       this.cloudService.getBlockedSongsAfterBlockSubject().next(this.data);
       this.cloudService.getUpdateSongAfterManipulatingSubject().next({ ...this.data, block: true });
-    });
+      this.loading = false;
+    }, err => this.loading = false);
   }
 
   onAddSongToPlayList() {
@@ -117,15 +121,14 @@ export class PopupComponent implements OnInit, OnDestroy {
     });
   }
 
-  onDeleteSong() {
-    this.cloudService.getUpdateSongsAfterDelete().next(this.data);
-    this.dialogRef.close();
-  }
+  // onDeleteSong() {
+  //   this.cloudService.getUpdateSongsAfterDelete().next(this.data);
+  //   this.dialogRef.close();
+  // }
 
-  onAddToCurrentPlaylist() {
-    this.cloudService.getUpdateSongsAfterAdd().next(this.data);
-    this.dialogRef.close();
-    this.alertify.success('Added');
-  }
+  // onAddToCurrentPlaylist() {
+  //   this.cloudService.getUpdateSongsAfterAdd().next(this.data);
+  //   this.dialogRef.close();
+  // }
 
 }

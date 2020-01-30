@@ -14,6 +14,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   signForm: FormGroup;
   destroySubscription$: Subject<boolean> = new Subject();
+  disableMode = false;
 
   arrayType = ['jpg', 'JPG', 'png', 'PNG', 'gif', 'GIF', 'tif', 'TIF'];
 
@@ -54,6 +55,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
+    this.disableMode = true;
+    this.signForm.disable();
     const formData = new FormData();
     formData.append('username', this.signForm.value.username);
     formData.append('password', this.signForm.value.password);
@@ -81,6 +84,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
         if (error.error.password2) {
           this.alertifyService.error(error.error.password2);
         }
+        this.disableMode = false;
+        this.signForm.enable();
       }
     );
   }
