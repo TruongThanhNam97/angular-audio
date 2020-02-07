@@ -74,7 +74,7 @@ export class PopupEditComponent implements OnInit, OnDestroy {
   validateVideoSize(control: FormControl): { [key: string]: boolean } {
     if (control.value) {
       const fileSize = (control.value.size / 1000000).toFixed(1);
-      return +fileSize <= 100 ? null : { invalidSize: true };
+      return +fileSize <= 150 ? null : { invalidSize: true };
     }
   }
 

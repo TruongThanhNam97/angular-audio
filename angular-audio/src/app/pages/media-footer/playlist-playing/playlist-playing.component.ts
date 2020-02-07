@@ -145,7 +145,7 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
       this.loadingLike = true;
       this.cloudService.likeSong({ id: song.id }).pipe(
         takeUntil(this.destroySubscription$)
-      ).subscribe(updatedSong => {
+      ).subscribe((updatedSong: any) => {
         const index = this.files.findIndex(item => item.id === updatedSong.id);
         this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
         this.cdt.detectChanges();
@@ -155,6 +155,8 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
             item.playlistName = song.playlistName;
             return item;
           });
+          updatedSong.playlistId = song.playlistId;
+          updatedSong.playlistName = song.playlistName;
         }
         this.cloudService.getUpdatedSongsAfterLikingSubject().next(this.files);
         if (this.isLiked(updatedSong)) {

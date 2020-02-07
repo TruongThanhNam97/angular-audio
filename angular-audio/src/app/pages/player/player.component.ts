@@ -228,7 +228,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
       this.loadingLike = true;
       this.cloudService.likeSong({ id: song.id }).pipe(
         takeUntil(this.destroySubscription$)
-      ).subscribe(song => {
+      ).subscribe((song: any) => {
         const index = this.files.findIndex(item => item.id === song.id);
         this.files = [...this.files.filter((v, i) => i < index), { ...song }, ...this.files.filter((v, i) => i > index)];
         if (this.playlist) {
@@ -238,6 +238,8 @@ export class PlayerComponent implements OnInit, OnDestroy {
             return song;
           });
           this.cloudService.getUpdateSongAfterManipulatingSubject().next({ ...song, playlistId: this.id, playlistName: this.playlist });
+          song.playlistId = this.id;
+          song.playlistName = this.playlist;
         } else {
           this.cloudService.getUpdateSongAfterManipulatingSubject().next(song);
         }
@@ -369,16 +371,23 @@ export class PlayerComponent implements OnInit, OnDestroy {
   }
 
   openFile(file, index) {
-    const exactIndex = this.files.findIndex(item => item.id === file.id);
+    let exactIndex = this.files.findIndex(item => item.id === file.id);
     this.cloudService.resetTempAndLastCurrentTime().next(true);
     this.audioService.updatePlayMode();
-    if (this.username && this.selectedAlbum === this.username || this.categoryName && this.selectedCategory === this.categoryName
+    if (
+      (!this.favoriteMode && (this.username && this.selectedAlbum === this.username))
+      || (this.favoriteMode && (this.username && this.selectedAlbum === this.username) && (this.selectedFavoriteMode === this.favoriteMode))
+      || this.categoryName && this.selectedCategory === this.categoryName
       || this.artistName && this.selectedArtist === this.artistName || this.playlist && this.selectedPlayList === this.playlist
       || this.top100Love && this.selectedTop100Love === this.top100Love
       || this.top100Hear && this.selectedTop100Hear === this.top100Hear
     ) {
       this.currentFile = { index: exactIndex, file };
       this.arrSongContent = this.currentFile.file.songcontent.detail.split('\n');
+    } else {
+      if (exactIndex !== -1 && exactIndex !== index) {
+        exactIndex = -1;
+      }
     }
     this.audioService.updateCurrentFile1({ index: exactIndex, file });
     this.audioService.stop();

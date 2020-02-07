@@ -1,5 +1,6 @@
 const fs = require('fs');
 const spawn = require('child_process').spawn;
+const Path = require("path");
 
 
 class Watermarker {
@@ -14,7 +15,12 @@ class Watermarker {
         let count = 0;
         let arrFilesLength = req.files.length;
         for (let i = 0; i < arrFilesLength; i++) {
-            const pyWatermarker = spawn('py', ['./python_scripts/test.py', listFiles[i].filename]);
+            const pyWatermarker = spawn(
+                'python',
+                [Path.resolve(__dirname, 'test.py'), listFiles[i].filename],
+                {
+                    cwd: __dirname
+                });
             pyWatermarker.stdout.on('data', (data) => {
                 if (data.toString().includes("OK")) {
                     count++;

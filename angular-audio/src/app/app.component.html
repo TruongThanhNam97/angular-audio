@@ -63,12 +63,12 @@
     </ul>
 
     <div class="notify-processing" *ngIf="currentUser && (reupDectected === 1 || reupDectected === 2)">
-      Reup Detected: {{ reupDectected }}
+      Reup: {{ reupDectected }}
       <span class="pulse"></span>
     </div>
 
     <div class="notify-processing ml-4" *ngIf="queueProcessing > 0">
-      In processing {{ queueProcessing }}
+      Processing: {{ queueProcessing }}
       <span class="pulse"></span>
     </div>
 

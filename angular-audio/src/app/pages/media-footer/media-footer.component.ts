@@ -57,7 +57,13 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
       takeUntil(this.destroySubscription$)
     ).subscribe(
       (file: any) => {
-        this.currentFile = { ...file };
+        if (file.index !== -1) {
+          this.currentFile = { ...file };
+        } else {
+          const exactIndex = this.files.findIndex(item => item.id === file.file.id);
+          this.currentFile = { ...file, index: exactIndex };
+          this.audioService.setCurrentFile(this.currentFile);
+        }
       }
     );
     this.audioService.getState().pipe(

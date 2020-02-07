@@ -11,7 +11,7 @@ const validateLoginInput = require('../validation/login');
 
 const rateLimit = require("express-rate-limit");
 const registerRateLimit = rateLimit({
-  windowMs: 24 * 60 * 1000, // 1 day
+  windowMs: 24 * 60 * 60 * 1000, // 1 day
   max: 5, // start blocking after 5 requests
   message: "You spam !!!"
 });
