@@ -119,7 +119,7 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
       if (song.id === this.selectedSong.id) {
         this.selectedSong = { ...song };
       }
-      if (this.top20FavoriteSongs.filter(item => item.id === song.id).length > 0) {
+      if (this.top20FavoriteSongs && this.top20FavoriteSongs.filter(item => item.id === song.id).length > 0) {
         const index = this.top20FavoriteSongs.findIndex(item => item.id === song.id);
         this.top20FavoriteSongs =
           [...this.top20FavoriteSongs.filter((v, i) => i < index), { ...song }, ...this.top20FavoriteSongs.filter((v, i) => i > index)];
@@ -145,7 +145,7 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
       } else {
         this.isMatch = false;
       }
-      if (this.top20FavoriteSongs.filter(item => item.id === updatedSong.id).length > 0) {
+      if (this.top20FavoriteSongs && this.top20FavoriteSongs.filter(item => item.id === updatedSong.id).length > 0) {
         const index = this.top20FavoriteSongs.findIndex(item => item.id === updatedSong.id);
         this.top20FavoriteSongs =
           [...this.top20FavoriteSongs.filter((v, i) => i < index),
@@ -160,7 +160,7 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
         this.selectedSong = { ...song };
         this.likedUsers = this.selectedSong.likedUsers.length;
       }
-      if (this.top20FavoriteSongs.filter(item => item.id === song.id).length > 0) {
+      if (this.top20FavoriteSongs && this.top20FavoriteSongs.filter(item => item.id === song.id).length > 0) {
         const index = this.top20FavoriteSongs.findIndex(item => item.id === song.id);
         this.top20FavoriteSongs =
           [...this.top20FavoriteSongs.filter((v, i) => i < index), { ...song }, ...this.top20FavoriteSongs.filter((v, i) => i > index)];
@@ -173,7 +173,7 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
         this.selectedSong = { ...song };
         this.likedUsers = this.selectedSong.likedUsers.length;
       }
-      if (this.top20FavoriteSongs.filter(item => item.id === song.id).length > 0) {
+      if (this.top20FavoriteSongs && this.top20FavoriteSongs.filter(item => item.id === song.id).length > 0) {
         const index = this.top20FavoriteSongs.findIndex(item => item.id === song.id);
         this.top20FavoriteSongs =
           [...this.top20FavoriteSongs.filter((v, i) => i < index), { ...song }, ...this.top20FavoriteSongs.filter((v, i) => i > index)];
@@ -340,7 +340,7 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
           this.alertify.success('Block successfully');
           this.isBlocked = true;
           this.isPlay = false;
-          if (this.top20FavoriteSongs.filter(song => song.id === this.selectedSong.id).length > 0) {
+          if (this.top20FavoriteSongs && this.top20FavoriteSongs.filter(song => song.id === this.selectedSong.id).length > 0) {
             this.top20FavoriteSongs = this.top20FavoriteSongs.filter(song => song.id !== this.selectedSong.id);
           }
         } else {
