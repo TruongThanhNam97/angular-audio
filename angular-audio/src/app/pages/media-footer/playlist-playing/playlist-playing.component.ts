@@ -58,11 +58,15 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
     this.currentUser = this.authService.getCurrentUser();
     this.files = [...this.data];
     this.currentFile = this.audioService.getCurrentFile();
+    if (this.files.filter(file => file.id === this.currentFile.file.id).length > 0) {
+      const exactIndex = this.files.findIndex(file => file.id === this.currentFile.file.id);
+      this.currentFile = { ...this.currentFile, index: exactIndex };
+    }
     this.arrSongContent = this.currentFile.file.songcontent.detail.split('\n');
     this.audioService.getResetCurrentFileSubject().pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(currentFile => {
-      if (currentFile) {
+      if (!this.validateService.isEmpty(currentFile)) {
         this.currentFile = currentFile;
         this.arrSongContent = this.currentFile.file.songcontent.detail.split('\n');
       }
@@ -77,19 +81,32 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
     });
     this.cloudService.getUpdatedSongsAfterLikingSubject().pipe(
       takeUntil(this.destroySubscription$)
-    ).subscribe(files => this.files = [...files]);
+    ).subscribe(updatedSong => {
+      if (this.files.filter(file => file.id === updatedSong.id).length > 0) {
+        const index = this.files.findIndex(file => file.id === updatedSong.id);
+        this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
+      }
+    });
     this.cloudService.getBlockedSongsAfterBlockSubject().pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(blockedSong => {
       this.files = this.files.filter(song => song.id !== blockedSong.id);
+      if (this.files.length === 0) {
+        this.currentFile = {};
+        this.bottomSheetRef.dismiss();
+      }
       this.cdt.detectChanges();
     });
-    // this.cloudService.getUpdateSongsAfterDelete().pipe(
-    //   takeUntil(this.destroySubscription$)
-    // ).subscribe(selectedSong => {
-    //   this.files = this.files.filter(song => song.id !== selectedSong.id);
-    //   this.cdt.detectChanges();
-    // });
+    this.cloudService.getUpdateSongsAfterDelete().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(selectedSong => {
+      this.files = this.files.filter(song => song.id !== selectedSong.id);
+      if (this.files.length === 0) {
+        this.currentFile = {};
+        this.bottomSheetRef.dismiss();
+      }
+      this.cdt.detectChanges();
+    });
     this.playlistService.getListSongsAfterDeleteFromPlayListSubject().pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(data => {
@@ -101,6 +118,10 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
     ).subscribe((updatedSong: any) => {
       if (this.files.filter(song => song.id === updatedSong.id).length > 0) {
         const index = this.files.findIndex(song => song.id === updatedSong.id);
+        if (this.files[index].playlistId && this.files[index].playlistName) {
+          updatedSong.playlistId = this.files[index].playlistId;
+          updatedSong.playlistName = this.files[index].playlistName;
+        }
         this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
       }
       if (this.currentFile.file && this.currentFile.file.id === updatedSong.id) {
@@ -113,6 +134,10 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
     ).subscribe((updatedSong: any) => {
       if (this.files.filter(song => song.id === updatedSong.id).length > 0) {
         const index = this.files.findIndex(song => song.id === updatedSong.id);
+        if (this.files[index].playlistId && this.files[index].playlistName) {
+          updatedSong.playlistId = this.files[index].playlistId;
+          updatedSong.playlistName = this.files[index].playlistName;
+        }
         this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
       }
       if (this.currentFile.file && this.currentFile.file.id === updatedSong.id) {
@@ -125,6 +150,10 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
     ).subscribe((updatedSong: any) => {
       if (this.files.filter(song => song.id === updatedSong.id).length > 0) {
         const index = this.files.findIndex(song => song.id === updatedSong.id);
+        if (this.files[index].playlistId && this.files[index].playlistName) {
+          updatedSong.playlistId = this.files[index].playlistId;
+          updatedSong.playlistName = this.files[index].playlistName;
+        }
         this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
       }
       if (this.currentFile.file && this.currentFile.file.id === updatedSong.id) {
@@ -147,18 +176,13 @@ export class PlaylistPlayingComponent implements OnInit, OnDestroy {
         takeUntil(this.destroySubscription$)
       ).subscribe((updatedSong: any) => {
         const index = this.files.findIndex(item => item.id === updatedSong.id);
-        this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
-        this.cdt.detectChanges();
         if (song.playlistId && song.playlistName) {
-          this.files = this.files.map(item => {
-            item.playlistId = song.playlistId;
-            item.playlistName = song.playlistName;
-            return item;
-          });
           updatedSong.playlistId = song.playlistId;
           updatedSong.playlistName = song.playlistName;
         }
-        this.cloudService.getUpdatedSongsAfterLikingSubject().next(this.files);
+        this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
+        this.cdt.detectChanges();
+        this.cloudService.getUpdatedSongsAfterLikingSubject().next(updatedSong);
         if (this.isLiked(updatedSong)) {
           this.alertify.success('Like successfully');
         } else {

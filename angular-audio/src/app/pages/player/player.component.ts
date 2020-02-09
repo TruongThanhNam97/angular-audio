@@ -127,7 +127,17 @@ export class PlayerComponent implements OnInit, OnDestroy {
     });
     this.audioService.getResetCurrentFileSubject().pipe(
       takeUntil(this.destroySubscription$)
-    ).subscribe(currentFile => this.currentFile = currentFile);
+    ).subscribe(currentFile => {
+      if (this.isMatchCurrentPlayListAndCurrentPlayerAudio) {
+        if (!this.validateService.isEmpty(currentFile)
+          && this.files.filter(file => file.id === currentFile.file.id)) {
+          const exactIndex = this.files.findIndex(file => file.id === currentFile.file.id);
+          this.currentFile = { ...currentFile, index: exactIndex };
+        } else {
+          this.currentFile = { ...currentFile };
+        }
+      }
+    });
     if (this.audioService.getPlayMode() && ((this.username !== this.selectedAlbum) || (this.categoryName !== this.selectedCategory)
       || (this.artistName !== this.selectedArtist) || (this.favoriteMode !== this.selectedFavoriteMode)
       || (this.playlist !== this.selectedPlayList)
@@ -141,7 +151,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.audioService.getCurrentFileSubject2().pipe(takeUntil(this.audioService.getDestroyGeneralSubject$())).subscribe((v: any) => {
       this.openFile(v.file, v.index);
     });
-    // Test
+    // // Test
     // this.cloudService.getUpdateListFilesAfterAddDelete().pipe(
     //   takeUntil(this.audioService.getDestroyGeneralSubject$())
     // ).subscribe(files => {
@@ -157,9 +167,12 @@ export class PlayerComponent implements OnInit, OnDestroy {
     });
     this.cloudService.getUpdatedSongsAfterLikingSubject().pipe(
       takeUntil(this.destroySubscription$)
-    ).subscribe(files => {
+    ).subscribe(updatedSong => {
       if (this.isMatchCurrentPlayListAndCurrentPlayerAudio) {
-        this.files = [...files];
+        if (this.files.filter(file => file.id === updatedSong.id).length > 0) {
+          const index = this.files.findIndex(file => file.id === updatedSong.id);
+          this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
+        }
       }
     });
     this.cloudService.getBlockedSongsAfterBlockSubject().pipe(
@@ -177,14 +190,25 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.cloudService.getUpdateSongAfterManipulatingSubject().pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(updatedSong => {
+      if (this.playlist) {
+        updatedSong.playlistId = this.id;
+        updatedSong.playlistName = this.playlist;
+      }
       if (this.files.filter(song => song.id === updatedSong.id).length > 0) {
         const index = this.files.findIndex(song => song.id === updatedSong.id);
         this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
+      }
+      if (this.currentFile.file && this.currentFile.file.id === updatedSong.id) {
+        this.currentFile = { ...this.currentFile, file: updatedSong };
       }
     });
     this.socketIo.getCommentsRealTime().pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe((updatedSong: any) => {
+      if (this.playlist) {
+        updatedSong.playlistId = this.id;
+        updatedSong.playlistName = this.playlist;
+      }
       if (this.files.filter(song => song.id === updatedSong.id).length > 0) {
         const index = this.files.findIndex(song => song.id === updatedSong.id);
         this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
@@ -196,6 +220,10 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.socketIo.getLikeSongRealTime().pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe((updatedSong: any) => {
+      if (this.playlist) {
+        updatedSong.playlistId = this.id;
+        updatedSong.playlistName = this.playlist;
+      }
       if (this.files.filter(song => song.id === updatedSong.id).length > 0) {
         const index = this.files.findIndex(song => song.id === updatedSong.id);
         this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
@@ -207,6 +235,10 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.socketIo.getViewsRealTime().pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe((updatedSong: any) => {
+      if (this.playlist) {
+        updatedSong.playlistId = this.id;
+        updatedSong.playlistName = this.playlist;
+      }
       if (this.files.filter(song => song.id === updatedSong.id).length > 0) {
         const index = this.files.findIndex(song => song.id === updatedSong.id);
         this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
@@ -230,21 +262,16 @@ export class PlayerComponent implements OnInit, OnDestroy {
         takeUntil(this.destroySubscription$)
       ).subscribe((song: any) => {
         const index = this.files.findIndex(item => item.id === song.id);
-        this.files = [...this.files.filter((v, i) => i < index), { ...song }, ...this.files.filter((v, i) => i > index)];
         if (this.playlist) {
-          this.files = this.files.map(song => {
-            song.playlistId = this.id;
-            song.playlistName = this.playlist;
-            return song;
-          });
-          this.cloudService.getUpdateSongAfterManipulatingSubject().next({ ...song, playlistId: this.id, playlistName: this.playlist });
           song.playlistId = this.id;
           song.playlistName = this.playlist;
+          this.cloudService.getUpdateSongAfterManipulatingSubject().next(song);
         } else {
           this.cloudService.getUpdateSongAfterManipulatingSubject().next(song);
         }
+        this.files = [...this.files.filter((v, i) => i < index), { ...song }, ...this.files.filter((v, i) => i > index)];
         if (this.isMatchCurrentPlayListAndCurrentPlayerAudio) {
-          this.cloudService.getUpdatedSongsAfterLikingSubject().next(this.files);
+          this.cloudService.getUpdatedSongsAfterLikingSubject().next(song);
         }
         if (!this.audioService.getPlayMode()) {
           this.cloudService.setCurrentPlayList(this.files);
@@ -392,7 +419,6 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.audioService.updateCurrentFile1({ index: exactIndex, file });
     this.audioService.stop();
     this.audioService.playStream(file.url).subscribe();
-    this.isMatchCurrentPlayListAndCurrentPlayerAudio = true;
     this.cloudService.setSelectedSongId(file.id);
     // this.songInfoService.getModeSubject().next('displayBtnPlay');
     // this.cloudService.getUpdatedSongsAfterLikingSubject().next(this.files);
@@ -491,6 +517,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.cloudService.setSelectedSongId(file.id);
     this.songInfoService.setStatusAudio('play');
     this.cloudService.updateCurrentPlayList();
+    this.isMatchCurrentPlayListAndCurrentPlayerAudio = true;
   }
 
   onNavigateToAlbum(currentFile) {
@@ -503,7 +530,9 @@ export class PlayerComponent implements OnInit, OnDestroy {
   }
 
   isEmpty() {
-    return this.validateService.isEmpty(this.currentFile);
+    if (this.currentFile) {
+      return this.validateService.isEmpty(this.currentFile);
+    }
   }
 
   onSeeVideo(file) {

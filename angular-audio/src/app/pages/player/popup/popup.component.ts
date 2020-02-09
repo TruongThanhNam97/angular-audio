@@ -121,14 +121,14 @@ export class PopupComponent implements OnInit, OnDestroy {
     });
   }
 
-  // onDeleteSong() {
-  //   this.cloudService.getUpdateSongsAfterDelete().next(this.data);
-  //   this.dialogRef.close();
-  // }
+  onDeleteSong() {
+    this.cloudService.getUpdateSongsAfterDelete().next(this.data);
+    this.dialogRef.close();
+  }
 
-  // onAddToCurrentPlaylist() {
-  //   this.cloudService.getUpdateSongsAfterAdd().next(this.data);
-  //   this.dialogRef.close();
-  // }
+  onAddToCurrentPlaylist() {
+    this.cloudService.getUpdateSongsAfterAdd().next(this.data);
+    this.dialogRef.close();
+  }
 
 }

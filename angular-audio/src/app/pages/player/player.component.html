@@ -17,17 +17,17 @@
       <mat-icon>music_note</mat-icon>
       <div style="margin-bottom: 50px;" *ngIf="!isEmpty()">
         <p class="songInfo" (click)="onNavigateToSongInfo(currentFile)">
-          <strong>{{ this.currentFile.file.name }}</strong></p>
+          <strong>{{ this.currentFile?.file?.name }}</strong></p>
         <p style="font-size: 15px; word-break: break-all;">Album: <strong class="album"
-            (click)="onNavigateToAlbum(currentFile)">{{ currentFile.file.userName }}</strong></p>
+            (click)="onNavigateToAlbum(currentFile)">{{ currentFile?.file?.userName }}</strong></p>
       </div>
-      <div style="max-height: 520px; overflow-y: scroll;" *ngIf="!isEmpty() && currentFile.file.songcontent.status">
+      <div style="max-height: 520px; overflow-y: scroll;" *ngIf="!isEmpty() && currentFile?.file?.songcontent?.status">
         <p *ngFor="let text of arrSongContent" style="font-size: 14px;word-break: break-all;">{{ text.trim() }}</p>
       </div>
-      <p *ngIf="!isEmpty() && !currentFile.file.songcontent.status && currentFile.file.songcontent.detail"
+      <p *ngIf="!isEmpty() && !currentFile?.file?.songcontent?.status && currentFile?.file?.songcontent?.detail"
         style="font-size: 14px;">
         Waiting admin approve</p>
-      <p *ngIf="!isEmpty() && !currentFile.file.songcontent.status && !currentFile.file.songcontent.detail">
+      <p *ngIf="!isEmpty() && !currentFile?.file?.songcontent?.status && !currentFile?.file?.songcontent?.detail">
         No
         lyrics
       </p>

@@ -43,7 +43,8 @@
       <button (click)="onViewMore()" mat-button matTooltip="View more">
         <mat-icon mat-list-icon>more_horiz</mat-icon>
       </button>
-      <button mat-button (click)="onOpenPlaylist()">
+      <button mat-button (click)="onOpenPlaylist()" style="transition: 0.4s;"
+        [ngStyle]="{'box-shadow': highlightMode ? '0px 0px 20px 8px #e0e0ff' : ''}">
         <mat-icon mat-list-icon>queue_music</mat-icon>
         Playlist is playing ({{ files.length }})
       </button>

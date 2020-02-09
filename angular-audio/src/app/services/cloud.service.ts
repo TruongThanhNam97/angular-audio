@@ -37,9 +37,9 @@ export class CloudService {
 
   private updateSongAfterEdit$: Subject<any> = new Subject();
 
-  // private updateSongsAfterDelete$: Subject<any> = new Subject();
+  private updateSongsAfterDelete$: Subject<any> = new Subject();
 
-  // private updateSongsAfterAdd$: Subject<any> = new Subject();
+  private updateSongsAfterAdd$: Subject<any> = new Subject();
 
   private resetTempAndLastCurrentTime$: Subject<boolean> = new Subject();
 
@@ -51,9 +51,17 @@ export class CloudService {
     this.SERVER_URL_SOUND = environment.SERVER_URL_SOUND;
   }
 
-  // getUpdateListFilesAfterAddDelete() {
-  //   return this.updatelistFilesAfterAddDelete$;
-  // }
+  getUpdateSongsAfterAdd() {
+    return this.updateSongsAfterAdd$;
+  }
+
+  getUpdateSongsAfterDelete() {
+    return this.updateSongsAfterDelete$;
+  }
+
+  getUpdateListFilesAfterAddDelete() {
+    return this.updatelistFilesAfterAddDelete$;
+  }
 
   getSelectedTop100Hear() {
     return this.selectedTop100Hear;
@@ -82,14 +90,6 @@ export class CloudService {
   resetSelectedTop100Love() {
     this.selectedTop100Love = null;
   }
-
-  // getUpdateSongsAfterAdd() {
-  //   return this.updateSongsAfterAdd$;
-  // }
-
-  // getUpdateSongsAfterDelete() {
-  //   return this.updateSongsAfterDelete$;
-  // }
 
   getUpdateSongAfterEdit() {
     return this.updateSongAfterEdit$;

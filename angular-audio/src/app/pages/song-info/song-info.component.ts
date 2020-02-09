@@ -70,9 +70,9 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit() {
-    if (this.songInfoService.getStatusAudio() === 'pause') {
-      this.songInfoService.setStatusAudio('play');
-    }
+    // if (this.songInfoService.getStatusAudio() === 'pause') {
+    //   this.songInfoService.setStatusAudio('play');
+    // }
     this.currentUser = this.authService.getCurrentUser();
     this.route.queryParams.subscribe(param => {
       this.isPlay = false;
@@ -395,8 +395,8 @@ export class SongInfoComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.validateService.isEmpty(data);
   }
 
-  // onAddSongToCurrentPlayList() {
-  //   this.cloudService.getUpdateSongsAfterAdd().next(this.selectedSong);
-  // }
+  onAddSongToCurrentPlayList() {
+    this.cloudService.getUpdateSongsAfterAdd().next(this.selectedSong);
+  }
 
 }

@@ -28,6 +28,7 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
   randomMode = false;
   temp = 0;
   lastCurrentTime = 0;
+  highlightMode = false;
 
   destroySubscription$: Subject<boolean> = new Subject();
 
@@ -46,7 +47,9 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
     this.files = this.cloudService.getCurrentPlayList();
     this.cloudService.getCurrentPlayListSubject().pipe(
       takeUntil(this.destroySubscription$)
-    ).subscribe(files => this.files = [...files]);
+    ).subscribe(files => {
+      this.files = [...files];
+    });
     this.currentFile = this.audioService.getCurrentFile();
     this.audioService.getResetCurrentFileSubject().pipe(
       takeUntil(this.destroySubscription$)
@@ -57,13 +60,9 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
       takeUntil(this.destroySubscription$)
     ).subscribe(
       (file: any) => {
-        if (file.index !== -1) {
-          this.currentFile = { ...file };
-        } else {
-          const exactIndex = this.files.findIndex(item => item.id === file.file.id);
-          this.currentFile = { ...file, index: exactIndex };
-          this.audioService.setCurrentFile(this.currentFile);
-        }
+        const exactIndex = this.files.findIndex(item => item.id === file.file.id);
+        this.currentFile = { ...file, index: exactIndex };
+        this.audioService.setCurrentFile(this.currentFile);
       }
     );
     this.audioService.getState().pipe(
@@ -98,7 +97,12 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
     this.audioService.getMuteSubject().pipe(takeUntil(this.destroySubscription$)).subscribe((mute: boolean) => this.mute = mute);
     this.audioService.getLoopSubject().pipe(takeUntil(this.destroySubscription$)).subscribe((loop: boolean) => this.loop = loop);
     this.cloudService.getUpdatedSongsAfterLikingSubject()
-      .pipe(takeUntil(this.destroySubscription$)).subscribe(files => this.files = [...files]);
+      .pipe(takeUntil(this.destroySubscription$)).subscribe(updatedSong => {
+        if (this.files.filter(file => file.id === updatedSong.id).length > 0) {
+          const index = this.files.findIndex(file => file.id === updatedSong.id);
+          this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
+        }
+      });
     this.cloudService.getBlockedSongsAfterBlockSubject().pipe(takeUntil(this.destroySubscription$)).subscribe(blockedSong => {
       this.files = this.files.filter(song => song.id !== blockedSong.id);
       const newIndex = this.files.findIndex(file => file.id === this.currentFile.file.id);
@@ -119,42 +123,44 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
         this.audioService.setCurrentFile({ index: newIndex, file: this.currentFile.file });
       }
     });
-    // this.cloudService.getUpdateSongsAfterDelete().pipe(
-    //   takeUntil(this.destroySubscription$)
-    // ).subscribe(selectedSong => {
-    //   this.files = this.files.filter(song => song.id !== selectedSong.id);
-    //   // Test
-    //   this.cloudService.getUpdateListFilesAfterAddDelete().next(this.files);
-    //   const newIndex = this.files.findIndex(file => file.id === this.currentFile.file.id);
-    //   if (selectedSong.id === this.currentFile.file.id) {
-    //     const nextIndex = this.currentFile.index;
-    //     const preIndex = this.currentFile.index - 1;
-    //     if (this.files[nextIndex]) {
-    //       this.next1();
-    //     } else if (this.files[preIndex]) {
-    //       this.previous1();
-    //     } else {
-    //       this.audioService.resetCurentFile();
-    //       this.audioService.closePlayMode();
-    //       this.audioService.stop();
-    //     }
-    //   } else if (newIndex !== this.currentFile.index) {
-    //     this.audioService.getResetCurrentFileSubject().next({ index: newIndex, file: this.currentFile.file });
-    //     this.audioService.setCurrentFile({ index: newIndex, file: this.currentFile.file });
-    //   }
-    // });
-    // this.cloudService.getUpdateSongsAfterAdd().pipe(
-    //   takeUntil(this.destroySubscription$)
-    // ).subscribe(selectedSong => {
-    //   if (this.files.filter(item => item.id === selectedSong.id).length === 0) {
-    //     this.files = [...this.files, selectedSong];
-    //     // Test
-    //     this.cloudService.getUpdateListFilesAfterAddDelete().next(this.files);
-    //     this.alertify.success('Added');
-    //   } else {
-    //     this.alertify.error('Already exists in current playlist');
-    //   }
-    // });
+    this.cloudService.getUpdateSongsAfterDelete().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(selectedSong => {
+      this.files = this.files.filter(song => song.id !== selectedSong.id);
+      // Test
+      // this.cloudService.getUpdateListFilesAfterAddDelete().next(this.files);
+      const newIndex = this.files.findIndex(file => file.id === this.currentFile.file.id);
+      if (selectedSong.id === this.currentFile.file.id) {
+        const nextIndex = this.currentFile.index;
+        const preIndex = this.currentFile.index - 1;
+        if (this.files[nextIndex]) {
+          this.next1();
+        } else if (this.files[preIndex]) {
+          this.previous1();
+        } else {
+          this.audioService.resetCurentFile();
+          this.audioService.closePlayMode();
+          this.audioService.stop();
+        }
+      } else if (newIndex !== this.currentFile.index) {
+        this.audioService.getResetCurrentFileSubject().next({ index: newIndex, file: this.currentFile.file });
+        this.audioService.setCurrentFile({ index: newIndex, file: this.currentFile.file });
+      }
+    });
+    this.cloudService.getUpdateSongsAfterAdd().pipe(
+      takeUntil(this.destroySubscription$)
+    ).subscribe(selectedSong => {
+      if (this.files.filter(item => item.id === selectedSong.id).length === 0) {
+        this.files = [...this.files, selectedSong];
+        this.highlightMode = true;
+        const timer = setTimeout(() => {
+          this.highlightMode = false;
+          clearTimeout(timer);
+        }, 1000);
+      } else {
+        this.alertify.error('Already exists in current playlist');
+      }
+    });
     this.playlistService.getListSongsAfterDeleteFromPlayListSubject().pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(data => {
@@ -182,6 +188,10 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
     ).subscribe(updatedSong => {
       if (this.files.filter(song => song.id === updatedSong.id).length > 0) {
         const index = this.files.findIndex(song => song.id === updatedSong.id);
+        if (this.files[index].playlistId && this.files[index].playlistName) {
+          updatedSong.playlistId = this.files[index].playlistId;
+          updatedSong.playlistName = this.files[index].playlistName;
+        }
         this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
       }
       if (this.currentFile.file && this.currentFile.file.id === updatedSong.id) {
@@ -193,6 +203,10 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
     ).subscribe((updatedSong: any) => {
       if (this.files.filter(song => song.id === updatedSong.id).length > 0) {
         const index = this.files.findIndex(song => song.id === updatedSong.id);
+        if (this.files[index].playlistId && this.files[index].playlistName) {
+          updatedSong.playlistId = this.files[index].playlistId;
+          updatedSong.playlistName = this.files[index].playlistName;
+        }
         this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
       }
       if (this.currentFile.file && this.currentFile.file.id === updatedSong.id) {
@@ -204,6 +218,10 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
     ).subscribe((updatedSong: any) => {
       if (this.files.filter(song => song.id === updatedSong.id).length > 0) {
         const index = this.files.findIndex(song => song.id === updatedSong.id);
+        if (this.files[index].playlistId && this.files[index].playlistName) {
+          updatedSong.playlistId = this.files[index].playlistId;
+          updatedSong.playlistName = this.files[index].playlistName;
+        }
         this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
       }
       if (this.currentFile.file && this.currentFile.file.id === updatedSong.id) {
@@ -215,6 +233,10 @@ export class MediaFooterComponent implements OnInit, OnDestroy {
     ).subscribe((updatedSong: any) => {
       if (this.files.filter(song => song.id === updatedSong.id).length > 0) {
         const index = this.files.findIndex(song => song.id === updatedSong.id);
+        if (this.files[index].playlistId && this.files[index].playlistName) {
+          updatedSong.playlistId = this.files[index].playlistId;
+          updatedSong.playlistName = this.files[index].playlistName;
+        }
         this.files = [...this.files.filter((v, i) => i < index), { ...updatedSong }, ...this.files.filter((v, i) => i > index)];
       }
       if (this.currentFile.file && this.currentFile.file.id === updatedSong.id) {
