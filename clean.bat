@@ -1,14 +1,22 @@
 pushd server-audio
-del *.wav
-del *.WAV
 del *.mp3
 del *.MP3
+del *.wav
+del *.WAV
+del *.M4A
+del *.m4a
+del *.flac
+del *.FLAC
 
 pushd assets\original-songs
-del *.wav
 del *.mp3
 del *.MP3
+del *.wav
 del *.WAV
+del *.M4A
+del *.m4a
+del *.flac
+del *.FLAC
 popd
 
 pushd public\watermark-songs\mp3-128

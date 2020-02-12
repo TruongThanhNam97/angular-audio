@@ -31,8 +31,15 @@
         <input (change)="onSelectVideo($event)" style="display: none;" type="file" class="form-control-file" id="btnMv"
           aria-describedby="fileHelpId">
         <span style="color: red;" *ngIf="signForm.get('video').invalid">
-          <span *ngIf="signForm.get('video').hasError('invalid')">Video is invalid</span>
-          <span *ngIf="signForm.get('video').hasError('invalidSize')">Video size is invalid</span>
+          <span class="mr-2" *ngIf="signForm.get('video').hasError('invalid')">Video is invalid</span>
+          <span class="mr-2" *ngIf="signForm.get('video').hasError('invalidSize')">Video size is invalid</span>
+          <span class="mr-2" *ngIf="signForm.get('video').hasError('fileNameLength')">Max length of file name:
+            150</span>
+          <span class="mr-2" *ngIf="signForm.get('video').hasError('numberExtensions')">File should have only one
+            extension</span>
+          <span class="mr-2" *ngIf="signForm.get('video').hasError('controlCharacters')">File name should not have
+            control
+            characters</span>
         </span>
       </div>
       <div class="form-group" style="display: flex;">

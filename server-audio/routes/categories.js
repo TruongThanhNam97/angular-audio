@@ -9,19 +9,29 @@ const categoriesModel = require('../models/category');
 
 var multer = require("multer");
 
-var storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, "./public/images");
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + "-" + file.originalname);
-    }
-});
+const controlCharacters = /[!@#$%^&*()_+\=\[\]{};':"\\|,<>\/?]+/;
+
+const Resize = require('../features/resize');
+const path = require('path');
+
+// var storage = multer.diskStorage({
+//     destination: function (req, file, cb) {
+//         cb(null, "./public/images");
+//     },
+//     filename: function (req, file, cb) {
+//         cb(null, Date.now() + "-" + file.originalname);
+//     }
+// });
 
 var upload = multer({
-    storage: storage,
+    // storage: storage,
     fileFilter: (req, file, cb) => {
-        if (file.originalname.match(/\.(jpg|JPG|png|PNG|tif|TIF|gif|GIF)$/)) {
+        if (
+            validateExtensionsFile(file, 'image')
+            && validateFileNameLength(file)
+            && validateNumberOfExtensions(file)
+            && validateControlCharacters(file)
+        ) {
             cb(null, true);
         } else {
             cb(null, false);
@@ -29,10 +39,34 @@ var upload = multer({
     }
 });
 
+const validateFileNameLength = (file) => {
+    return file.originalname.length <= 150;
+};
+
+const validateNumberOfExtensions = (file) => {
+    return file.originalname.split('.').length === 2;
+};
+
+const validateControlCharacters = (file) => {
+    return !controlCharacters.test(file.originalname);
+};
+
+const validateExtensionsFile = (file, mode) => {
+    if (mode === 'audio') {
+        return file.originalname.match(/\.(mp3|MP3|wav|WAV|m4a|M4A|flac|FLAC)$/);
+    }
+    if (mode === 'video') {
+        return file.originalname.match(/\.(mp4|MP4)$/);
+    }
+    if (mode === 'image') {
+        return file.originalname.match(/\.(jpg|JPG|png|PNG|jpeg|JPEG|webp|WEBP)$/);
+    }
+};
+
 //@route    POST /categories/upload
 //@desc     Upload categories
 //@access   Private - Only Admin
-router.post('/upload', passport.authenticate('jwt', { session: false }), upload.any(), (req, res, next) => {
+router.post('/upload', passport.authenticate('jwt', { session: false }), upload.any(), async (req, res, next) => {
     if (req.user.username !== 'superadmin') {
         return res.status(401).json('Unauthorized');
     }
@@ -41,6 +75,13 @@ router.post('/upload', passport.authenticate('jwt', { session: false }), upload.
     if (!isValid) {
         return res.status(400).json(errors);
     }
+    // Handle image
+    let filename = '';
+    if (req.files[0]) {
+        const imagePath = path.join(__dirname, '../public/images');
+        const fileUpload = new Resize(imagePath, req.files[0].originalname);
+        filename = await fileUpload.save(req.files[0].buffer);
+    }
     const { name } = req.body;
     categoriesModel.findOne({ name }).then(category => {
         if (category) {
@@ -48,7 +89,7 @@ router.post('/upload', passport.authenticate('jwt', { session: false }), upload.
             res.status(400).json(errors);
         } else {
             const category = { name };
-            if (req.files[0]) category.avatar = req.files[0].filename;
+            if (req.files[0]) category.avatar = filename;
             const newCategory = new categoriesModel(category);
             newCategory.save()
                 .then(category => res.status(200).json(category))
@@ -60,7 +101,7 @@ router.post('/upload', passport.authenticate('jwt', { session: false }), upload.
 //@route    POST /categories/update
 //@desc     Update category
 //@access   Private - Only Admin
-router.post('/update', passport.authenticate('jwt', { session: false }), upload.any(), (req, res, next) => {
+router.post('/update', passport.authenticate('jwt', { session: false }), upload.any(), async (req, res, next) => {
     if (req.user.username !== 'superadmin') {
         return res.status(401).json('Unauthorized')
     }
@@ -69,9 +110,16 @@ router.post('/update', passport.authenticate('jwt', { session: false }), upload.
     if (!isValid) {
         return res.status(400).json(errors);
     }
+    // Handle image
+    let filename = '';
+    if (req.files[0]) {
+        const imagePath = path.join(__dirname, '../public/images');
+        const fileUpload = new Resize(imagePath, req.files[0].originalname);
+        filename = await fileUpload.save(req.files[0].buffer);
+    }
     const { id, name } = req.body;
     if (req.files[0]) {
-        categoriesModel.findOneAndUpdate({ _id: id }, { $set: { name, avatar: req.files[0].filename } }, { new: true })
+        categoriesModel.findOneAndUpdate({ _id: id }, { $set: { name, avatar: filename } }, { new: true })
             .select('_id name avatar')
             .then(category => res.status(200).json(category));
     } else {

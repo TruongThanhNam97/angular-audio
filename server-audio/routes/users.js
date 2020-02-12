@@ -9,36 +9,71 @@ const passport = require("passport"); // authorize user
 const validateRegisterInput = require('../validation/register');
 const validateLoginInput = require('../validation/login');
 
+const Resize = require('../features/resize');
+const path = require('path');
+
 const rateLimit = require("express-rate-limit");
+
 const registerRateLimit = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 1 day
   max: 5, // start blocking after 5 requests
   message: "You spam !!!"
 });
 
+const controlCharacters = /[!@#$%^&*()_+\=\[\]{};':"\\|,<>\/?]+/;
+
 const userModel = require('../models/user');
 
 var multer = require("multer");
 
-var storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "./public/images");
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname);
-  }
-});
+// var storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, "./public/images");
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, Date.now() + "-" + file.originalname);
+//   }
+// });
 
 var upload = multer({
-  storage: storage,
+  // storage: storage,
   fileFilter: (req, file, cb) => {
-    if (file.originalname.match(/\.(jpg|JPG|png|PNG|tif|TIF|gif|GIF)$/)) {
+    if (
+      validateExtensionsFile(file, 'image')
+      && validateFileNameLength(file)
+      && validateNumberOfExtensions(file)
+      && validateControlCharacters(file)
+    ) {
       cb(null, true);
     } else {
       cb(null, false);
     }
   }
 });
+
+const validateFileNameLength = (file) => {
+  return file.originalname.length <= 150;
+};
+
+const validateNumberOfExtensions = (file) => {
+  return file.originalname.split('.').length === 2;
+};
+
+const validateControlCharacters = (file) => {
+  return !controlCharacters.test(file.originalname);
+};
+
+const validateExtensionsFile = (file, mode) => {
+  if (mode === 'audio') {
+    return file.originalname.match(/\.(mp3|MP3|wav|WAV|m4a|M4A|flac|FLAC)$/);
+  }
+  if (mode === 'video') {
+    return file.originalname.match(/\.(mp4|MP4)$/);
+  }
+  if (mode === 'image') {
+    return file.originalname.match(/\.(jpg|JPG|png|PNG|jpeg|JPEG|webp|WEBP)$/);
+  }
+};
 
 //@route    GET /users/
 //@desc     GET all users
@@ -66,12 +101,21 @@ router.get('/getAllUsers', passport.authenticate('jwt', { session: false }), (re
 //@route    POST /users/register
 //@desc     Register user
 //@access   Public
-router.post('/register', registerRateLimit, upload.any(), (req, res, next) => {
+router.post('/register', registerRateLimit, upload.any(), async (req, res, next) => {
   const { errors, isValid } = validateRegisterInput(req.body);
   // Check Validation
   if (!isValid) {
     return res.status(400).json(errors);
   }
+
+  // Handle image
+  let filename = '';
+  if (req.files[0]) {
+    const imagePath = path.join(__dirname, '../public/images');
+    const fileUpload = new Resize(imagePath, req.files[0].originalname);
+    filename = await fileUpload.save(req.files[0].buffer);
+  }
+
   const { username, password } = req.body;
   userModel.findOne({ username: username }).then(user => {
     if (user) {
@@ -79,7 +123,7 @@ router.post('/register', registerRateLimit, upload.any(), (req, res, next) => {
       res.status(400).json(errors);
     } else {
       const user = { username, password };
-      if (req.files[0]) user.avatar = req.files[0].filename;
+      if (req.files[0]) user.avatar = filename;
       const newUser = new userModel(user);
       bcrypt.genSalt(10, (err, salt) => {
         bcrypt.hash(newUser.password, salt, (err, hash) => {
@@ -143,11 +187,18 @@ router.post('/login', (req, res, next) => {
 //@route    POST /users/update
 //@desc     Update user
 //@access   Private
-router.post('/update', passport.authenticate('jwt', { session: false }), upload.any(), (req, res, next) => {
+router.post('/update', passport.authenticate('jwt', { session: false }), upload.any(), async (req, res, next) => {
   const { errors, isValid } = validateRegisterInput(req.body);
   // Check Validation
   if (!isValid) {
     return res.status(400).json(errors);
+  }
+  // Handle image
+  let filename = '';
+  if (req.files[0]) {
+    const imagePath = path.join(__dirname, '../public/images');
+    const fileUpload = new Resize(imagePath, req.files[0].originalname);
+    filename = await fileUpload.save(req.files[0].buffer);
   }
   const { id, password, oldpassword } = req.body;
   userModel.findOne({ _id: id }).then(user => {
@@ -162,7 +213,7 @@ router.post('/update', passport.authenticate('jwt', { session: false }), upload.
           return res.status(400).json({ password: 'Old password is incorrect' });
         }
         const user = { password };
-        if (req.files[0]) user.avatar = req.files[0].filename;
+        if (req.files[0]) user.avatar = filename;
         bcrypt.genSalt(10, (err, salt) => {
           bcrypt.hash(user.password, salt, (err, hash) => {
             if (err) throw err;
@@ -193,7 +244,7 @@ router.post('/update', passport.authenticate('jwt', { session: false }), upload.
 //@route    POST /users/unban
 //@desc     Unban user
 //@access   Private
-router.post('/unban', passport.authenticate('jwt', { session: false }), upload.any(), (req, res, next) => {
+router.post('/unban', passport.authenticate('jwt', { session: false }), (req, res, next) => {
   if (req.user.username !== 'superadmin') {
     return res.status(401).json('Unauthorized');
   }
@@ -218,7 +269,7 @@ router.post('/unban', passport.authenticate('jwt', { session: false }), upload.a
 //@route    POST /users/ban
 //@desc     Ban user
 //@access   Private
-router.post('/ban', passport.authenticate('jwt', { session: false }), upload.any(), (req, res, next) => {
+router.post('/ban', passport.authenticate('jwt', { session: false }), (req, res, next) => {
   if (req.user.username !== 'superadmin') {
     return res.status(401).json('Unauthorized');
   }

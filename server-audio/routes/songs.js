@@ -17,19 +17,26 @@ const upView = rateLimit({
     message: "You spam !!!"
 });
 
+const controlCharacters = /[!@#$%^&*()_+\=\[\]{};':"\\|,<>\/?]+/;
+
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, "./assets/original-songs");
     },
     filename: function (req, file, cb) {
-        cb(null, Date.now() + "~!~" + file.originalname);
+        cb(null, randomString(20) + "." + file.originalname.split('.')[1]);
     }
 });
 
 var upload = multer({
     storage: storage,
     fileFilter: (req, file, cb) => {
-        if (file.originalname.match(/\.(mp3|MP3|wav|WAV|m4A|M4A|flac|FLAC)$/)) {
+        if (
+            validateExtensionsFile(file, 'audio')
+            && validateFileNameLength(file)
+            && validateNumberOfExtensions(file)
+            && validateControlCharacters(file)
+        ) {
             cb(null, true);
         } else {
             cb(null, false);
@@ -40,20 +47,24 @@ var upload = multer({
     }
 });
 
-
 var storageVideo = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, "./public/videos");
     },
     filename: function (req, file, cb) {
-        cb(null, Date.now() + "~!~" + file.originalname);
+        cb(null, randomString(20) + "." + file.originalname.split('.')[1]);
     }
 });
 
 var uploadVideo = multer({
     storage: storageVideo,
     fileFilter: (req, file, cb) => {
-        if (file.originalname.match(/\.(mp4|MP4)$/)) {
+        if (
+            validateExtensionsFile(file, 'video')
+            && validateFileNameLength(file)
+            && validateNumberOfExtensions(file)
+            && validateControlCharacters(file)
+        ) {
             cb(null, true);
         } else {
             cb(null, false);
@@ -63,6 +74,37 @@ var uploadVideo = multer({
         fileSize: 150000000
     }
 });
+
+const validateFileNameLength = (file) => {
+    return file.originalname.length <= 150;
+};
+
+const validateNumberOfExtensions = (file) => {
+    return file.originalname.split('.').length === 2;
+};
+
+const validateControlCharacters = (file) => {
+    return !controlCharacters.test(file.originalname);
+};
+
+const validateExtensionsFile = (file, mode) => {
+    if (mode === 'audio') {
+        return file.originalname.match(/\.(mp3|MP3|wav|WAV|m4a|M4A|flac|FLAC)$/);
+    }
+    if (mode === 'video') {
+        return file.originalname.match(/\.(mp4|MP4)$/);
+    }
+};
+
+const randomString = (length) => {
+    var result = '';
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
 
 /* GET top 20 favorite songs. */
 router.get("/", (req, res, next) => {

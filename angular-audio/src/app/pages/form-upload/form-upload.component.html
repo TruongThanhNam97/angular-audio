@@ -1,53 +1,3 @@
-<!-- <ng-container *ngIf="categories && categories.length > 0; else elseTemplate">
-  <div class="container mt-3" *ngIf="signForm">
-    <form [formGroup]="signForm">
-      <div class="form-group">
-        <label for="btnFile" class="btn btn-success">Choose Files</label>
-        <input (change)="onSelectFile($event)" type="file" class="form-control-file" id="btnFile" style="display: none;"
-          multiple>
-      </div>
-      <div class="mb-4" *ngFor="let control of getControls();let i = index;" [formArrayName]="'arrSongs'">
-        <div [formGroupName]="i" style="text-align: right;">
-          <span>{{ control.value.file.name }}</span>
-          <div class="form-group">
-            <input [ngClass]="{'is-invalid': control.get('name').invalid}" type="text" class="form-control"
-              formControlName="name" placeholder="Song name">
-            <span class="invalid-feedback" *ngIf="control.get('name').invalid">
-              <span *ngIf="control.get('name').hasError('required')">Song name field is required</span>
-              <span *ngIf="control.get('name').hasError('maxlength')">Max length of song name field: 50</span>
-            </span>
-          </div>
-          <div class="form-group">
-            <input [ngClass]="{'is-invalid': control.get('artist').invalid}" type="text" class="form-control"
-              formControlName="artist" placeholder="Artist of song">
-            <span class="invalid-feedback" *ngIf="control.get('artist').invalid">
-              <span *ngIf="control.get('artist').hasError('required')">Artist field is required</span>
-              <span *ngIf="control.get('artist').hasError('maxlength')">Max length of artist field: 50</span>
-            </span>
-          </div>
-          <div class="form-group row">
-            <div class="col-5">
-              <select class="form-control" formControlName="categoryId">
-                <option *ngFor="let category of categories" [value]="category.id">{{ category.name }}</option>
-              </select>
-            </div>
-            <div class="col-7">
-              <span style="color: red;" *ngIf="control.get('file').hasError('invalid')">File is invalid</span>
-              <button type="button" (click)="onRemove(i)" class="btn btn-danger ml-3">Remove</button>
-              <button [disabled]="control.invalid" type="button" (click)="onSave(control,i)"
-                class="btn btn-info ml-3">Save file</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </form>
-  </div>
-</ng-container>
-<ng-template #elseTemplate>
-  <div class="container mt-3">
-    No categories. Waiting admin to update cateogories...
-  </div>
-</ng-template> -->
 <div class="container mt-3" *ngIf="signForm">
   <form [formGroup]="signForm">
     <div *ngIf="chooseFileMode" class="form-group" style="margin-bottom: 0;">
@@ -62,7 +12,7 @@
     <div class="form-group mb-5" *ngFor="let control of getControls();let i = index;" [formArrayName]="'arrSongs'"
       style="padding: 15px;background: #f1f1f1;">
       <div [formGroupName]="i">
-        <div>
+        <div *ngIf="control.value.file">
           <span>{{ control.value.file.name }}</span>
           <span style="float: right;">{{ (control.value.file.size/1000000).toFixed(1) + ' MB' }}</span>
         </div>
@@ -87,11 +37,21 @@
         </div>
         <div class="form-group">
           <button type="button" (click)="onRemove(i)" class="btn btn-danger mr-2">Remove</button>
-          <span style="color: #dc3545; font-size: 15px;" class="mr-2"
+          <span class="mr-2" style="color: #dc3545; font-size: 15px;" class="mr-2"
             *ngIf="control.get('file').hasError('invalid')">File is
             invalid</span>
-          <span style="color: #dc3545; font-size: 15px;" *ngIf="control.get('file').hasError('invalidSize')">File size
+          <span class="mr-2" style="color: #dc3545; font-size: 15px;"
+            *ngIf="control.get('file').hasError('invalidSize')">File size
             is invalid</span>
+          <span class="mr-2" style="color: #dc3545; font-size: 15px;"
+            *ngIf="control.get('file').hasError('fileNameLength')">Max length of file name: 150</span>
+          <span class="mr-2" style="color: #dc3545; font-size: 15px;"
+            *ngIf="control.get('file').hasError('numberExtensions')">File should have only one extension</span>
+          <span class="mr-2" style="color: #dc3545; font-size: 15px;"
+            *ngIf="control.get('file').hasError('controlCharacters')">File name should not have control
+            characters</span>
+          <span class="mr-2" style="color: #dc3545; font-size: 15px;"
+            *ngIf="control.get('file').hasError('required')">Only allows audio file</span>
           <!-- <button [disabled]="control.invalid" type="button" (click)="onSave(control,i)" class="btn btn-info ml-3">Save
             file</button> -->
         </div>

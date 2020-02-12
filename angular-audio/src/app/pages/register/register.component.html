@@ -1,5 +1,6 @@
 <div class="container mt-5">
-  <form [formGroup]="signForm" (submit)="onSubmit()">
+  <span style="color: gray;font-style: italic;">NK MP3 supports png, jpg, jpeg, webp file formats</span>
+  <form [formGroup]="signForm" (submit)="onSubmit()" class="mt-2">
     <div class="form-group">
       <input [ngClass]="{'is-invalid': signForm.get('username').touched && signForm.get('username').invalid}"
         type="text" class="form-control" placeholder="Username" formControlName="username">
@@ -34,9 +35,21 @@
       <label for="btnFile" class="btn btn-info">Choose image</label>
       <input (change)="onSelectedFile($event)" style="display: none;" type="file" class="form-control-file" id="btnFile"
         aria-describedby="fileHelpId">
-      <span style="color: red;"
+      <span class="mr-2" style="color: red;"
         *ngIf="signForm.get('avatar').value && signForm.get('avatar').hasError('incorrectType')">
         File is invalid
+      </span>
+      <span class="mr-2" style="color: red;"
+        *ngIf="signForm.get('avatar').value && signForm.get('avatar').hasError('controlCharacters')">
+        File name should not have control characters
+      </span>
+      <span class="mr-2" style="color: red;"
+        *ngIf="signForm.get('avatar').value && signForm.get('avatar').hasError('fileNameLength')">
+        Max length of file name: 150
+      </span>
+      <span class="mr-2" style="color: red;"
+        *ngIf="signForm.get('avatar').value && signForm.get('avatar').hasError('numberExtensions')">
+        File should have only one extension
       </span>
       <span *ngIf="signForm.get('avatar').value && !signForm.get('avatar').hasError('incorrectType')">
         {{ signForm.get('avatar').value.name }}

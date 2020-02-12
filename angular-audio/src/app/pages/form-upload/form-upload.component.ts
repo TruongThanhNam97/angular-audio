@@ -7,8 +7,8 @@ import { MatDialog } from '@angular/material';
 import { PopupBanComponent } from '../login/popup-ban/popup-ban.component';
 import { FormGroup, FormArray, FormControl, Validators } from '@angular/forms';
 import { UploadService } from 'src/app/services/upload.service';
-import { takeUntil } from 'rxjs/operators';
-import { Subject, concat } from 'rxjs';
+import { takeUntil, map, catchError, switchMap, tap, take, delay } from 'rxjs/operators';
+import { Subject, concat, fromEvent, Observable, of, merge } from 'rxjs';
 import { CategoryService } from 'src/app/services/categories.service';
 
 @Component({
@@ -29,6 +29,8 @@ export class FormUploadComponent implements OnInit {
   destroySubscription$: Subject<boolean> = new Subject();
 
   typeFileMusic = ['mp3', 'MP3', 'wav', 'WAV', 'm4a', 'M4A', 'flac', 'FLAC'];
+
+  controlCharacters = /[!@#$%^&*()_+\=\[\]{};':"\\|,<>\/?]+/;
 
   categories: any;
 
@@ -58,16 +60,66 @@ export class FormUploadComponent implements OnInit {
         const file = e.target.files[i];
         const lastIndex = file.name.lastIndexOf('.');
         const song = file.name.slice(0, lastIndex);
-        const formGroup = new FormGroup({
-          name: new FormControl(song.split('-')[0], [Validators.required, Validators.maxLength(50)]),
-          artist: new FormControl(song.split('-')[1], [Validators.required, Validators.maxLength(50)]),
-          file: new FormControl(file, [this.validateFile.bind(this), this.validateFileSize.bind(this)]),
-          detail: new FormControl('')
+        let formGroup;
+        this.isAudioFileExactly(file).pipe(
+          takeUntil(this.destroySubscription$)
+        ).subscribe(result => {
+          if (result) {
+            formGroup = new FormGroup({
+              name: new FormControl(song.split('-')[0], [Validators.required, Validators.maxLength(50)]),
+              artist: new FormControl(song.split('-')[1], [Validators.required, Validators.maxLength(50)]),
+              file: new FormControl(file,
+                [
+                  Validators.required,
+                  this.validateFileNameLength.bind(this),
+                  this.validateNumberOfExtensions.bind(this),
+                  this.validateControlCharacters.bind(this),
+                  this.validateFile.bind(this),
+                  this.validateFileSize.bind(this)
+                ]
+              ),
+              detail: new FormControl('')
+            });
+          } else {
+            formGroup = new FormGroup({
+              name: new FormControl(song.split('-')[0], [Validators.required, Validators.maxLength(50)]),
+              artist: new FormControl(song.split('-')[1], [Validators.required, Validators.maxLength(50)]),
+              file: new FormControl(null,
+                [
+                  Validators.required,
+                  this.validateFileNameLength.bind(this),
+                  this.validateNumberOfExtensions.bind(this),
+                  this.validateControlCharacters.bind(this),
+                  this.validateFile.bind(this),
+                  this.validateFileSize.bind(this)
+                ]
+              ),
+              detail: new FormControl('')
+            });
+          }
+          (this.signForm.get('arrSongs') as FormArray).push(formGroup);
         });
-        (this.signForm.get('arrSongs') as FormArray).push(formGroup);
       }
     }
     e.target.value = null;
+  }
+
+  validateFileNameLength(control: FormControl): { [key: string]: boolean } {
+    if (control.value) {
+      return control.value.name.length <= 150 ? null : { fileNameLength: true };
+    }
+  }
+
+  validateNumberOfExtensions(control: FormControl): { [key: string]: boolean } {
+    if (control.value) {
+      return control.value.name.split('.').length === 2 ? null : { numberExtensions: true };
+    }
+  }
+
+  validateControlCharacters(control: FormControl): { [key: string]: boolean } {
+    if (control.value) {
+      return !this.controlCharacters.test(control.value.name) ? null : { controlCharacters: true };
+    }
   }
 
   validateFile(control: FormControl): { [key: string]: boolean } {
@@ -81,7 +133,42 @@ export class FormUploadComponent implements OnInit {
   validateFileSize(control: FormControl): { [key: string]: boolean } {
     if (control.value) {
       const fileSize = (control.value.size / 1000000).toFixed(1);
-      return +fileSize <= 60 ? null : { invalidSize: true };
+      return +fileSize <= 60 && +fileSize >= 0.5 ? null : { invalidSize: true };
+    }
+  }
+
+  isAudioFileExactly(file): Observable<boolean> {
+    if (file) {
+      const reader = new FileReader();
+      reader.readAsArrayBuffer(file.slice(0, 4));
+      return fromEvent(reader, 'load').pipe(
+        map((evt: any) => {
+          const uint = new Uint8Array(evt.target.result);
+          const bytes = [];
+          uint.forEach((byte) => {
+            bytes.push(byte.toString(16));
+          })
+          const hex = bytes.join('').toUpperCase();
+          return this.checkMimeTypeAudioFile(hex);
+        })
+      );
+    }
+  }
+
+  checkMimeTypeAudioFile(signature): boolean {
+    switch (signature) {
+      case '4944333': // mp3
+        return true;
+      case '4944334': // mp3 after watermark
+        return true;
+      case '664C6143': // flac
+        return true;
+      case '52494646': // wav
+        return true;
+      case '0001C':  // m4a
+        return true;
+      default:
+        return false;
     }
   }
 

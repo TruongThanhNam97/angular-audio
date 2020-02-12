@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Subject, Observable, fromEvent } from 'rxjs';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { CloudService } from 'src/app/services/cloud.service';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, map } from 'rxjs/operators';
 import { AlertifyService } from 'src/app/services/alertify.service';
 
 @Component({
@@ -22,6 +22,8 @@ export class PopupEditComponent implements OnInit, OnDestroy {
   modeDisable = false;
 
   loading = false;
+
+  controlCharacters = /[!@#$%^&*()_+\=\[\]{};':"\\|,<>\/?]+/;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -50,17 +52,53 @@ export class PopupEditComponent implements OnInit, OnDestroy {
       name: new FormControl(null, [Validators.required, Validators.maxLength(50)]),
       artist: new FormControl(null, [Validators.required, Validators.maxLength(50)]),
       detail: new FormControl(''),
-      video: new FormControl(null, [this.validateVideo.bind(this), this.validateVideoSize.bind(this)])
+      video: new FormControl(null,
+        [
+          this.validateVideo.bind(this),
+          this.validateVideoSize.bind(this),
+          this.validateFileNameLength.bind(this),
+          this.validateNumberOfExtensions.bind(this),
+          this.validateControlCharacters.bind(this)
+        ])
     });
   }
 
   onSelectVideo(event) {
     if (event.target.files.length > 0) {
-      this.signForm.patchValue({
-        video: event.target.files[0]
+      const file = event.target.files[0];
+      this.isVideoFileExactly(file).pipe(
+        takeUntil(this.destroySubscription$)
+      ).subscribe(result => {
+        if (result) {
+          this.signForm.patchValue({
+            video: file
+          });
+        } else {
+          this.signForm.patchValue({
+            video: null
+          });
+        }
       });
     }
     event.target.value = null;
+  }
+
+  validateFileNameLength(control: FormControl): { [key: string]: boolean } {
+    if (control.value) {
+      return control.value.name.length <= 150 ? null : { fileNameLength: true };
+    }
+  }
+
+  validateNumberOfExtensions(control: FormControl): { [key: string]: boolean } {
+    if (control.value) {
+      return control.value.name.split('.').length === 2 ? null : { numberExtensions: true };
+    }
+  }
+
+  validateControlCharacters(control: FormControl): { [key: string]: boolean } {
+    if (control.value) {
+      return !this.controlCharacters.test(control.value.name) ? null : { controlCharacters: true };
+    }
   }
 
   validateVideo(control: FormControl): { [key: string]: boolean } {
@@ -74,7 +112,36 @@ export class PopupEditComponent implements OnInit, OnDestroy {
   validateVideoSize(control: FormControl): { [key: string]: boolean } {
     if (control.value) {
       const fileSize = (control.value.size / 1000000).toFixed(1);
-      return +fileSize <= 150 ? null : { invalidSize: true };
+      return +fileSize <= 150 && +fileSize >= 10 ? null : { invalidSize: true };
+    }
+  }
+
+  isVideoFileExactly(file): Observable<boolean> {
+    if (file) {
+      const reader = new FileReader();
+      reader.readAsArrayBuffer(file.slice(0, 4));
+      return fromEvent(reader, 'load').pipe(
+        map((evt: any) => {
+          const uint = new Uint8Array(evt.target.result);
+          const bytes = [];
+          uint.forEach((byte) => {
+            bytes.push(byte.toString(16));
+          })
+          const hex = bytes.join('').toUpperCase();
+          return this.checkMimeTypeVideoFile(hex);
+        })
+      );
+    }
+  }
+
+  checkMimeTypeVideoFile(signature): boolean {
+    switch (signature) {
+      case '00020': // mp4
+        return true;
+      case '00018': // mp4
+        return true;
+      default:
+        return false;
     }
   }
 
