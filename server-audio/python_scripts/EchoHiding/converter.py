@@ -2,7 +2,7 @@ import ffmpy
 import sys
 import os
 import datetime
-
+import wave
 
 class WavConverter:
     def __init__(self, ffmpy_exe_path):
@@ -21,7 +21,13 @@ class WavConverter:
         return self.input_wav
 
     def is_needed(self, name):
-        return name[-4:] != '.wav'
+        if name[-4:] != '.wav':
+            return True
+        wavein = wave.open( str(name) , 'r')
+        if wavein.getframerate() != 48000:
+            return True
+        return False
+
 
     def delete_temps(self):
         if self.was_used:

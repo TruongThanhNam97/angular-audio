@@ -11,7 +11,7 @@ class Decoding_factory:
         message =  Path(Watermark_Message_Folder_Path)/"original.txt"
 
         audioconverter = WavConverter(ffmpy_exe_path)
-        need2convert = audioconverter.is_needed(File_Name)
+        need2convert = audioconverter.is_needed(audio)
         if need2convert:
             audio = audioconverter.into_wav(audio)
         
