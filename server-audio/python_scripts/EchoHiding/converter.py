@@ -21,6 +21,7 @@ class WavConverter:
         return self.input_wav
 
     def is_needed(self, name):
+        name = str(name)
         if name[-4:] != '.wav':
             return True
         wavein = wave.open( str(name) , 'r')
