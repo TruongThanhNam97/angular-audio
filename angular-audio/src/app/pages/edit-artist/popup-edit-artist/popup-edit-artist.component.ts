@@ -1,10 +1,11 @@
 import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { Subject, Observable, fromEvent } from 'rxjs';
+import { Subject } from 'rxjs';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { AlertifyService } from 'src/app/services/alertify.service';
-import { takeUntil, map } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { ArtistsService } from 'src/app/services/artists.service';
+import { ValidateService } from 'src/app/services/validate.service';
 
 @Component({
   selector: 'app-popup-edit-artist',
@@ -29,7 +30,8 @@ export class PopupEditArtistComponent implements OnInit, OnDestroy {
     @Inject(MAT_DIALOG_DATA) public data: any,
     public dialogRef: MatDialogRef<PopupEditArtistComponent>,
     private artistsService: ArtistsService,
-    private alertifyService: AlertifyService
+    private alertifyService: AlertifyService,
+    private validateService: ValidateService
   ) { }
 
   ngOnInit() {
@@ -46,7 +48,7 @@ export class PopupEditArtistComponent implements OnInit, OnDestroy {
 
   onChange(event) {
     const file = event.target.files[0];
-    this.isImageFileExactly(file).pipe(
+    this.validateService.validateFileBySignature(file, 'image').pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(result => {
       if (result) {
@@ -98,43 +100,6 @@ export class PopupEditArtistComponent implements OnInit, OnDestroy {
   validateControlCharacters(control: FormControl): { [key: string]: boolean } {
     if (control.value) {
       return !this.controlCharacters.test(control.value.name) ? null : { controlCharacters: true };
-    }
-  }
-
-  isImageFileExactly(file): Observable<boolean> {
-    if (file) {
-      const reader = new FileReader();
-      reader.readAsArrayBuffer(file.slice(0, 4));
-      return fromEvent(reader, 'load').pipe(
-        map((evt: any) => {
-          const uint = new Uint8Array(evt.target.result);
-          const bytes = [];
-          uint.forEach((byte) => {
-            bytes.push(byte.toString(16));
-          })
-          const hex = bytes.join('').toUpperCase();
-          return this.checkMimeTypeImageFile(hex);
-        })
-      );
-    }
-  }
-
-  checkMimeTypeImageFile(signature): boolean {
-    switch (signature) {
-      case 'FFD8FFE0': // jpg / jpeg
-        return true;
-      case 'FFD8FFE2': // jpg
-        return true;
-      case 'FFD8FFFE': // jpg
-        return true;
-      case 'FFD8FFE1': // jpg
-        return true;
-      case '89504E47': // png
-        return true;
-      case '52494646': // webp
-        return true;
-      default:
-        return false;
     }
   }
 

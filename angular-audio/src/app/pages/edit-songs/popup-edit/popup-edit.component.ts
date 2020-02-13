@@ -5,6 +5,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { CloudService } from 'src/app/services/cloud.service';
 import { takeUntil, map } from 'rxjs/operators';
 import { AlertifyService } from 'src/app/services/alertify.service';
+import { ValidateService } from 'src/app/services/validate.service';
 
 @Component({
   selector: 'app-popup-edit',
@@ -29,7 +30,8 @@ export class PopupEditComponent implements OnInit, OnDestroy {
     @Inject(MAT_DIALOG_DATA) public data: any,
     public dialogRef: MatDialogRef<PopupEditComponent>,
     private cloudService: CloudService,
-    private alertifyService: AlertifyService
+    private alertifyService: AlertifyService,
+    private validateService: ValidateService
   ) { }
 
   ngOnInit() {
@@ -66,7 +68,7 @@ export class PopupEditComponent implements OnInit, OnDestroy {
   onSelectVideo(event) {
     if (event.target.files.length > 0) {
       const file = event.target.files[0];
-      this.isVideoFileExactly(file).pipe(
+      this.validateService.validateFileBySignature(file, 'video').pipe(
         takeUntil(this.destroySubscription$)
       ).subscribe(result => {
         if (result) {
@@ -115,36 +117,6 @@ export class PopupEditComponent implements OnInit, OnDestroy {
       return +fileSize <= 150 && +fileSize >= 10 ? null : { invalidSize: true };
     }
   }
-
-  isVideoFileExactly(file): Observable<boolean> {
-    if (file) {
-      const reader = new FileReader();
-      reader.readAsArrayBuffer(file.slice(0, 4));
-      return fromEvent(reader, 'load').pipe(
-        map((evt: any) => {
-          const uint = new Uint8Array(evt.target.result);
-          const bytes = [];
-          uint.forEach((byte) => {
-            bytes.push(byte.toString(16));
-          })
-          const hex = bytes.join('').toUpperCase();
-          return this.checkMimeTypeVideoFile(hex);
-        })
-      );
-    }
-  }
-
-  checkMimeTypeVideoFile(signature): boolean {
-    switch (signature) {
-      case '00020': // mp4
-        return true;
-      case '00018': // mp4
-        return true;
-      default:
-        return false;
-    }
-  }
-
 
   // const { id, name, artist, categoryId, artistId, detail } = req.body;
 

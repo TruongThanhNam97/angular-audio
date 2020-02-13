@@ -1,9 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { Subject, Observable, fromEvent } from 'rxjs';
+import { Subject } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
-import { takeUntil, map } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { AlertifyService } from 'src/app/services/alertify.service';
+import { ValidateService } from 'src/app/services/validate.service';
 
 @Component({
   selector: 'app-register',
@@ -20,7 +21,10 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   controlCharacters = /[!@#$%^&*()_+\=\[\]{};':"\\|,<>\/?]+/;
 
-  constructor(private authService: AuthService, private alertifyService: AlertifyService) { }
+  constructor(
+    private authService: AuthService,
+    private alertifyService: AlertifyService,
+    private validateService: ValidateService) { }
 
   ngOnInit() {
     this.intializeForm();
@@ -46,7 +50,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   onSelectedFile(event: any) {
     const file = event.target.files[0];
-    this.isImageFileExactly(file).pipe(
+    this.validateService.validateFileBySignature(file, 'image').pipe(
       takeUntil(this.destroySubscription$)
     ).subscribe(result => {
       if (result) {
@@ -84,43 +88,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
     if (formControl.value) {
       const fileType = formControl.value.name.split('.')[1];
       return this.arrayType.includes(fileType) ? null : { incorrectType: true };
-    }
-  }
-
-  isImageFileExactly(file): Observable<boolean> {
-    if (file) {
-      const reader = new FileReader();
-      reader.readAsArrayBuffer(file.slice(0, 4));
-      return fromEvent(reader, 'load').pipe(
-        map((evt: any) => {
-          const uint = new Uint8Array(evt.target.result);
-          const bytes = [];
-          uint.forEach((byte) => {
-            bytes.push(byte.toString(16));
-          })
-          const hex = bytes.join('').toUpperCase();
-          return this.checkMimeTypeImageFile(hex);
-        })
-      );
-    }
-  }
-
-  checkMimeTypeImageFile(signature): boolean {
-    switch (signature) {
-      case 'FFD8FFE0': // jpg / jpeg
-        return true;
-      case 'FFD8FFE2': // jpg
-        return true;
-      case 'FFD8FFFE': // jpg
-        return true;
-      case 'FFD8FFE1': // jpg
-        return true;
-      case '89504E47': // png
-        return true;
-      case '52494646': // webp
-        return true;
-      default:
-        return false;
     }
   }
 

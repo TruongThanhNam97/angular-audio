@@ -271,7 +271,7 @@ var watermark = (req, res, next) => {
                             }
                         });
                     } else {
-                        console.log(err.message.toString());
+                        res.status(400).json(err.message.toString());
                     }
                 }
             )
