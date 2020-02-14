@@ -9,6 +9,7 @@ export class SongNamePipe implements PipeTransform {
         const lastIndex = value.lastIndexOf('.');
         const songName = value.slice(0, lastIndex);
         const extension = value.substr(lastIndex + 1);
-        return `${songName.substr(0, 50)}... .${extension}`;
+        return extension.length <= 3
+            ? `${songName.substr(0, 50)}... .${extension}` : `${songName.substr(0, 50)}... .${extension.substr(0, 3)}...`;
     }
 }
