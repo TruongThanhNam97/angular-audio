@@ -52,6 +52,7 @@ import { NamePipe } from './pipes/filter-name.pipe';
 import { UsernamePipe } from './pipes/filter-username.pipe';
 import { SongPipe } from './pipes/filter-song.pipe';
 import { LoadingComponent } from './pages/loading/loading.component';
+import { SongNamePipe } from './pipes/song-name.pipe';
 
 @NgModule({
   declarations: [
@@ -100,7 +101,8 @@ import { LoadingComponent } from './pages/loading/loading.component';
     NamePipe,
     UsernamePipe,
     SongPipe,
-    LoadingComponent
+    LoadingComponent,
+    SongNamePipe
   ],
   imports: [
     BrowserModule,
