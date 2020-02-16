@@ -72,7 +72,7 @@ app.use((req, res, next) => {
 });
 
 
-app.use("/", songsRouter);
+app.use("/songs", songsRouter);
 app.use("/users", usersRouter);
 app.use("/categories", categoriesRouter);
 app.use("/artists", artistsRouter);

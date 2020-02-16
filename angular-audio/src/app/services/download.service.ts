@@ -15,7 +15,7 @@ export class DownloadService {
     }
 
     downloadFile(data): Observable<any> {
-        return this.http.get(`${this.SERVER_URL}download/song`, {
+        return this.http.get(`${this.SERVER_URL}songs/download/song`, {
             responseType: 'blob',
             params: {
                 nameToDownload: data.nameToDownload,

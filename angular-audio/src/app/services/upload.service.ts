@@ -38,7 +38,7 @@ export class UploadService {
   }
 
   uploadSong(data) {
-    return this.http.post(`${this.SERVER_URL}upload`, data, { headers: { Authorization: localStorage.getItem('jwtToken') } }).pipe(
+    return this.http.post(`${this.SERVER_URL}songs/upload`, data, { headers: { Authorization: localStorage.getItem('jwtToken') } }).pipe(
       retry(0)
     );
   }
