@@ -100,7 +100,7 @@ class System:
 
     def unite_channels(self, channels):
         content = []
-        for i in range(len(channels[0])):
+        for i in range( min( len(channels[0]) , len(channels[1]) ) ):
             for j in range(2):
                 content.append(channels[j][i])
         return content
