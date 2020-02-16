@@ -3,6 +3,7 @@ import sys
 import os
 import datetime
 import wave
+import EchoHiding.utility as utility
 
 class WavConverter:
     def __init__(self, ffmpy_exe_path):
@@ -13,7 +14,7 @@ class WavConverter:
 
     def into_wav(self, _input):
         self.input = str(_input)
-        self.input_wav = str(datetime.datetime.now().timestamp() ) +'_temp.wav'
+        self.input_wav = str(datetime.datetime.now().timestamp() ) + utility.String.generateRandomString() +'.wav'
         sys.stdout = open(os.devnull, "w")
 
         #retry if failed

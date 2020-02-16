@@ -1,3 +1,6 @@
+import string
+import random
+
 class String:
     @staticmethod
     def toBitsArray(string):
@@ -7,6 +10,12 @@ class String:
             bits = format( ord(c), '08b' )
             result.extend([int(b) for b in bits])
         return result
+
+    @staticmethod
+    def generateRandomString(length = 10):
+        letters = string.ascii_letters
+        return ''.join(random.choice(letters) for i in range(length))
+
 
 class BitsArray:
     @staticmethod
