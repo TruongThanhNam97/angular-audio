@@ -15,7 +15,25 @@ class WavConverter:
         self.input = str(_input)
         self.input_wav = str(datetime.datetime.now().timestamp() ) +'_temp.wav'
         sys.stdout = open(os.devnull, "w")
-        ffmpy.FFmpeg( executable= self.ffmpy_exe_path, inputs={self.input : None}, outputs={self.input_wav: "-ar 48000"}).run(stdout = None, stderr=sys.stdout )
+
+        #retry if failed
+        retry_times = 0
+        retry_number = 3
+        is_done = False
+        while(not is_done):
+            #break point
+            retry_times += 1
+            if retry_times >= retry_number:
+                is_done = True
+            else:
+                is_done = False
+
+            try:    
+                ffmpy.FFmpeg( executable= self.ffmpy_exe_path, inputs={self.input : None}, outputs={self.input_wav: "-ar 48000"}).run(stdout = None, stderr=sys.stdout )
+                is_done = True
+            except:
+                pass
+        
         sys.stdout = sys.__stdout__
         self.was_used = True
         return self.input_wav
