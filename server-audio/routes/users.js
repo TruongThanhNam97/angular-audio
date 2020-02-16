@@ -8,6 +8,7 @@ const passport = require("passport"); // authorize user
 // Load Input validation
 const validateRegisterInput = require('../validation/register');
 const validateLoginInput = require('../validation/login');
+const validateUpdateUser = require('../validation/update-user');
 
 const Resize = require('../features/resize');
 const path = require('path');
@@ -188,7 +189,7 @@ router.post('/login', (req, res, next) => {
 //@desc     Update user
 //@access   Private
 router.post('/update', passport.authenticate('jwt', { session: false }), upload.any(), async (req, res, next) => {
-  const { errors, isValid } = validateRegisterInput(req.body);
+  const { errors, isValid } = validateUpdateUser(req.body);
   // Check Validation
   if (!isValid) {
     return res.status(400).json(errors);

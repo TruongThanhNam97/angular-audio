@@ -124,7 +124,7 @@ export class CloudService {
   }
 
   getTop20FavarotieSongs() {
-    return this.http.get(`${this.SERVER_URL}`).pipe(
+    return this.http.get(`${this.SERVER_URL}songs`).pipe(
       map((files: any) => {
         let result = files.reduce((acc, cur) => {
           const obj = {
@@ -153,7 +153,7 @@ export class CloudService {
   }
 
   getTop100FavoriteSongs() {
-    return this.http.get(`${this.SERVER_URL}getTop100Love`).pipe(
+    return this.http.get(`${this.SERVER_URL}songs/getTop100Love`).pipe(
       map((files: any) => {
         let result = files.reduce((acc, cur) => {
           const obj = {
@@ -187,7 +187,7 @@ export class CloudService {
   }
 
   getTop100Hear() {
-    return this.http.get(`${this.SERVER_URL}getTop100Hear`).pipe(
+    return this.http.get(`${this.SERVER_URL}songs/getTop100Hear`).pipe(
       map((files: any) => {
         let result = files.reduce((acc, cur) => {
           const obj = {
@@ -221,7 +221,7 @@ export class CloudService {
   }
 
   getAllSongs() {
-    return this.http.get(`${this.SERVER_URL}getAllSongs`).pipe(
+    return this.http.get(`${this.SERVER_URL}songs/getAllSongs`).pipe(
       map((files: any) => {
         let result = files.reduce((acc, cur) => {
           const obj = {
@@ -250,7 +250,7 @@ export class CloudService {
   }
 
   getSongBySongId(id: string) {
-    return this.http.get(this.SERVER_URL + 'getSongBySongId', { params: { id } }).pipe(
+    return this.http.get(this.SERVER_URL + 'songs/getSongBySongId', { params: { id } }).pipe(
       map((song: any) => {
         const result = {
           id: song._id,
@@ -279,7 +279,7 @@ export class CloudService {
   }
 
   getSongsByUserId(id: string) {
-    return this.http.get(this.SERVER_URL + 'getSongs', { params: { id } }).pipe(
+    return this.http.get(this.SERVER_URL + 'songs/getSongs', { params: { id } }).pipe(
       map((files: any) => {
         let result = files.reduce((acc, cur) => {
           const obj = {
@@ -313,7 +313,7 @@ export class CloudService {
   }
 
   getFavoriteSongsByUserId(id: string) {
-    return this.http.get(this.SERVER_URL + 'getSongs', { params: { id, favoriteMode: 'true' } }).pipe(
+    return this.http.get(this.SERVER_URL + 'songs/getSongs', { params: { id, favoriteMode: 'true' } }).pipe(
       map((files: any) => {
         let result = files.reduce((acc, cur) => {
           const obj = {
@@ -347,7 +347,7 @@ export class CloudService {
   }
 
   getSongsByCategoryId(id: string) {
-    return this.http.get(this.SERVER_URL + 'getSongsByCategory', { params: { id } }).pipe(
+    return this.http.get(this.SERVER_URL + 'songs/getSongsByCategory', { params: { id } }).pipe(
       map((files: any) => {
         let result = files.reduce((acc, cur) => {
           const obj = {
@@ -381,7 +381,7 @@ export class CloudService {
   }
 
   getSongsByArtistId(id: string) {
-    return this.http.get(this.SERVER_URL + 'getSongsByArtist', { params: { id } }).pipe(
+    return this.http.get(this.SERVER_URL + 'songs/getSongsByArtist', { params: { id } }).pipe(
       map((files: any) => {
         let result = files.reduce((acc, cur) => {
           const obj = {
@@ -415,7 +415,7 @@ export class CloudService {
   }
 
   updateSong(data) {
-    return this.http.post(`${this.SERVER_URL}edit-song`, data, {
+    return this.http.post(`${this.SERVER_URL}songs/edit-song`, data, {
       headers: {
         Authorization: localStorage.getItem('jwtToken')
       }
@@ -442,7 +442,7 @@ export class CloudService {
   }
 
   approveSong(data) {
-    return this.http.post(`${this.SERVER_URL}approve-song`, data, {
+    return this.http.post(`${this.SERVER_URL}songs/approve-song`, data, {
       headers: {
         Authorization: localStorage.getItem('jwtToken')
       }
@@ -469,7 +469,7 @@ export class CloudService {
   }
 
   deleteSong(data) {
-    return this.http.post(`${this.SERVER_URL}delete-song`, data, {
+    return this.http.post(`${this.SERVER_URL}songs/delete-song`, data, {
       headers: {
         Authorization: localStorage.getItem('jwtToken')
       }
@@ -477,7 +477,7 @@ export class CloudService {
   }
 
   likeSong(data) {
-    return this.http.post(`${this.SERVER_URL}like-song`, data, {
+    return this.http.post(`${this.SERVER_URL}songs/like-song`, data, {
       headers: {
         Authorization: localStorage.getItem('jwtToken')
       }
@@ -549,7 +549,7 @@ export class CloudService {
   }
 
   getBlockedSongs() {
-    return this.http.get(`${this.SERVER_URL}getBlockedSongs`, {
+    return this.http.get(`${this.SERVER_URL}songs/getBlockedSongs`, {
       headers: {
         Authorization: localStorage.getItem('jwtToken')
       }
@@ -557,7 +557,7 @@ export class CloudService {
   }
 
   blockSong(data) {
-    return this.http.post(`${this.SERVER_URL}block-song`, data, {
+    return this.http.post(`${this.SERVER_URL}songs/block-song`, data, {
       headers: {
         Authorization: localStorage.getItem('jwtToken')
       }
@@ -577,7 +577,7 @@ export class CloudService {
   }
 
   addComment(data) {
-    return this.http.post(`${this.SERVER_URL}addComment`, data, {
+    return this.http.post(`${this.SERVER_URL}songs/addComment`, data, {
       headers: {
         Authorization: localStorage.getItem('jwtToken')
       }
@@ -602,7 +602,7 @@ export class CloudService {
   }
 
   addSubComment(data) {
-    return this.http.post(`${this.SERVER_URL}addSubComment`, data, {
+    return this.http.post(`${this.SERVER_URL}songs/addSubComment`, data, {
       headers: {
         Authorization: localStorage.getItem('jwtToken')
       }
@@ -628,7 +628,7 @@ export class CloudService {
 
 
   editComment(data) {
-    return this.http.post(`${this.SERVER_URL}editComment`, data, {
+    return this.http.post(`${this.SERVER_URL}songs/editComment`, data, {
       headers: {
         Authorization: localStorage.getItem('jwtToken')
       }
@@ -653,7 +653,7 @@ export class CloudService {
   }
 
   editSubComment(data) {
-    return this.http.post(`${this.SERVER_URL}editSubComment`, data, {
+    return this.http.post(`${this.SERVER_URL}songs/editSubComment`, data, {
       headers: {
         Authorization: localStorage.getItem('jwtToken')
       }
@@ -678,7 +678,7 @@ export class CloudService {
   }
 
   deleteComment(data) {
-    return this.http.post(`${this.SERVER_URL}deleteComment`, data, {
+    return this.http.post(`${this.SERVER_URL}songs/deleteComment`, data, {
       headers: {
         Authorization: localStorage.getItem('jwtToken')
       }
@@ -703,7 +703,7 @@ export class CloudService {
   }
 
   deleteSubComment(data) {
-    return this.http.post(`${this.SERVER_URL}deleteSubComment`, data, {
+    return this.http.post(`${this.SERVER_URL}songs/deleteSubComment`, data, {
       headers: {
         Authorization: localStorage.getItem('jwtToken')
       }
@@ -728,7 +728,7 @@ export class CloudService {
   }
 
   likeComment(data) {
-    return this.http.post(`${this.SERVER_URL}likeComment`, data, {
+    return this.http.post(`${this.SERVER_URL}songs/likeComment`, data, {
       headers: {
         Authorization: localStorage.getItem('jwtToken')
       }
@@ -753,7 +753,7 @@ export class CloudService {
   }
 
   likeSubComment(data) {
-    return this.http.post(`${this.SERVER_URL}likeSubComment`, data, {
+    return this.http.post(`${this.SERVER_URL}songs/likeSubComment`, data, {
       headers: {
         Authorization: localStorage.getItem('jwtToken')
       }
@@ -778,7 +778,7 @@ export class CloudService {
   }
 
   unlikeComment(data) {
-    return this.http.post(`${this.SERVER_URL}unlikeComment`, data, {
+    return this.http.post(`${this.SERVER_URL}songs/unlikeComment`, data, {
       headers: {
         Authorization: localStorage.getItem('jwtToken')
       }
@@ -803,7 +803,7 @@ export class CloudService {
   }
 
   unlikeSubComment(data) {
-    return this.http.post(`${this.SERVER_URL}unlikeSubComment`, data, {
+    return this.http.post(`${this.SERVER_URL}songs/unlikeSubComment`, data, {
       headers: {
         Authorization: localStorage.getItem('jwtToken')
       }
@@ -828,7 +828,7 @@ export class CloudService {
   }
 
   updateViewsOfSong(data) {
-    return this.http.post(`${this.SERVER_URL}views`, data).pipe(
+    return this.http.post(`${this.SERVER_URL}songs/views`, data).pipe(
       map((song: any) => ({
         id: song._id,
         url: this.SERVER_URL_SOUND + song.url,
