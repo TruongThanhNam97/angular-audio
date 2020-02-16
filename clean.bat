@@ -48,6 +48,8 @@ del *.gif
 del *.GIF
 del *.tif
 del *.TIF
+del *.webp
+del *.WEBP
 popd
 
 popd

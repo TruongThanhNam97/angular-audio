@@ -217,15 +217,17 @@ var watermark = (req, res, next) => {
             watermarker.Watermark(req,
                 (data) => saveSongMetadata(req, res, data),
                 (err) => {
+                    const count = err.count;
+                    const arrFilesLength = err.arrFilesLength;
                     if (err.message.toString().includes('Reup detected')) {
-                        const count = err.count;
-                        const arrFilesLength = err.arrFilesLength;
+                        console.log(err.message.toString()); 
                         userModel.findById({ _id: req.user.id }).then(user => {
                             let numberOfReup = user.numberOfReup;
                             numberOfReup++;
                             if (numberOfReup <= 3) {
                                 userModel.findOneAndUpdate({ _id: req.user.id }, { $set: { numberOfReup } }, { new: true }).then(user => {
                                     if (count === arrFilesLength && numberOfReup < 3) {
+                                        res.status(200).json(user);
                                         res.io.emit('followingUpload', { user });
                                         if (user.followers.length > 0) {
                                             let arrOwner = [];
@@ -271,7 +273,10 @@ var watermark = (req, res, next) => {
                             }
                         });
                     } else {
-                        res.status(400).json(err.message.toString());
+                        console.log(err.message.toString()); 
+                        if (count === arrFilesLength) {
+                            res.status(400).json(err.message.toString());
+                        }
                     }
                 }
             )
