@@ -1,4 +1,4 @@
-# angular-audio
+# Streaming Music with Watermarking feature using Echo Hiding
 
 Special thank to : [Evrin-aus-dem-Norden](https://github.com/Evrin-aus-dem-Norden)
 For provide the algorithm for echo data hiding at :
@@ -18,3 +18,10 @@ It's that easy, or something's wrong :|
 # Clean Database
 
 May it's the clean.bat?
+
+# Author
+Khương Đặng (Kevin Dang):
+https://bitbucket.org/khuongdang/
+
+Trương Thanh Nam:
+https://github.com/TruongThanhNam97
