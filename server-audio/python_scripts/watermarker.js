@@ -16,7 +16,7 @@ class Watermarker {
         let arrFilesLength = req.files.length;
         for (let i = 0; i < arrFilesLength; i++) {
             const pyWatermarker = spawn(
-                'python',
+                'py',
                 [Path.resolve(__dirname, 'test.py'), listFiles[i].filename, req.user._id, req.user.username],
                 {
                     cwd: __dirname

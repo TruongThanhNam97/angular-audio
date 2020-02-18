@@ -8,8 +8,9 @@ class Coding_factory:
     @staticmethod
     def Encoding(File_Name, File_Path, Original_Folder_Path, Watermarked_Folder_Path, Watermark_Message_Folder_Path, Key_Folder_Path):
         audio = File_Path
-        text = Path(Watermark_Message_Folder_Path)/"original.txt"
-        output_path = Path(Watermarked_Folder_Path)/(File_Name[:-4]+".wav")
+        text = Path(Watermark_Message_Folder_Path)/"original.txt"   
+        file_name = str(File_Name).rsplit('.',1)[0]  +".wav"
+        output_path = Path(Watermarked_Folder_Path)/(file_name)
 
         signal = Wave(audio)
         message = BinaryMessage(text)
@@ -17,4 +18,4 @@ class Coding_factory:
         stegosystem = System(signal, message)
         stegosystem.create_stego()
         stegosystem.signal.create_stegoaudio(output_path)
-        return File_Name[:-4]+".wav"
+        return file_name
