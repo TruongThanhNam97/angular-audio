@@ -51,8 +51,8 @@ def isSimilar(bits, message, original, original_bits):
 def ToMP3(filename):
 
     input_file = Watermarked_Folder_Path/filename
-    output_128 = Watermarked_Folder_Path_128/(filename[:-4]+".mp3")
-    output_320 = Watermarked_Folder_Path_320/(filename[:-4]+".mp3")
+    output_128 = Watermarked_Folder_Path_128/(filename.rsplit('.',1)[0] +".mp3")
+    output_320 = Watermarked_Folder_Path_320/(filename.rsplit('.',1)[0] +".mp3")
     param_128 = ["-y","-b:a","128k"]
     param_320 = ["-y","-b:a","320k"]
 
