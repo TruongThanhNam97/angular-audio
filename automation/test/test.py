@@ -1,0 +1,1 @@
+print( "32aa".center(10,'-') )

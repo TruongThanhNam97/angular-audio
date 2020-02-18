@@ -1,0 +1,222 @@
+"" 
+Amber Sun - Gareth Emery_Ashley Wallbrid.mp3,,toMP3,0.0,1.0
+Animal - Martin Garrix.mp3,,toMP3,0.004608294930875556,0.9954545454545455
+Blah Blah Blah - Armin Van Buuren.mp3,,toMP3,0.0023041474654378336,0.997734991429173
+Done For Me - Charlie Puth_ Kehlani.mp3,,toMP3,0.004608294930875556,0.9954545454545455
+Good Thing - Zedd_ Kehlani.mp3,,toMP3,0.0023041474654378336,0.997734991429173
+Liar - Camila Cabello.mp3,,toMP3,0.011520737327188946,0.9886646733252714
+Loi Nho - Den_ Phuong Anh Dao.mp3,,toMP3,0.0023041474654378336,0.9977246841962694
+Memories - Maroon 5.mp3,,toMP3,0.0,1.0
+Nuoc Mat Em Lau Bang Tinh Yeu Moi - Da L.mp3,,toMP3,0.543778801843318,0.46848748060169065
+Phone Down - Armin Van Buuren_Garibay.mp3,,toMP3,0.004608294930875556,0.9954545454545455
+Real Friends - Camila Cabello.mp3,,toMP3,0.016129032258064502,0.9843317991963335
+Say You Won_t Let Go - James Arthur.mp3,,toMP3,0.0,1.0
+Senorita - Camila Cabello_ Shawn Mendes.mp3,,toMP3,0.0,1.0
+Sticky Fingers - Above Beyond_ Alex Varg.mp3,,toMP3,0.027649769585253448,0.9725179925282852
+Sucker - Jonas Brothers.mp3,,toMP3,0.0023041474654378336,0.997734991429173
+This Feeling - The Chainsmokers_ Kelsea.mp3,,toMP3,0.0,1.0
+Treat You Better - Shawn Mendes.mp3,,toMP3,0.0023041474654378336,0.9977246841962694
+Amber Sun - Gareth Emery_Ashley Wallbrid.mp3,,toMP3 128,0.0,1.0
+Animal - Martin Garrix.mp3,,toMP3 128,0.004608294930875556,0.9954545454545455
+Blah Blah Blah - Armin Van Buuren.mp3,,toMP3 128,0.0023041474654378336,0.997734991429173
+Done For Me - Charlie Puth_ Kehlani.mp3,,toMP3 128,0.004608294930875556,0.9954545454545455
+Good Thing - Zedd_ Kehlani.mp3,,toMP3 128,0.0023041474654378336,0.997734991429173
+Liar - Camila Cabello.mp3,,toMP3 128,0.011520737327188946,0.9886646733252714
+Loi Nho - Den_ Phuong Anh Dao.mp3,,toMP3 128,0.0023041474654378336,0.9977246841962694
+Memories - Maroon 5.mp3,,toMP3 128,0.0,1.0
+Nuoc Mat Em Lau Bang Tinh Yeu Moi - Da L.mp3,,toMP3 128,0.543778801843318,0.46848748060169065
+Phone Down - Armin Van Buuren_Garibay.mp3,,toMP3 128,0.004608294930875556,0.9954545454545455
+Real Friends - Camila Cabello.mp3,,toMP3 128,0.016129032258064502,0.9843317991963335
+Say You Won_t Let Go - James Arthur.mp3,,toMP3 128,0.0,1.0
+Senorita - Camila Cabello_ Shawn Mendes.mp3,,toMP3 128,0.0,1.0
+Sticky Fingers - Above Beyond_ Alex Varg.mp3,,toMP3 128,0.027649769585253448,0.9725179925282852
+Sucker - Jonas Brothers.mp3,,toMP3 128,0.0023041474654378336,0.997734991429173
+This Feeling - The Chainsmokers_ Kelsea.mp3,,toMP3 128,0.0,1.0
+Treat You Better - Shawn Mendes.mp3,,toMP3 128,0.0023041474654378336,0.9977246841962694
+Amber Sun - Gareth Emery_Ashley Wallbrid.mp3,,toMP3 192,0.0,1.0
+Animal - Martin Garrix.mp3,,toMP3 192,0.004608294930875556,0.995485304256668
+Blah Blah Blah - Armin Van Buuren.mp3,,toMP3 192,0.0,1.0
+Done For Me - Charlie Puth_ Kehlani.mp3,,toMP3 192,0.0023041474654378336,0.997734991429173
+Good Thing - Zedd_ Kehlani.mp3,,toMP3 192,0.0,1.0
+Liar - Camila Cabello.mp3,,toMP3 192,0.0023041474654378336,0.9977246841962694
+Loi Nho - Den_ Phuong Anh Dao.mp3,,toMP3 192,0.0,1.0
+Memories - Maroon 5.mp3,,toMP3 192,0.0,1.0
+Nuoc Mat Em Lau Bang Tinh Yeu Moi - Da L.mp3,,toMP3 192,0.5207373271889402,0.49101091716907963
+Phone Down - Armin Van Buuren_Garibay.mp3,,toMP3 192,0.0023041474654378336,0.997734991429173
+Real Friends - Camila Cabello.mp3,,toMP3 192,0.01382488479262678,0.986526521651637
+Say You Won_t Let Go - James Arthur.mp3,,toMP3 192,0.0023041474654378336,0.997734991429173
+Senorita - Camila Cabello_ Shawn Mendes.mp3,,toMP3 192,0.0023041474654378336,0.997734991429173
+Sticky Fingers - Above Beyond_ Alex Varg.mp3,,toMP3 192,0.03917050691244239,0.9611210463251492
+Sucker - Jonas Brothers.mp3,,toMP3 192,0.0,1.0
+This Feeling - The Chainsmokers_ Kelsea.mp3,,toMP3 192,0.0,1.0
+Treat You Better - Shawn Mendes.mp3,,toMP3 192,0.0023041474654378336,0.9977246841962694
+Amber Sun - Gareth Emery_Ashley Wallbrid.mp3,,toMP3 320,0.0,1.0
+Animal - Martin Garrix.mp3,,toMP3 320,0.0023041474654378336,0.997734991429173
+Blah Blah Blah - Armin Van Buuren.mp3,,toMP3 320,0.0,1.0
+Done For Me - Charlie Puth_ Kehlani.mp3,,toMP3 320,0.0023041474654378336,0.997734991429173
+Good Thing - Zedd_ Kehlani.mp3,,toMP3 320,0.0,1.0
+Liar - Camila Cabello.mp3,,toMP3 320,0.004608294930875556,0.9954545454545455
+Loi Nho - Den_ Phuong Anh Dao.mp3,,toMP3 320,0.0,1.0
+Memories - Maroon 5.mp3,,toMP3 320,0.0,1.0
+Nuoc Mat Em Lau Bang Tinh Yeu Moi - Da L.mp3,,toMP3 320,0.5368663594470047,0.4740515022049439
+Phone Down - Armin Van Buuren_Garibay.mp3,,toMP3 320,0.0023041474654378336,0.997734991429173
+Real Friends - Camila Cabello.mp3,,toMP3 320,0.009216589861751112,0.9910312089651149
+Say You Won_t Let Go - James Arthur.mp3,,toMP3 320,0.0,1.0
+Senorita - Camila Cabello_ Shawn Mendes.mp3,,toMP3 320,0.0,1.0
+Sticky Fingers - Above Beyond_ Alex Varg.mp3,,toMP3 320,0.02304147465437789,0.9772727272727273
+Sucker - Jonas Brothers.mp3,,toMP3 320,0.0023041474654378336,0.997734991429173
+This Feeling - The Chainsmokers_ Kelsea.mp3,,toMP3 320,0.0,1.0
+Treat You Better - Shawn Mendes.mp3,,toMP3 320,0.0023041474654378336,0.9977246841962694
+Amber Sun - Gareth Emery_Ashley Wallbrid.mp3,,toMP3 44k,0.0,1.0
+Animal - Martin Garrix.mp3,,toMP3 44k,0.004608294930875556,0.9954545454545455
+Blah Blah Blah - Armin Van Buuren.mp3,,toMP3 44k,0.0023041474654378336,0.997734991429173
+Done For Me - Charlie Puth_ Kehlani.mp3,,toMP3 44k,0.004608294930875556,0.9954545454545455
+Good Thing - Zedd_ Kehlani.mp3,,toMP3 44k,0.0023041474654378336,0.997734991429173
+Liar - Camila Cabello.mp3,,toMP3 44k,0.011520737327188946,0.9886646733252714
+Loi Nho - Den_ Phuong Anh Dao.mp3,,toMP3 44k,0.0023041474654378336,0.9977246841962694
+Memories - Maroon 5.mp3,,toMP3 44k,0.0,1.0
+Nuoc Mat Em Lau Bang Tinh Yeu Moi - Da L.mp3,,toMP3 44k,0.5161290322580645,0.5046026401550141
+Phone Down - Armin Van Buuren_Garibay.mp3,,toMP3 44k,0.004608294930875556,0.9954545454545455
+Real Friends - Camila Cabello.mp3,,toMP3 44k,0.016129032258064502,0.9843317991963335
+Say You Won_t Let Go - James Arthur.mp3,,toMP3 44k,0.0,1.0
+Senorita - Camila Cabello_ Shawn Mendes.mp3,,toMP3 44k,0.0,1.0
+Sticky Fingers - Above Beyond_ Alex Varg.mp3,,toMP3 44k,0.027649769585253448,0.9725179925282852
+Sucker - Jonas Brothers.mp3,,toMP3 44k,0.0023041474654378336,0.997734991429173
+This Feeling - The Chainsmokers_ Kelsea.mp3,,toMP3 44k,0.0,1.0
+Treat You Better - Shawn Mendes.mp3,,toMP3 44k,0.0023041474654378336,0.9977246841962694
+Amber Sun - Gareth Emery_Ashley Wallbrid.mp3,,toMP3 48k,0.0,1.0
+Animal - Martin Garrix.mp3,,toMP3 48k,0.004608294930875556,0.9954545454545455
+Blah Blah Blah - Armin Van Buuren.mp3,,toMP3 48k,0.0,1.0
+Done For Me - Charlie Puth_ Kehlani.mp3,,toMP3 48k,0.0023041474654378336,0.997734991429173m
+Good Thing - Zedd_ Kehlani.mp3,,toMP3 48k,0.0023041474654378336,0.9977246841962694
+Liar - Camila Cabello.mp3,,toMP3 48k,0.0023041474654378336,0.997734991429173
+Loi Nho - Den_ Phuong Anh Dao.mp3,,toMP3 48k,0.0,1.0
+Memories - Maroon 5.mp3,,toMP3 48k,0.004608294930875556,0.9954545454545455
+Nuoc Mat Em Lau Bang Tinh Yeu Moi - Da L.mp3,,toMP3 48k,0.543778801843318,0.46848748060169065
+Phone Down - Armin Van Buuren_Garibay.mp3,,toMP3 48k,0.0023041474654378336,0.997734991429173
+Real Friends - Camila Cabello.mp3,,toMP3 48k,0.020737327188940058,0.9799859422136237
+Say You Won_t Let Go - James Arthur.mp3,,toMP3 48k,0.0,1.0
+Senorita - Camila Cabello_ Shawn Mendes.mp3,,toMP3 48k,0.0,1.0
+Sticky Fingers - Above Beyond_ Alex Varg.mp3,,toMP3 48k,0.03686635944700456,0.9636363636363636
+Sucker - Jonas Brothers.mp3,,toMP3 48k,0.0,1.0
+This Feeling - The Chainsmokers_ Kelsea.mp3,,toMP3 48k,0.0,1.0
+Treat You Better - Shawn Mendes.mp3,,toMP3 48k,0.0023041474654378336,0.9977246841962694
+Amber Sun - Gareth Emery_Ashley Wallbrid.mp3,,toMP3 64,0.004608294930875556,0.995485304256668
+Animal - Martin Garrix.mp3,,toMP3 64,0.004608294930875556,0.9954545454545455
+Blah Blah Blah - Armin Van Buuren.mp3,,toMP3 64,0.0023041474654378336,0.997734991429173
+Done For Me - Charlie Puth_ Kehlani.mp3,,toMP3 64,0.004608294930875556,0.995485304256668
+Good Thing - Zedd_ Kehlani.mp3,,toMP3 64,0.00691244239631339,0.9931688637204873
+Liar - Camila Cabello.mp3,,toMP3 64,0.0023041474654378336,0.997734991429173
+Loi Nho - Den_ Phuong Anh Dao.mp3,,toMP3 64,0.004608294930875556,0.9954545454545455
+Memories - Maroon 5.mp3,,toMP3 64,0.004608294930875556,0.995485304256668
+Nuoc Mat Em Lau Bang Tinh Yeu Moi - Da L.mp3,,toMP3 64,0.5345622119815668,0.48221974779913784
+Phone Down - Armin Van Buuren_Garibay.mp3,,toMP3 64,0.00691244239631339,0.9932507665246444
+Real Friends - Camila Cabello.mp3,,toMP3 64,0.027649769585253448,0.9737945687202026
+Say You Won_t Let Go - James Arthur.mp3,,toMP3 64,0.00691244239631339,0.9932507665246444
+Senorita - Camila Cabello_ Shawn Mendes.mp3,,toMP3 64,0.0023041474654378336,0.997734991429173
+Sticky Fingers - Above Beyond_ Alex Varg.mp3,,toMP3 64,0.03917050691244239,0.961278120390013
+Sucker - Jonas Brothers.mp3,,toMP3 64,0.004608294930875556,0.995485304256668
+This Feeling - The Chainsmokers_ Kelsea.mp3,,toMP3 64,0.0023041474654378336,0.997734991429173
+Treat You Better - Shawn Mendes.mp3,,toMP3 64,0.004608294930875556,0.9954545454545455
+Amber Sun - Gareth Emery_Ashley Wallbrid.mp3,,toMP3 96,0.0023041474654378336,0.997734991429173
+Animal - Martin Garrix.mp3,,toMP3 96,0.0023041474654378336,0.997734991429173
+Blah Blah Blah - Armin Van Buuren.mp3,,toMP3 96,0.004608294930875556,0.995485304256668
+Done For Me - Charlie Puth_ Kehlani.mp3,,toMP3 96,0.0,1.0
+Good Thing - Zedd_ Kehlani.mp3,,toMP3 96,0.0,1.0
+Liar - Camila Cabello.mp3,,toMP3 96,0.0023041474654378336,0.997734991429173
+Loi Nho - Den_ Phuong Anh Dao.mp3,,toMP3 96,0.0,1.0
+Memories - Maroon 5.mp3,,toMP3 96,0.0,1.0
+Nuoc Mat Em Lau Bang Tinh Yeu Moi - Da L.mp3,,toMP3 96,0.5230414746543779,0.49223038193378355
+Phone Down - Armin Van Buuren_Garibay.mp3,,toMP3 96,0.004608294930875556,0.995485304256668
+Real Friends - Camila Cabello.mp3,,toMP3 96,0.018433179723502335,0.9820218343381593
+Say You Won_t Let Go - James Arthur.mp3,,toMP3 96,0.0,1.0
+Senorita - Camila Cabello_ Shawn Mendes.mp3,,toMP3 96,0.0,1.0
+Sticky Fingers - Above Beyond_ Alex Varg.mp3,,toMP3 96,0.02995391705069128,0.9703897613415771
+Sucker - Jonas Brothers.mp3,,toMP3 96,0.004608294930875556,0.995485304256668
+This Feeling - The Chainsmokers_ Kelsea.mp3,,toMP3 96,0.0,1.0
+Treat You Better - Shawn Mendes.mp3,,toMP3 96,0.0023041474654378336,0.9977246841962694
+Amber Sun - Gareth Emery_Ashley Wallbrid.mp3,,toMP3 Mono,0.016129032258064502,0.9843317991963335
+Animal - Martin Garrix.mp3,,toMP3 Mono,0.02995391705069128,0.9710362989057366
+Blah Blah Blah - Armin Van Buuren.mp3,,toMP3 Mono,0.009216589861751112,0.9909603710555014
+Done For Me - Charlie Puth_ Kehlani.mp3,,toMP3 Mono,0.011520737327188946,0.9886646733252714
+Good Thing - Zedd_ Kehlani.mp3,,toMP3 Mono,0.009216589861751112,0.9908779100005741
+Liar - Camila Cabello.mp3,,toMP3 Mono,0.01382488479262678,0.9864354378543347
+Loi Nho - Den_ Phuong Anh Dao.mp3,,toMP3 Mono,0.004608294930875556,0.995485304256668
+Memories - Maroon 5.mp3,,toMP3 Mono,0.00691244239631339,0.9931998323772222
+Nuoc Mat Em Lau Bang Tinh Yeu Moi - Da L.mp3,,toMP3 Mono,0.5368663594470047,0.48116571430317157
+Phone Down - Armin Van Buuren_Garibay.mp3,,toMP3 Mono,0.009216589861751112,0.990909090909091
+Real Friends - Camila Cabello.mp3,,toMP3 Mono,0.03917050691244239,0.9628689735181367
+Say You Won_t Let Go - James Arthur.mp3,,toMP3 Mono,0.009216589861751112,0.9909603710555014
+Senorita - Camila Cabello_ Shawn Mendes.mp3,,toMP3 Mono,0.0,1.0
+Sticky Fingers - Above Beyond_ Alex Varg.mp3,,toMP3 Mono,0.04608294930875578,0.9545454545454546
+Sucker - Jonas Brothers.mp3,,toMP3 Mono,0.01382488479262678,0.986526521651637
+This Feeling - The Chainsmokers_ Kelsea.mp3,,toMP3 Mono,0.0023041474654378336,0.997734991429173
+Treat You Better - Shawn Mendes.mp3,,toMP3 Mono,0.00691244239631339,0.9931688637204873
+Amber Sun - Gareth Emery_Ashley Wallbrid.mp3,,toMP3 Mono 128,0.009216589861751112,0.9909603710555014
+Animal - Martin Garrix.mp3,,toMP3 Mono 128,0.018433179723502335,0.9819105046531681
+Blah Blah Blah - Armin Van Buuren.mp3,,toMP3 Mono 128,0.004608294930875556,0.995485304256668
+Done For Me - Charlie Puth_ Kehlani.mp3,,toMP3 Mono 128,0.004608294930875556,0.9954545454545455
+Good Thing - Zedd_ Kehlani.mp3,,toMP3 Mono 128,0.01382488479262678,0.9863116523508019
+Liar - Camila Cabello.mp3,,toMP3 Mono 128,0.016129032258064502,0.9841295142733206
+Loi Nho - Den_ Phuong Anh Dao.mp3,,toMP3 Mono 128,0.00691244239631339,0.9931998323772222
+Memories - Maroon 5.mp3,,toMP3 Mono 128,0.004608294930875556,0.995485304256668
+Nuoc Mat Em Lau Bang Tinh Yeu Moi - Da L.mp3,,toMP3 Mono 128,0.5345622119815668,0.4845641046770819
+Phone Down - Armin Van Buuren_Garibay.mp3,,toMP3 Mono 128,0.009216589861751112,0.990909090909091
+Real Friends - Camila Cabello.mp3,,toMP3 Mono 128,0.020737327188940058,0.9798371334465785
+Say You Won_t Let Go - James Arthur.mp3,,toMP3 Mono 128,0.0023041474654378336,0.997734991429173
+Senorita - Camila Cabello_ Shawn Mendes.mp3,,toMP3 Mono 128,0.004608294930875556,0.995485304256668
+Sticky Fingers - Above Beyond_ Alex Varg.mp3,,toMP3 Mono 128,0.04147465437788023,0.9592858386473346
+Sucker - Jonas Brothers.mp3,,toMP3 Mono 128,0.011520737327188946,0.9887359903131687
+This Feeling - The Chainsmokers_ Kelsea.mp3,,toMP3 Mono 128,0.0,1.0
+Treat You Better - Shawn Mendes.mp3,,toMP3 Mono 128,0.00691244239631339,0.9931584145359874
+Amber Sun - Gareth Emery_Ashley Wallbrid.mp3,,toMP3 Mono 192,0.009216589861751112,0.9909603710555014
+Animal - Martin Garrix.mp3,,toMP3 Mono 192,0.01382488479262678,0.9863636363636363
+Blah Blah Blah - Armin Van Buuren.mp3,,toMP3 Mono 192,0.004608294930875556,0.995485304256668
+Done For Me - Charlie Puth_ Kehlani.mp3,,toMP3 Mono 192,0.004608294930875556,0.995485304256668
+Good Thing - Zedd_ Kehlani.mp3,,toMP3 Mono 192,0.011520737327188946,0.9886130432447053
+Liar - Camila Cabello.mp3,,toMP3 Mono 192,0.011520737327188946,0.9886646733252714
+Loi Nho - Den_ Phuong Anh Dao.mp3,,toMP3 Mono 192,0.00691244239631339,0.9931688637204873
+Memories - Maroon 5.mp3,,toMP3 Mono 192,0.004608294930875556,0.995485304256668
+Nuoc Mat Em Lau Bang Tinh Yeu Moi - Da L.mp3,,toMP3 Mono 192,0.5414746543778801,0.4743310953180096
+Phone Down - Armin Van Buuren_Garibay.mp3,,toMP3 Mono 192,0.009216589861751112,0.990909090909091
+Real Friends - Camila Cabello.mp3,,toMP3 Mono 192,0.016129032258064502,0.9843317991963335
+Say You Won_t Let Go - James Arthur.mp3,,toMP3 Mono 192,0.0023041474654378336,0.997734991429173
+Senorita - Camila Cabello_ Shawn Mendes.mp3,,toMP3 Mono 192,0.0023041474654378336,0.997734991429173
+Sticky Fingers - Above Beyond_ Alex Varg.mp3,,toMP3 Mono 192,0.04377880184331795,0.9565442794378866
+Sucker - Jonas Brothers.mp3,,toMP3 Mono 192,0.004608294930875556,0.995485304256668
+This Feeling - The Chainsmokers_ Kelsea.mp3,,toMP3 Mono 192,0.0,1.0
+Treat You Better - Shawn Mendes.mp3,,toMP3 Mono 192,0.004608294930875556,0.9954441676503464
+Amber Sun - Gareth Emery_Ashley Wallbrid.mp3,,toMP3 Mono 320,0.00691244239631339,0.9931998323772222
+Animal - Martin Garrix.mp3,,toMP3 Mono 320,0.009216589861751112,0.9909603710555014
+Blah Blah Blah - Armin Van Buuren.mp3,,toMP3 Mono 320,0.004608294930875556,0.995485304256668
+Done For Me - Charlie Puth_ Kehlani.mp3,,toMP3 Mono 320,0.00691244239631339,0.9932507665246444
+Good Thing - Zedd_ Kehlani.mp3,,toMP3 Mono 320,0.011520737327188946,0.9886130432447053
+Liar - Camila Cabello.mp3,,toMP3 Mono 320,0.011520737327188946,0.9886130432447053
+Loi Nho - Den_ Phuong Anh Dao.mp3,,toMP3 Mono 320,0.004608294930875556,0.9954545454545455
+Memories - Maroon 5.mp3,,toMP3 Mono 320,0.0023041474654378336,0.997734991429173
+Nuoc Mat Em Lau Bang Tinh Yeu Moi - Da L.mp3,,toMP3 Mono 320,0.5414746543778801,0.47193990372426947
+Phone Down - Armin Van Buuren_Garibay.mp3,,toMP3 Mono 320,0.009216589861751112,0.990909090909091
+Real Friends - Camila Cabello.mp3,,toMP3 Mono 320,0.016129032258064502,0.9843317991963335
+Say You Won_t Let Go - James Arthur.mp3,,toMP3 Mono 320,0.004608294930875556,0.995485304256668
+Senorita - Camila Cabello_ Shawn Mendes.mp3,,toMP3 Mono 320,0.0023041474654378336,0.997734991429173
+Sticky Fingers - Above Beyond_ Alex Varg.mp3,,toMP3 Mono 320,0.03456221198156684,0.965833940865795
+Sucker - Jonas Brothers.mp3,,toMP3 Mono 320,0.009216589861751112,0.9910312089651149
+This Feeling - The Chainsmokers_ Kelsea.mp3,,toMP3 Mono 320,0.0,1.0
+Treat You Better - Shawn Mendes.mp3,,toMP3 Mono 320,0.004608294930875556,0.9954441676503464
+Amber Sun - Gareth Emery_Ashley Wallbrid.mp3,,toMP3 Mono 64,0.004608294930875556,0.995485304256668
+Animal - Martin Garrix.mp3,,toMP3 Mono 64,0.004608294930875556,0.9954545454545455
+Blah Blah Blah - Armin Van Buuren.mp3,,toMP3 Mono 64,0.0023041474654378336,0.997734991429173
+Done For Me - Charlie Puth_ Kehlani.mp3,,toMP3 Mono 64,0.004608294930875556,0.995485304256668
+Good Thing - Zedd_ Kehlani.mp3,,toMP3 Mono 64,0.00691244239631339,0.9931688637204873
+Liar - Camila Cabello.mp3,,toMP3 Mono 64,0.0023041474654378336,0.997734991429173
+Loi Nho - Den_ Phuong Anh Dao.mp3,,toMP3 Mono 64,0.004608294930875556,0.9954545454545455
+Memories - Maroon 5.mp3,,toMP3 Mono 64,0.004608294930875556,0.995485304256668
+Nuoc Mat Em Lau Bang Tinh Yeu Moi - Da L.mp3,,toMP3 Mono 64,0.5345622119815668,0.48221974779913784
+Phone Down - Armin Van Buuren_Garibay.mp3,,toMP3 Mono 64,0.00691244239631339,0.9932507665246444
+Real Friends - Camila Cabello.mp3,,toMP3 Mono 64,0.027649769585253448,0.9737945687202026
+Say You Won_t Let Go - James Arthur.mp3,,toMP3 Mono 64,0.00691244239631339,0.9932507665246444
+Senorita - Camila Cabello_ Shawn Mendes.mp3,,toMP3 Mono 64,0.0023041474654378336,0.997734991429173
+Sticky Fingers - Above Beyond_ Alex Varg.mp3,,toMP3 Mono 64,0.03917050691244239,0.961278120390013
+Sucker - Jonas Brothers.mp3,,toMP3 Mono 64,0.004608294930875556,0.995485304256668
+This Feeling - The Chainsmokers_ Kelsea.mp3,,toMP3 Mono 64,0.0023041474654378336,0.997734991429173
+Treat You Better - Shawn Mendes.mp3,,toMP3 Mono 64,0.004608294930875556,0.9954545454545455
