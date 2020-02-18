@@ -108,7 +108,8 @@ export class FormUploadComponent implements OnInit {
 
   renameFile(name: string, index: number) {
     const oldFileItem = (this.signForm.get('arrSongs') as FormArray).controls[index].value.file;
-    const newFile: File = new File([oldFileItem], name, { type: oldFileItem.type });
+    const extension = oldFileItem.name.split('.')[oldFileItem.name.split('.').length - 1];
+    const newFile: File = new File([oldFileItem], `${name}.${extension}`, { type: oldFileItem.type });
     const lastIndex = newFile.name.lastIndexOf('.');
     const songName = newFile.name.slice(0, lastIndex);
     (this.signForm.get('arrSongs') as FormArray).controls[index].patchValue({
