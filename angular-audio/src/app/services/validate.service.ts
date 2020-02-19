@@ -11,14 +11,14 @@ export class ValidateService {
     private arrImageFileInfo = [
         {
             extension: ['jpg', 'jpeg'],
-            signature: ['FFD8FFE0', 'FFD8FFE1', 'FFD8FFE8', 'FFD8FFE2', 'FFD8FFE3', 'FFD8FFFE'],
-            size: 4,
+            signature: ['FFD8FF'],
+            size: 3,
             offset: 0
         },
         {
             extension: ['png'],
-            signature: ['89504E470D0A1A0A', '89504E47DA1AA000'],
-            size: 8,
+            signature: ['89504E47'],
+            size: 4,
             offset: 0
         },
         {
@@ -45,14 +45,14 @@ export class ValidateService {
         },
         {
             extension: ['m4a'],
-            signature: ['00000020667479704D3441', '0001C6674797069736F6D0', '0001C667479704D3441200'],
-            size: 11,
-            offset: 0
+            signature: ['66747970'],
+            size: 4,
+            offset: 4
         },
         {
             extension: ['flac'],
-            signature: ['664C614300000022', '664C614300022120'],
-            size: 8,
+            signature: ['664C6143'],
+            size: 4,
             offset: 0
         }
     ];
@@ -61,9 +61,9 @@ export class ValidateService {
     private arrVideoFileInfo = [
         {
             extension: ['mp4'],
-            signature: ['0002066747970697', '00018667479706D7'],
-            size: 8,
-            offset: 0
+            signature: ['66747970'],
+            size: 4,
+            offset: 4
         }
     ];
 
@@ -79,18 +79,19 @@ export class ValidateService {
     validateFileBySignature(file, fileType): Observable<boolean> {
         if (file) {
             const reader = new FileReader();
-            reader.readAsArrayBuffer(file.slice(0, 15));
-            return fromEvent(reader, 'load').pipe(
+            const loadContentFile$ = fromEvent(reader, 'load').pipe(
                 map((evt: any) => {
                     const uint = new Uint8Array(evt.target.result);
                     const bytes = [];
                     uint.forEach((byte) => {
-                        bytes.push(byte.toString(16));
+                        bytes.push(('0' + byte.toString(16)).slice(-2));
                     })
                     const hex = bytes.join('').toUpperCase();
                     return this.checkMimeTypeOfFile(hex, fileType, file);
                 })
             );
+            reader.readAsArrayBuffer(file.slice(0, 15));
+            return loadContentFile$;
         }
     }
 
