@@ -41,6 +41,24 @@ class Watermarker {
             })
         }
     }
+
+    readWatermark(req, next= null, on_error = null){
+        const pyWatermarker = spawn(
+            'py',
+            [Path.resolve(__dirname, 'test.py'), listFiles[i].filename, req.user._id, req.user.username],
+            {
+                cwd: __dirname
+            });
+            pyWatermarker.stdout.on('data', (data) => {
+                let data = JSON.parse(data.toString()) ;
+                let message = data.message;
+                console.log(message);
+            });
+            pyWatermarker.stderr.on('data', (data) => {
+                count++;
+                on_error({ message: data, count, arrFilesLength });
+            })
+    }
 }
 
 module.exports = new Watermarker();
