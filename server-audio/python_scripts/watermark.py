@@ -5,17 +5,18 @@ import threading
 from pathlib import Path
 from EchoHiding import coding ,decoding
 from difflib import SequenceMatcher
+import config
 
-Main_File_Path = Path( os.path.abspath(__file__) )
-Root_Path = Main_File_Path.parents[1]
-Original_Folder_Path = Root_Path/"assets"/"original-songs"
-Watermark_Message_Folder_Path = Root_Path/"assets"/"watermark-messages"
-Key_Folder_Path = Root_Path/"assets"/"song-keys"
-Watermarked_Folder_Path = Root_Path/"public"/"watermark-songs"/"wav"
-Watermarked_Folder_Path_128 = Root_Path/"public"/"watermark-songs"/"mp3-128"
-Watermarked_Folder_Path_320 = Root_Path/"public"/"watermark-songs"/"mp3-320"
-Py_Script_Folder_Path = Root_Path/"python_scripts"
-FFMPEG_EXE_Path = Py_Script_Folder_Path/"libs"/"ffmpeg"/"bin"/"ffmpeg.exe"
+Main_File_Path = config.Main_File_Path
+Root_Path = config.Root_Path
+Original_Folder_Path = config.Original_Folder_Path
+Watermark_Message_Folder_Path = config.Watermark_Message_Folder_Path
+Key_Folder_Path = config.Key_Folder_Path
+Watermarked_Folder_Path = config.Watermarked_Folder_Path
+Watermarked_Folder_Path_128 = config.Watermarked_Folder_Path_128
+Watermarked_Folder_Path_320 = config.Watermarked_Folder_Path_320
+Py_Script_Folder_Path = config.Py_Script_Folder_Path
+FFMPEG_EXE_Path = config.FFMPEG_EXE_Path
 
 
 def isSimilar(bits, message, original, original_bits):
