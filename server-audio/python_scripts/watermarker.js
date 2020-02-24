@@ -42,9 +42,8 @@ class Watermarker {
         }
     }
 
-    readWatermark(req, next= null, on_error = null){
+    readWatermark(req, next = null, on_error = null) {
         const listFiles = req.files;
-        let count = 0;
         let arrFilesLength = req.files.length;
         for (let i = 0; i < arrFilesLength; i++) {
             const pyWatermarker = spawn(
@@ -54,23 +53,22 @@ class Watermarker {
                     cwd: __dirname
                 });
             pyWatermarker.stdout.on('data', (data) => {
-                let result = JSON.parse(data.toString()) ;
-                if(result){                  
+                let result = JSON.parse(data.toString());
+                if (result) {
                     let message = "Something's wrong";
-                    if( result.message ){
+                    if (result.message) {
                         message = result.message;
-                        console.log(result);
                     }
-                    if( result.error && result.error == false )
+                    if (result.error == false)
                         next(result);
                     else
-                        on_error({ message: "Something's wrong", count, arrFilesLength });
+                        on_error({ message: "Something's wrong" });
+                } else {
+                    on_error({ message: "Something's wrong" });
                 }
-                on_error({ message: "Something's wrong", count, arrFilesLength });
             });
             pyWatermarker.stderr.on('data', (data) => {
-                count++;
-                on_error({ message: data.toString(), count, arrFilesLength });
+                on_error({ message: data.toString() });
             })
         }
     }

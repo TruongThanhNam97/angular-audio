@@ -25,6 +25,7 @@ import { ManageBlockedSongsComponent } from './pages/manage-blocked-songs/manage
 import { ManagePlaylistComponent } from './pages/manage-playlist/manage-playlist.component';
 import { SongInfoComponent } from './pages/song-info/song-info.component';
 import { Top100Component } from './pages/top100/top100.component';
+import { ReadSongComponent } from './pages/read-song/read-song.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/categories', pathMatch: 'full' },
@@ -74,6 +75,11 @@ const routes: Routes = [
   {
     path: 'manage-user',
     component: ManageUserComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'read-song',
+    component: ReadSongComponent,
     canActivate: [AuthGuard]
   },
   { path: 'categories', component: CategoriesComponent },

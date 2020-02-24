@@ -220,7 +220,7 @@ var watermark = (req, res, next) => {
                     const count = err.count;
                     const arrFilesLength = err.arrFilesLength;
                     if (err.message.toString().includes('Reup detected')) {
-                        console.log(err.message.toString()); 
+                        console.log(err.message.toString());
                         userModel.findById({ _id: req.user.id }).then(user => {
                             let numberOfReup = user.numberOfReup;
                             numberOfReup++;
@@ -273,7 +273,7 @@ var watermark = (req, res, next) => {
                             }
                         });
                     } else {
-                        console.log(err.message.toString()); 
+                        console.log(err.message.toString());
                         if (count === arrFilesLength) {
                             res.status(400).json(err.message.toString());
                         }
@@ -285,6 +285,22 @@ var watermark = (req, res, next) => {
 }
 
 router.post("/upload", passport.authenticate('jwt', { session: false }), upload.any(), watermark);
+
+router.post("/readWatermark", passport.authenticate('jwt', { session: false }), upload.any(), (req, res, next) => {
+    if (req.user.username !== 'superadmin') {
+        return res.status(401).json('Unauthorized');
+    }
+    watermarker.readWatermark(req,
+        (data) => {
+            console.log(data);
+            res.status(200).json(data);
+        },
+        (err) => {
+            console.log(err);
+            res.status(400).json(err);
+        }
+    )
+});
 
 /* GET all songs */
 router.get("/getAllSongs", (req, res, next) => {
