@@ -17,7 +17,7 @@ class Watermarker {
         for (let i = 0; i < arrFilesLength; i++) {
             const pyWatermarker = spawn(
                 'py',
-                [Path.resolve(__dirname, 'watermark.py'), listFiles[i].filename, req.user._id, req.user.username],
+                ["-W ignore",Path.resolve(__dirname, 'watermark.py'), listFiles[i].filename, req.user._id, req.user.username],
                 {
                     cwd: __dirname
                 });
@@ -48,7 +48,7 @@ class Watermarker {
         for (let i = 0; i < arrFilesLength; i++) {
             const pyWatermarker = spawn(
                 'py',
-                [Path.resolve(__dirname, 'readWatermark.py'), listFiles[i].filename],
+                ["-W ignore",Path.resolve(__dirname, 'readWatermark.py'), listFiles[i].filename],
                 {
                     cwd: __dirname
                 });
@@ -59,7 +59,7 @@ class Watermarker {
                     if (result.message) {
                         message = result.message;
                     }
-                    if (result.error == false)
+                    if (result.error === false)
                         next(result);
                     else
                         on_error({ message: "Something's wrong" });
