@@ -43,6 +43,13 @@ export class UploadService {
     );
   }
 
+  readSong(data) {
+    return this.http.post(`${this.SERVER_URL}songs/readWatermark`, data,
+      { headers: { Authorization: localStorage.getItem('jwtToken') } }).pipe(
+        retry(0)
+      );
+  }
+
   getQueueProcessingSubject() {
     return this.queueProcessingSubject$.asObservable();
   }
