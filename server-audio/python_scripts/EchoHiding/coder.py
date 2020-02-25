@@ -3,13 +3,13 @@ import numpy
 import random
 from EchoHiding.hamming_coder import HammingCoder
 from EchoHiding.config import Config
-import utility
+from EchoHiding.utility import String
 
 class BinaryMessage:
     def CreateEncodeString(self):
-        user_id_moded = utility.toString32(self.user_id)
-        user_name_moded = utility.toString32(self.user_name)
-        return self.watermark + " " + self.user_id + " " + self.user_name
+        user_id_moded = String.toString32(self.user_id)
+        user_name_moded = String.toString32(self.user_name)
+        return self.watermark + " " + user_id_moded + " " + user_name_moded
 
     def __init__(self, input_txt, user_id, user_name):
         self.bits = []
