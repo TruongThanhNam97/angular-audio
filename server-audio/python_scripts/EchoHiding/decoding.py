@@ -5,7 +5,7 @@ from pathlib import Path
 
 class Decoding_factory:
     @staticmethod
-    def Decoding( File_Name, Original_Folder_Path ,Watermark_Message_Folder_Path ,FFMPEG_EXE_Path):
+    def Decoding( File_Name, Original_Folder_Path ,Watermark_Message_Folder_Path ,FFMPEG_EXE_Path , is_full_message = False):
         audio = Path(Original_Folder_Path)/File_Name
         ffmpy_exe_path = FFMPEG_EXE_Path
         message =  Path(Watermark_Message_Folder_Path)/"original.txt"
@@ -16,8 +16,13 @@ class Decoding_factory:
             audio = audioconverter.into_wav(audio)
         
         signal = Wave(audio)
-        message = BinaryMessage(message)
+        message = BinaryMessage(message, is_full_message)
 
         stegosystem = System(signal, message)
         decoded_message, decoded_bits = stegosystem.extract_stegomessage()
         return decoded_message , str(audio), need2convert, message.bits_original ,decoded_bits
+
+    @staticmethod
+    def getFullMessage( File_Name, Original_Folder_Path ,Watermark_Message_Folder_Path ,FFMPEG_EXE_Path):
+        return Decoding_factory.Decoding( File_Name, Original_Folder_Path ,Watermark_Message_Folder_Path ,FFMPEG_EXE_Path , is_full_message = True)
+

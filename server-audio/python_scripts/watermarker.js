@@ -53,6 +53,7 @@ class Watermarker {
                     cwd: __dirname
                 });
             pyWatermarker.stdout.on('data', (data) => {
+                console.log(data.toString());
                 let result = JSON.parse(data.toString());
                 if (result) {
                     let message = "Something's wrong";

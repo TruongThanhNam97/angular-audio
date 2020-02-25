@@ -3,20 +3,24 @@ import math
 from EchoHiding.hamming_decoder import HammingDecoder
 from EchoHiding.hamming_coder import HammingCoder
 from EchoHiding.config import Config
+from EchoHiding.utility import String
 
 
 class BinaryMessage:
-    def __init__(self, orginal_message):
+    def __init__(self, orginal_message, is_full_message = False):
         self.bits = []
         self.bits_original_encoded = []
         self.bitslen = 0
-        self.input_message = open(str(orginal_message), 'r')
+        self.input = open(str(orginal_message), 'r')
+        self.input_message = self.input.read()
+        if(is_full_message):
+            self.input_message += ( " " + String.toString32() + String.toString32() )
         self.bits_original = []
         bits = ""
 
         _code = HammingCoder()
 
-        for ch in self.input_message.read():
+        for ch in self.input_message:
             symb_ord = ord(ch.encode('utf8'))          
             bits = bin(symb_ord)[2:].zfill(8)
 
@@ -113,11 +117,11 @@ class System:
 
     def extract_stegomessage(self):
 
-        for segment in range(self.message.bitslen_message):
-            start_segment = self.start_frame + Config.segment_len*segment
-            end_segment = start_segment + Config.segment_len
+        for segment in range(self.message.bitslen_message):        
+            start_segment = self.start_frame + Config.segment_len * segment
+            end_segment = start_segment + Config.segment_len - 1
             segment_array = self.signal.channels[0][start_segment : end_segment]
-
+            print(segment, " : ",start_segment," : ",end_segment )
             self.message.bits.append( self.decode_section(segment_array) )
 
         return self.message.decode()

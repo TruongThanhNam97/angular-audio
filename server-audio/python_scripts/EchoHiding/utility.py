@@ -5,7 +5,6 @@ class String:
     @staticmethod
     def toBitsArray(string):
         result = []
-
         for c in string:
             bits = format( ord(c), '08b' )
             result.extend([int(b) for b in bits])
@@ -17,7 +16,7 @@ class String:
         return ''.join(random.choice(letters) for i in range(length))
 
     @staticmethod
-    def toString32(string):
+    def toString32(string = ""):
         if ( len(string) > 32 ):
             string = string[0,31]
         return string.center(32,"-")

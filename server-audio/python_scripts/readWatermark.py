@@ -22,8 +22,7 @@ FFMPEG_EXE_Path = config.FFMPEG_EXE_Path
 File_Name = sys.argv[1]
 
 def readWatermark(filename):
-    message , File_Path, is_temp, message_bits, original_bits = decoding.Decoding_factory.Decoding(File_Name,Original_Folder_Path, Watermark_Message_Folder_Path, FFMPEG_EXE_Path)
-    watermark = "This is the watermark"
+    message , File_Path, is_temp, message_bits, original_bits = decoding.Decoding_factory.getFullMessage(File_Name,Original_Folder_Path, Watermark_Message_Folder_Path, FFMPEG_EXE_Path)
     if(is_temp):
         os.remove(File_Path)
     return message
