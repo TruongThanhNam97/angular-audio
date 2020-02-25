@@ -68,6 +68,8 @@ def ToMP3(filename):
     pass
 
 File_Name = sys.argv[1]
+User_ID = sys.argv[2]
+User_Name = sys.argv[3]
 
 print('Starting to decode')
 sys.stdout.flush()
@@ -81,7 +83,7 @@ sys.stdout.flush()
 if not isSimilar(message_bits, message, original_message, original_bits):
     print('Starting to encode')
     sys.stdout.flush()
-    output = coding.Coding_factory.Encoding(File_Name, File_Path, Original_Folder_Path, Watermarked_Folder_Path, Watermark_Message_Folder_Path ,Key_Folder_Path)
+    output = coding.Coding_factory.Encoding(File_Name, File_Path, Original_Folder_Path, Watermarked_Folder_Path, Watermark_Message_Folder_Path ,Key_Folder_Path, User_ID, User_Name)
     ToMP3(output)
     print( "OK" )
     sys.stdout.flush()

@@ -16,7 +16,12 @@ class String:
         letters = string.ascii_letters
         return ''.join(random.choice(letters) for i in range(length))
 
-
+    @staticmethod
+    def toString32(string):
+        if ( len(string) > 32 ):
+            string = string[0,31]
+        return string.center(32,"-")
+        
 class BitsArray:
     @staticmethod
     def toString(array):

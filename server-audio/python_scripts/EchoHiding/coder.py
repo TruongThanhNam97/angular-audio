@@ -3,15 +3,26 @@ import numpy
 import random
 from EchoHiding.hamming_coder import HammingCoder
 from EchoHiding.config import Config
+import utility
 
 class BinaryMessage:
-    def __init__(self, input_txt):
+    def CreateEncodeString(self):
+        user_id_moded = utility.toString32(self.user_id)
+        user_name_moded = utility.toString32(self.user_name)
+        return self.watermark + " " + self.user_id + " " + self.user_name
+
+    def __init__(self, input_txt, user_id, user_name):
         self.bits = []
         self.input = open(input_txt, 'r')
+        self.user_id = user_id
+        self.user_name = user_name
+        self.watermark = self.input.read()
+
+        self.encodeString = self.CreateEncodeString()
 
         code = HammingCoder()
 
-        for ch in self.input.read():
+        for ch in self.encodeString:
             symb_ord = ord(ch.encode('utf8'))
             bin_ord = bin(symb_ord)[2:].zfill(8)
 
