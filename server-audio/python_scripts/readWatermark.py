@@ -22,14 +22,14 @@ FFMPEG_EXE_Path = config.FFMPEG_EXE_Path
 File_Name = sys.argv[1]
 
 def readWatermark(filename):
-    message , File_Path, is_temp, message_bits, original_bits = decoding.Decoding_factory.getFullMessage(File_Name,Original_Folder_Path, Watermark_Message_Folder_Path, FFMPEG_EXE_Path)
+    message , File_Path, is_temp, message_bits, original_bits, user_id = decoding.Decoding_factory.getFullMessage(File_Name,Original_Folder_Path, Watermark_Message_Folder_Path, FFMPEG_EXE_Path)
     if(is_temp):
         os.remove(File_Path)
-    return message
+    return message, user_id
 
 def main():
-    watermark = readWatermark(File_Name)
-    result = json.dumps({ "error" : False,"message" : watermark })
+    watermark, user_arr = readWatermark(File_Name)
+    result = json.dumps({ "error" : False,"message" : watermark ,"user_id_arr": user_arr})
     print(result)
     return result
 

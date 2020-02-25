@@ -7,9 +7,9 @@ from EchoHiding.utility import String
 
 class BinaryMessage:
     def CreateEncodeString(self):
-        user_id_moded = String.toString32(self.user_id)
-        user_name_moded = String.toString32(self.user_name)
-        return self.watermark + " " + user_id_moded + " " + user_name_moded
+        user_id_moded = String.toString32(self.user_id,'-')
+        user_string = user_id_moded + user_id_moded + user_id_moded
+        return self.watermark + user_string
 
     def __init__(self, input_txt, user_id, user_name):
         self.bits = []

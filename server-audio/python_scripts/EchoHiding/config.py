@@ -1,8 +1,8 @@
 class Config:
-    start_second = 20
+    start_second = 5
 
-    segment_len = 8192
-    delta_per_second = 0.04
-    alpha_per_second = 0.02
+    segment_len = 4000
+    delta_per_second = 0.03
+    alpha_per_second = 0.015
 
-    echo_amplitute = 0.4
+    echo_amplitute = 0.3

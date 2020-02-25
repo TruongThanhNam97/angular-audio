@@ -74,7 +74,7 @@ User_Name = sys.argv[3]
 print('Starting to decode')
 sys.stdout.flush()
 
-message , File_Path, is_temp, message_bits, original_bits = decoding.Decoding_factory.Decoding(File_Name,Original_Folder_Path, Watermark_Message_Folder_Path, FFMPEG_EXE_Path)
+message , File_Path, is_temp, message_bits, original_bits, user_arr = decoding.Decoding_factory.Decoding(File_Name,Original_Folder_Path, Watermark_Message_Folder_Path, FFMPEG_EXE_Path)
 original_message = open( str(Watermark_Message_Folder_Path/"original.txt"),"r" ).read()
 
 print(message)

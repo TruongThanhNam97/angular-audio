@@ -19,8 +19,8 @@ class Decoding_factory:
         message = BinaryMessage(message, is_full_message)
 
         stegosystem = System(signal, message)
-        decoded_message, decoded_bits = stegosystem.extract_stegomessage()
-        return decoded_message , str(audio), need2convert, message.bits_original ,decoded_bits
+        decoded_message, decoded_bits, user_id = stegosystem.extract_stegomessage()
+        return decoded_message , str(audio), need2convert, message.bits_original ,decoded_bits, user_id
 
     @staticmethod
     def getFullMessage( File_Name, Original_Folder_Path ,Watermark_Message_Folder_Path ,FFMPEG_EXE_Path):

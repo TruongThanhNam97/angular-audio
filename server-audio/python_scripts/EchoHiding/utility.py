@@ -16,10 +16,10 @@ class String:
         return ''.join(random.choice(letters) for i in range(length))
 
     @staticmethod
-    def toString32(string = ""):
+    def toString32(string = "", char = '-'):
         if ( len(string) > 32 ):
             string = string[0,31]
-        return string.center(32,"-")
+        return string.center(32, char)
         
 class BitsArray:
     @staticmethod

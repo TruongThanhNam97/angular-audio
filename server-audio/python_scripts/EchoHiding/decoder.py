@@ -13,8 +13,10 @@ class BinaryMessage:
         self.bitslen = 0
         self.input = open(str(orginal_message), 'r')
         self.input_message = self.input.read()
+        self.original_len = len(self.input_message)
         if(is_full_message):
-            self.input_message += ( " " + String.toString32() + String.toString32() )
+            userstring = String.toString32() + String.toString32() + String.toString32()
+            self.input_message += userstring
         self.bits_original = []
         bits = ""
 
@@ -53,6 +55,7 @@ class BinaryMessage:
         self.set_bitslen()
 
         message = ""
+        user_id = ["","",""]
         decoded_bits = []
 
         for i in range(self.bitslen):
@@ -74,7 +77,11 @@ class BinaryMessage:
                         byte_ord = int(symb_ord).to_bytes(1, byteorder='little')
                         letter = byte_ord.decode("utf8",errors='ignore')
 
-                    message = message + letter
+                    
+                    if(i < self.original_len*14 ):
+                        message += letter
+                    else:                               
+                        user_id[(i - self.original_len*14) // (32*14)] += letter
 
                     flag = False
                     left, right = "", ""
@@ -84,7 +91,7 @@ class BinaryMessage:
                 bin_ord = ''
                 counter = 0
 
-        return message, decoded_bits
+        return message, decoded_bits, user_id
 
 class System:
     def __init__(self, signal, message):
@@ -94,7 +101,6 @@ class System:
         self.total_message_frames = self.message.bitslen * Config.segment_len
         self.start_frame = Config.start_second * self.signal.frame_rate
         self.end_frame = self.start_frame + self.total_message_frames
-
 
         self.delta_frames = int(numpy.floor( self.signal.frame_rate * Config.delta_per_second ))
         self.alpha_frames = int(numpy.floor( self.signal.frame_rate * Config.alpha_per_second ))
@@ -121,7 +127,6 @@ class System:
             start_segment = self.start_frame + Config.segment_len * segment
             end_segment = start_segment + Config.segment_len - 1
             segment_array = self.signal.channels[0][start_segment : end_segment]
-            print(segment, " : ",start_segment," : ",end_segment )
             self.message.bits.append( self.decode_section(segment_array) )
 
         return self.message.decode()
