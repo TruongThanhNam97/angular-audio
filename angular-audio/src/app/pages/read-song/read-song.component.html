@@ -31,9 +31,9 @@
   </form>
   <div class="file-info" *ngIf="decodeInfo" id="info">
     <h5>File: <strong>{{ decodeInfo.file }}</strong></h5>
-    <h5>User Id: <strong>{{ decodeInfo.userid[0] }}</strong></h5>
+    <h5>User Id: <strong>{{ decodeInfo.userid }}</strong></h5>
     <h5>User Name: <strong>{{ decodeInfo.username ? decodeInfo.username : '' }}</strong></h5>
-    <h5>Result: <strong>{{ decodeInfo.error ? 'Not watermarked' : 'Watermarked' }}</strong></h5>
+    <h5>Result: <strong [ngStyle]="{'color': decodeInfo.watermarked ? 'red' : 'green'}">{{ decodeInfo.watermarked ? 'Watermarked' : 'Not Watermarked' }}</strong></h5>
     <!-- <mat-icon (click)="print()" class="printIcon" matTooltip="Print">print</mat-icon> -->
   </div>
 </div>

@@ -110,7 +110,7 @@ export class ReadSongComponent implements OnInit, OnDestroy {
         this.decodeInfo = { ...res };
         this.decodeInfo.file = this.signForm.get('file').value.name;
       }),
-      switchMap(() => this.authService.getUserNameByUserId('5e55cd5561d1444b0c846a9b')),
+      switchMap(() => this.authService.getUserNameByUserId(this.decodeInfo.userid)),
       tap(result => this.decodeInfo.username = result.username),
       takeUntil(this.destroySubscription$)
     ).subscribe(res => { }, err => {

@@ -55,11 +55,7 @@ class Watermarker {
             pyWatermarker.stdout.on('data', (data) => {
                 let result = JSON.parse(data.toString());
                 if (result) {
-                    if (result.error === false) {
                         next(result);
-                    }
-                    else
-                        on_error({ message: "Something's wrong" });
                 } else {
                     on_error({ message: "Something's wrong" });
                 }

@@ -55,7 +55,6 @@ def readWatermark(filename):
 
 def main():
     message , message_bits, original_bits, user_id = readWatermark(File_Name)
-    print(message)
     original_message = open( str(Watermark_Message_Folder_Path/"original.txt"),"r" ).read()
     is_watermarked = isSimilar(message_bits, message, original_message, original_bits)
     result = json.dumps({ "watermarked" : is_watermarked,"userid" : user_id.replace('-','') })
