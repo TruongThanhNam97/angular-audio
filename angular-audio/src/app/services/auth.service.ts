@@ -149,6 +149,14 @@ export class AuthService {
         );
     }
 
+    getUserNameByUserId(id: string) {
+        return this.http.get(`${this.SERVER_URL}users/getUserById`, { params: { id } }).pipe(
+            map((user: any) => ({
+                username: user.username
+            }))
+        );
+    }
+
     followsUser(data) {
         return this.http.post(`${this.SERVER_URL}users/follows`, data, {
             headers: {

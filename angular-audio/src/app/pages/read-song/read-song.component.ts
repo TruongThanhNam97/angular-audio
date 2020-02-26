@@ -1,9 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ValidateService } from 'src/app/services/validate.service';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, tap, switchMap } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { UploadService } from 'src/app/services/upload.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-read-song',
@@ -17,10 +18,12 @@ export class ReadSongComponent implements OnInit, OnDestroy {
   typeFileMusic = ['mp3', 'MP3', 'wav', 'WAV', 'm4a', 'M4A', 'flac', 'FLAC'];
   controlCharacters = /[!@#$%^&*()_+\=\[\]{};':"\\|,<>\/?]+/;
   loading = false;
+  decodeInfo: any;
 
   constructor(
     private validateService: ValidateService,
-    private uploadService: UploadService) { }
+    private uploadService: UploadService,
+    private authService: AuthService) { }
 
   ngOnInit() {
     this.initializeForm();
@@ -103,15 +106,36 @@ export class ReadSongComponent implements OnInit, OnDestroy {
     const formData = new FormData();
     formData.append('file', this.signForm.get('file').value);
     this.uploadService.readSong(formData).pipe(
+      tap(res => {
+        this.decodeInfo = { ...res };
+        this.decodeInfo.file = this.signForm.get('file').value.name;
+      }),
+      switchMap(() => this.authService.getUserNameByUserId('5e55cd5561d1444b0c846a9b')),
+      tap(result => this.decodeInfo.username = result.username),
       takeUntil(this.destroySubscription$)
-    ).subscribe(res => {
-      console.log(res);
-    }, err => {
-      console.log(err);
+    ).subscribe(res => { }, err => {
       this.loading = false;
     }, () => {
       this.loading = false;
     });
+  }
+
+  print() {
+    const screenWidth = screen.width;
+    const screenHeight = screen.height;
+
+    const mywindow = window.open('', 'PRINT', `height=${screenHeight / 2},
+        width=${screenWidth / 1.5}`);
+
+    mywindow.document.write(document.getElementById('info').innerHTML);
+
+    mywindow.document.close(); // necessary for IE >= 10
+    mywindow.focus(); // necessary for IE >= 10*/
+
+    mywindow.print();
+    mywindow.close();
+
+    return true;
   }
 
 }

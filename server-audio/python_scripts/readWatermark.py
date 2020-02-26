@@ -28,8 +28,8 @@ def readWatermark(filename):
     return message, user_id
 
 def main():
-    watermark, user_arr = readWatermark(File_Name)
-    result = json.dumps({ "error" : False,"message" : watermark ,"user_id_arr": user_arr})
+    watermark, userid = readWatermark(File_Name)
+    result = json.dumps({ "error" : False,"userid" : userid})
     print(result)
     return result
 
