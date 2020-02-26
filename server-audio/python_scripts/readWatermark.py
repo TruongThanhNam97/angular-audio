@@ -21,15 +21,44 @@ FFMPEG_EXE_Path = config.FFMPEG_EXE_Path
 
 File_Name = sys.argv[1]
 
+def isSimilar(bits, message, original, original_bits):
+    string_match_threshhold = config.string_match_threshhold
+    bit_match_threshhold = config.bit_match_threshhold
+
+
+    #check bit similar
+    total = len(bits)
+    if len(bits) > len(original_bits):
+        total = len(original_bits)
+    
+    similar_bits_count = 0.0
+    for i in range(total):
+        if( int(bits[i]) == int(original_bits[i]) ) :
+            similar_bits_count += 1.0
+
+    bits_similarity = similar_bits_count / total
+    string_similarity = SequenceMatcher(None, message, original ).ratio()
+
+    if bits_similarity >= bit_match_threshhold:
+        return True
+
+    if string_similarity >= string_match_threshhold:
+        return True
+
+    return False
+
 def readWatermark(filename):
     message , File_Path, is_temp, message_bits, original_bits, user_id = decoding.Decoding_factory.getFullMessage(File_Name,Original_Folder_Path, Watermark_Message_Folder_Path, FFMPEG_EXE_Path)
     if(is_temp):
         os.remove(File_Path)
-    return message, user_id
+    return message , message_bits, original_bits, user_id
 
 def main():
-    watermark, userid = readWatermark(File_Name)
-    result = json.dumps({ "error" : False,"userid" : userid})
+    message , message_bits, original_bits, user_id = readWatermark(File_Name)
+    print(message)
+    original_message = open( str(Watermark_Message_Folder_Path/"original.txt"),"r" ).read()
+    is_watermarked = isSimilar(message_bits, message, original_message, original_bits)
+    result = json.dumps({ "watermarked" : is_watermarked,"userid" : user_id.replace('-','') })
     print(result)
     return result
 

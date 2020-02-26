@@ -14,6 +14,7 @@ class BinaryMessage:
         self.input = open(str(orginal_message), 'r')
         self.input_message = self.input.read()
         self.original_len = len(self.input_message)
+        self.is_full_message = is_full_message
         if(is_full_message):
             userstring = String.toString32() + String.toString32() + String.toString32()
             self.input_message += userstring
@@ -55,10 +56,10 @@ class BinaryMessage:
         self.set_bitslen()
 
         message = ""
-        user_id = ["","",""]
+        user_id_bits_arr = ["","",""]
         decoded_bits = []
 
-        for i in range(self.bitslen):
+        for i in range(self.original_len*14):           
             bin_ord += str(self.bits[i])
             counter += 1
             if counter == 7:
@@ -77,11 +78,7 @@ class BinaryMessage:
                         byte_ord = int(symb_ord).to_bytes(1, byteorder='little')
                         letter = byte_ord.decode("utf8",errors='ignore')
 
-                    
-                    if(i < self.original_len*14 ):
                         message += letter
-                    else:                               
-                        user_id[(i - self.original_len*14) // (32*14)] += letter
 
                     flag = False
                     left, right = "", ""
@@ -90,6 +87,52 @@ class BinaryMessage:
                     flag = True
                 bin_ord = ''
                 counter = 0
+
+        user_id = ""
+        bin_ord = ''
+        counter = 0
+        flag = False
+        left, right = "", ""
+        if(self.is_full_message):
+            for i in range(self.original_len*14, self.bitslen):                            
+                user_id_bits_arr[(i - self.original_len*14) // (32*14)] += str(self.bits[i])
+
+            user_id_bit = ""
+
+            for i in range(32*14):
+                x = bool( int( user_id_bits_arr[0][i] ) )
+                y = bool( int( user_id_bits_arr[1][i] ) )
+                z = bool( int( user_id_bits_arr[2][i] ) )
+                user_id_bit += str(int((x and y) or (x and z) or (y and z) ))
+
+            for ch in user_id_bit:           
+                bin_ord += ch
+                counter += 1
+                if counter == 7:
+                    if flag:
+                        right = code.decode(bin_ord)
+                        symb_ord = int(left + right, 2)
+
+                        for j in range(4):
+                            decoded_bits.append(left[j])
+                        for j in range(4):
+                            decoded_bits.append(right[j])
+
+                        if 127 <= symb_ord <= 159 or 0 <= symb_ord <= 31:
+                            letter = ' '
+                        else:
+                            byte_ord = int(symb_ord).to_bytes(1, byteorder='little')
+                            letter = byte_ord.decode("utf8",errors='ignore')
+
+                            user_id += letter
+
+                        flag = False
+                        left, right = "", ""
+                    else:
+                        left = code.decode(bin_ord)
+                        flag = True
+                    bin_ord = ''
+                    counter = 0
 
         return message, decoded_bits, user_id
 
