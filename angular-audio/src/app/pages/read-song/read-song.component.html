@@ -26,8 +26,15 @@
         *ngIf="signForm.get('file').hasError('required')">Something went wrong</span>
     </div> -->
     <button [disabled]="signForm.invalid" type="button" (click)="submit()"
-      class="btn btn-secondary btn-block mb-5 mt-2">Submit
+      class="btn btn-secondary btn-block mb-5 mt-2">Check watermark
     </button>
   </form>
+  <div class="file-info" *ngIf="decodeInfo" id="info">
+    <h5>File: <strong>{{ decodeInfo.file }}</strong></h5>
+    <h5>User Id: <strong>{{ decodeInfo.userid.length < 24 ? '' : decodeInfo.userid }}</strong></h5>
+    <h5>User Name: <strong>{{ decodeInfo.username ? decodeInfo.username : '' }}</strong></h5>
+    <h5>Result: <strong [ngStyle]="{'color': decodeInfo.watermarked ? 'red' : 'green'}">{{ decodeInfo.watermarked ? 'Watermarked' : 'Not Watermarked' }}</strong></h5>
+    <!-- <mat-icon (click)="print()" class="printIcon" matTooltip="Print">print</mat-icon> -->
+  </div>
 </div>
 <app-loading *ngIf="loading"></app-loading>

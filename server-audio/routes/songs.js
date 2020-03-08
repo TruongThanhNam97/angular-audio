@@ -9,6 +9,8 @@ var path = require("path");
 var passport = require("passport");
 const validateComment = require('../validation/validate-comment');
 
+const fs = require('fs');
+
 const rateLimit = require("express-rate-limit");
 
 const upView = rateLimit({
@@ -219,6 +221,12 @@ var watermark = (req, res, next) => {
                 (err) => {
                     const count = err.count;
                     const arrFilesLength = err.arrFilesLength;
+                    const path = `./assets/original-songs/${err.filename}`;
+                    try {
+                        fs.unlinkSync(path)
+                    } catch (err) {
+                        console.error(err)
+                    }
                     if (err.message.toString().includes('Reup detected')) {
                         console.log(err.message.toString());
                         userModel.findById({ _id: req.user.id }).then(user => {
@@ -290,14 +298,25 @@ router.post("/readWatermark", passport.authenticate('jwt', { session: false }), 
     if (req.user.username !== 'superadmin') {
         return res.status(401).json('Unauthorized');
     }
+    const path = `./assets/original-songs/${req.files[0].filename}`;
     watermarker.readWatermark(req,
         (data) => {
             console.log(data);
             res.status(200).json(data);
+            try {
+                fs.unlinkSync(path)
+            } catch (err) {
+                console.error(err)
+            }
         },
         (err) => {
             console.log(err);
             res.status(400).json(err);
+            try {
+                fs.unlinkSync(path)
+            } catch (err) {
+                console.error(err)
+            }
         }
     )
 });
